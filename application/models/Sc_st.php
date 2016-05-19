@@ -22,5 +22,34 @@ class Sc_st extends CI_Model {
 			$query=$query." WHERE ".$where;
 		$this->db->query($query);
 	}
-	
+	protected function resetValue(){
+		$this->setId(null);
+		$this->setName(null);
+	}
+	protected function arrayBuilder(){
+		//if($this->getId() != NULL) $TEMP_QUERY["si_id"] = $this->getId();
+		//if($this->getName() != NULL) $TEMP_QUERY["si_name"] = $this->getName();
+		//return $TEMP_QUERY;
+	}
+	protected function queryBuilder(){
+		$TEMP_QUERY = "";
+		//if($this->getId() != NULL) $TEMP_QUERY.="si_id='".$this->getId()."',";
+		//if($this->getName() != NULL) $TEMP_QUERY.="si_name='".$this->getName()."',";
+		return substr($TEMP_QUERY,0,strlen($TEMP_QUERY)-1);
+	}
+	//setter and getter
+	private $kode;
+	private $nim;
+	private $nip;
+	private $judulta;
+	private $metode;
+	private $referensis;
+	private $referensid;
+	private $referensit;
+	private $lokasi;
+	private $namakrs;
+	private $statue;
+	private $logstatue;
+	private $kategori;
+	private $dataproses;
 }

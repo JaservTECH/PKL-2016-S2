@@ -2,6 +2,7 @@
 defined('BASEPATH') OR exit('What Are You Looking For ?');
 require_once ("Aktor.php");
 class Koordinator extends Aktor{
+	//constructor - valid
 	function __construct() {
 		parent::__construct();
 		$this->setLibrary('session');
@@ -9,121 +10,110 @@ class Koordinator extends Aktor{
 		$this->setHelper('url');
 		$this->setModel("sc_ea");
 		$this->setModel("sc_sk");
-		$this->setNewDataEncrypt("JaservTech.Koordinator.Public.Control.Open");
-		
-		//$this->load->library('session');
-		//$this->load->model("sc_ea");
-		//$this->setNewDataEncrypt("JaservTech.Koordinator.Public.Control.Open");
 	}
-	/*
-	public function getIsRegisterTime($data='2000-05-3'){
-		if(!$this->getStatusLockPublic())
-			header("location:".base_url()."gateinout.aspx");
-		return $this->sc_ea->getStatusTimeInActiveRegistrasi($data)->isIn();
-	}
-	*/
-	public function setAktifAkademikRegistrasi($start,$end,$title,$summary){
-		if(!$this->getStatusLockPublic())
-			header("location:".base_url()."gateinout.aspx");
-		$temp = $this->sc_ea->query("*","e_status=1 AND e_event=1")->row_array();
+	//event registrasi control - valid 
+	public function setAktifAkademikRegistrasi($TEMP_START,$TEMP_END,$TEMP_TITLE,$TEMP_SUMMARY){
+		$this->sc_ea->getEventActiveRegister();
 		if(intval(DATE("m")) > 6){
-			$y = intval(date("Y"));
-			$s = 1;
+			$YEAR = intval(date("Y"));
+			$SEMESTER = 1;
 		}else {
-			$y = intval(date("Y"))-1;
-			$s = 2;
+			$YEAR = intval(date("Y"))-1;
+			$SEMESTER = 2;
 		}
-		if(count($temp) > 0){
-			if((intval($temp['e_year']) == $y) && (intval($temp['e_semester']) == $s)){
-				$this->sc_ea->update("
-					e_start='".$start."',
-					e_end='".$end."',
-					e_title='".$title."',
-					e_summary='".$summary."'"
-					,"e_status=1 AND e_event=1");	
+		if($this->sc_ea->getId() != NULL){
+			if((intval($this->sc_ea->getYear()) == $YEAR) && (intval($this->sc_ea->getSemester()) == $SEMESTER)){
+				$this->sc_ea->resetValue();
+				$this->sc_ea->setStart($TEMP_START);
+				$this->sc_ea->setEnd($TEMP_END);
+				$this->sc_ea->setJudul($TEMP_TITLE);
+				$this->sc_ea->setIsi($TEMP_SUMMARY);	
+				if($this->sc_ea->setUpdateEventActiveRegister())
+					return $this->setCategoryPrintMessage(0, TRUE, "Success, input data");
+				else
+					return $this->setCategoryPrintMessage(0, FALSE, "Gagal, input data");
+					
 			}else{
-				$this->sc_ea->update("
-						e_status='2'"
-					,"e_status=1 AND e_event=1");	
-				$this->sc_ea->insert(array(
-						'e_year' => $y,
-						'e_semester' => $s,
-						'e_status' => "1",
-						'e_event' => "1",
-						'e_start' => $start,
-						'e_end' => $end,
-						'e_title' => $title,
-						'e_summary' => $summary
-				));
+				$this->sc_ea->resetValue();
+				$this->sc_ea->setStatus(2);
+				if($this->sc_ea->setUpdateEventActiveRegister()){
+					$this->sc_ea->resetValue();
+					$this->sc_ea->setYear($YEAR);
+					$this->sc_ea->setSemester($SEMESTER);
+					$this->sc_ea->setStart($TEMP_START);
+					$this->sc_ea->setEnd($TEMP_END);
+					$this->sc_ea->setStatus("1");
+					$this->sc_ea->setCategory("1");
+					$this->sc_ea->setIsi($TEMP_SUMMARY);
+					$this->sc_ea->setJudul($TEMP_TITLE);
+					if($this->sc_ea->setNewEventActiveRegister())
+						return $this->setCategoryPrintMessage(0, TRUE, "Success, input data");
+					else
+						return $this->setCategoryPrintMessage(0, FALSE, "Gagal, input data");
+				}else
+					return $this->setCategoryPrintMessage(0, FALSE, "Gagal, input data");
 			}
 		}else{
-			$this->sc_ea->insert(array(
-					'e_year' => $y,
-					'e_semester' => $s,
-					'e_status' => "1",
-					'e_event' => "1",
-					'e_start' => $start,
-					'e_end' => $end,
-					'e_title' => $title,
-					'e_summary' => $summary
-			));
+			$this->sc_ea->resetValue();
+			$this->sc_ea->setYear($YEAR);
+			$this->sc_ea->setSemester($SEMESTER);
+			$this->sc_ea->setStart($TEMP_START);
+			$this->sc_ea->setEnd($TEMP_END);
+			$this->sc_ea->setStatus("1");
+			$this->sc_ea->setCategory("1");
+			$this->sc_ea->setIsi($TEMP_SUMMARY);
+			$this->sc_ea->setJudul($TEMP_TITLE);
+			if($this->sc_ea->setNewEventActiveRegister())
+				return $this->setCategoryPrintMessage(0, TRUE, "Success, input data");
+			else
+				return $this->setCategoryPrintMessage(0, FALSE, "Gagal, input data");
 		}
-		return $this->setCategoryPrintMessage(0, true, "Success, input data");
 	}
-	public function setAktifAkademikEvent($start,$end,$title,$summary,$id){
-		if(!$this->getStatusLockPublic())
-			header("location:".base_url()."gateinout.aspx");
-			if(intval(DATE("m")) > 6){
-				$y = intval(date("Y"));
-				$s = 1;
-			}else {
-				$y = intval(date("Y"))-1;
-				$s = 2;
-			}
-			$this->sc_ea->update(
-					"e_start='".$start."',".
-					"e_end='".$end."',".
-					"e_title='".$title."',".
-					"e_summary='".$summary."'"
-					,"e_id=".$id." AND e_event=3");
-			return $this->setCategoryPrintMessage(0, true, "Success, input data");
+	public function setAktifAkademikEvent($TEMP_START,$TEMP_END,$TEMP_TITLE,$TEMP_SUMMARY,$TEMP_ID){
+		$this->sc_ea->resetValue();
+		$this->sc_ea->setStart($TEMP_START);
+		$this->sc_ea->setEnd($TEMP_END);
+		$this->sc_ea->setJudul($TEMP_TITLE);
+		$this->sc_ea->setIsi($TEMP_SUMMARY);
+		if($this->sc_ea->setUpdateEventKoordinator($TEMP_ID))
+			return $this->setCategoryPrintMessage(0, TRUE, "Success, input data");
+		else
+			return $this->setCategoryPrintMessage(0, FALSE, "Gagal, input data");
 	}
-	public function setNewAktifAkademikEvent($start,$end,$title,$summary){
-		if(!$this->getStatusLockPublic())
-			header("location:".base_url()."gateinout.aspx");
-			if(intval(DATE("m")) > 6){
-				$y = intval(date("Y"));
-				$s = 1;
-			}else {
-				$y = intval(date("Y"))-1;
-				$s = 2;
-			}
-			$this->sc_ea->insert(array(
-					'e_year' => $y,
-					'e_semester' => $s,
-					'e_start' => $start,
-					'e_end' =>$end,
-					'e_title' => $title,
-					'e_summary' => $summary,
-					'e_status' => '1',
-					'e_event' => '3'
-			));
-			return $this->setCategoryPrintMessage(0, true, "Success, input data");
+	public function setNewAktifAkademikEvent($TEMP_START,$TEMP_END,$TEMP_TITLE,$TEMP_SUMMARY){
+		if(intval(DATE("m")) > 6){
+			$YEAR = intval(date("Y"));
+			$SEMESTER = 1;
+		}else {
+			$YEAR = intval(date("Y"))-1;
+			$SEMESTER = 2;
+		}
+		$this->sc_ea->resetValue();
+		$this->sc_ea->setYear($YEAR);
+		$this->sc_ea->setSemester($SEMESTER);
+		$this->sc_ea->setStart($TEMP_START);
+		$this->sc_ea->setEnd($TEMP_END);
+		$this->sc_ea->setJudul($TEMP_TITLE);
+		$this->sc_ea->setIsi($TEMP_SUMMARY);
+		$this->sc_ea->setStatus("1");
+		$this->sc_ea->setCategory("3");
+		if($this->sc_ea->setNewEventKoordinator())
+			return $this->setCategoryPrintMessage(0, TRUE, "Success, input data");
+		else
+			return $this->setCategoryPrintMessage(0, FALSE, "Gagal, input data");
 	}
+	//cursor edit in here <<<<<<<<<<<<<---------------------
 	public function getFullDataRegistrasi($year,$semester){
-		if(!$this->getStatusLockPublic())
-			header("location:".base_url()."gateinout.aspx");
 		return $this->sc_ea->query("*","e_year=".$year." AND e_semester=".$semester." AND e_event=1")->row_array();
+		$this->sc_ea->resetValue();
+		$this->sc_ea->setYear();
+		$this->sc_ea->setSemester();
 	}
 	public function getFullDataRegistrasiNonDefault($id){
-		if(!$this->getStatusLockPublic())
-			header("location:".base_url()."gateinout.aspx");
 		return $this->sc_ea->query("*","e_id=".$id." AND e_event=3")->row_array();
 	}
 	
 	public function getListEventkoordinator($key){
-		if(!$this->getStatusLockPublic())
-			header("location:".base_url()."gateinout.aspx");
 		$temp = $this->sc_ea->query("*","e_event=3 AND e_status=1")->result_array();
 		if(count($temp) > 0){
 			$this->setHelper('date');
@@ -153,19 +143,13 @@ class Koordinator extends Aktor{
 		}
 	}
 	public function getListEventAcademic(){
-		if(!$this->getStatusLockPublic())
-			header("location:".base_url()."gateinout.aspx");
 		return $this->sc_ea->query("*","e_event=1 order by e_id desc")->result_array();
 	}
 	public function getCodeRegisterAktif(){
-		if(!$this->getStatusLockPublic())
-			header("location:".base_url()."gateinout.aspx");
 		return $this->sc_ea->getCodeRegistrasiAkademik();
 		
 	}
 	public function getCheckKodeUsername($value="",$cat=0){
-		if(!$this->getStatusLockPublic())
-			header("location:".base_url()."gateinout.aspx");
 		if(($value=="") || ($value == null)){
 			return $this->setCategoryPrintMessage($cat, false, "nilai tidak boleh kosong");
 		}
@@ -178,8 +162,6 @@ class Koordinator extends Aktor{
 		return $this->setCategoryPrintMessage($cat, true, "valid");
 	}
 	public function getCheckTitle($value="",$cat){
-		if(!$this->getStatusLockPublic())
-			header("location:".base_url()."gateinout.aspx");
 		if(($value=="") || ($value == null)){
 			return $this->setCategoryPrintMessage($cat, false, "nilai tidak boleh kosong");
 		}
@@ -187,8 +169,6 @@ class Koordinator extends Aktor{
 		return $this->setCategoryPrintMessage($cat, $temp[0], $temp[1]);
 	}
 	public function getCheckSummary($value="",$cat){
-		if(!$this->getStatusLockPublic())
-			header("location:".base_url()."gateinout.aspx");
 		if(($value=="") || ($value == null)){
 			return $this->setCategoryPrintMessage($cat, false, "nilai tidak boleh kosong");
 		}
@@ -196,8 +176,6 @@ class Koordinator extends Aktor{
 		return $this->setCategoryPrintMessage($cat, $temp[0], $temp[1]);
 	}
 	public function getCheckPassword($value="",$cat=0){
-		if(!$this->getStatusLockPublic())
-			header("location:".base_url()."gateinout.aspx");
 		if(($value=="") || ($value == null)){
 			return $this->setCategoryPrintMessage($cat, false, "nilai tidak boleh kosong");
 		}
@@ -237,27 +215,27 @@ class Koordinator extends Aktor{
 			redirect(base_url()."Controlroom/");
 		}
 		if($username == "")
-			return $this->setCategoryPrintMessage(1, false, "Anda melakukan debugging terhadap username");
+			return $this->setCategoryPrintMessage(0, false, "Anda melakukan debugging terhadap username");
 		if($password == "")
-			return $this->setCategoryPrintMessage(1, false, "Anda melakukan debugging teerhadap password");
+			return $this->setCategoryPrintMessage(0, false, "Anda melakukan debugging teerhadap password");
 		$this->sc_sk->query("*","s_kode='".$username."' AND s_password='".$password."'")->row_array();
 		if(!$this->getCheckKodeUsername($username,1)[0])
-			return $this->setCategoryPrintMessage(1,false,"Anda melakukan debugging");
+			return $this->setCategoryPrintMessage(0,false,"Anda melakukan debugging");
 		if(!$this->getCheckPassword($password,1)[0])
-			return $this->setCategoryPrintMessage(1,false,"Anda melakukan debugging");
+			return $this->setCategoryPrintMessage(0,false,"Anda melakukan debugging");
 		$temp = $this->sc_sk->query("*","s_kode='".$username."' AND s_password='".$password."'")->row_array();
 		if(count($temp)<=0)
-			return $this->setCategoryPrintMessage(1, false, "Kombinasi username dan password tidak cocok");
+			return $this->setCategoryPrintMessage(0, false, "Kombinasi username dan password tidak cocok");
 		if($temp['s_kode'] != $username)
-			return $this->setCategoryPrintMessage(1, false, "Username tidak cocok");
+			return $this->setCategoryPrintMessage(0, false, "Username tidak cocok");
 		if($temp['s_password'] != $password)
-			return $this->setCategoryPrintMessage(1, false, "Password tiidak cocok");
+			return $this->setCategoryPrintMessage(0, false, "Password tiidak cocok");
 		$this->session->set_userdata("nama","koordinator");
 		$this->session->set_userdata("kode",$this->encrypt("koordinator"));
 		if($this->getStatusLoginKoordinator()){
-			return $this->setCategoryPrintMessage(1,true, "Controlroom.aspx");
+			return $this->setCategoryPrintMessage(0,true, "Controlroom.aspx");
 		}else
-			return $this->setCategoryPrintMessage(1,false, "Terjadi kesalahan saat proses login");
+			return $this->setCategoryPrintMessage(0,false, "Terjadi kesalahan saat proses login");
 	}
 	private function encrypt($string=""){
 		return sha1(md5($string."jaservFilter"));

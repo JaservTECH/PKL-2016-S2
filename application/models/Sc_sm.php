@@ -1,4 +1,8 @@
 <?php
+	//query builder - Ok
+	//arrayBuilder - Ok
+	//automaSetContent - Ok
+	//resetValue - Ok
 defined('BASEPATH') OR exit('No direct script access allowed');
 class Sc_sm extends CI_Model {
 	public function __CONSTRUCT(){
@@ -153,30 +157,92 @@ class Sc_sm extends CI_Model {
 			$query=$query." WHERE ".$where;
 		$this->db->query($query);
 	}
+	
+	//Query builder
+	protected function queryBuilder(){
+		$TEMP_QUERY = "";
+		if($this->getNim() != NULL) $TEMP_QUERY.="s_nim='".$this->getNim()."',";
+		if($this->getName() != NULL) $TEMP_QUERY.="s_name='".$this->getName()."',";
+		if($this->getPassword() != NULL) $TEMP_QUERY.="s_password='".$this->getPassword()."',";
+		if($this->getEmail() != NULL) $TEMP_QUERY.="s_email='".$this->getEmail()."',";
+		if($this->getStatus() != NULL) $TEMP_QUERY.="s_statue='".$this->getStatus()."',";
+		if($this->getPeminatan() != NULL) $TEMP_QUERY.="s_p='".$this->getPeminatan()."',";
+		if($this->getNohp() != NULL) $TEMP_QUERY.="s_nohp='".$this->getNohp()."',";
+		if($this->getAktifTahun() != NULL) $TEMP_QUERY.="s_active_year='".$this->getAktifTahun()."',";
+		if($this->getNamaOrtu() != NULL) $TEMP_QUERY.="s_name_parent='".$this->getNamaOrtu()."',";
+		if($this->getNoHpOrtu() != NULL) $TEMP_QUERY.="s_nohp_parent='".$this->getNoHpOrtu()."',";
+		if($this->getSemester() != NULL) $TEMP_QUERY.="s_semester='".$this->getSemester()."',";
+		if($this->getOpenForm() != NULL) $TEMP_QUERY.="s_new_form='".$this->getOpenForm()."',";
+		if($this->getForceRegLama() != NULL) $TEMP_QUERY.="s_force_registrasi_lama='".$this->getForceRegLama()."',";
+		if($this->getForceRegNew() != NULL) $TEMP_QUERY.="s_force_registrasi='".$this->getForceRegNew()."',";
+		if($this->getSeminarTA1() != NULL) $TEMP_QUERY.="s_seminar_ta1='".$this->getSeminarTA1()."',";
+		if($this->getSeminarTA2() != NULL) $TEMP_QUERY.="s_seminar_ta2='".$this->getSeminarTA2()."',";
+		if($this->getFotoname() != NULL) $TEMP_QUERY.="s_foto_name='".$this->getFotoname()."',";
+		if($this->getTranskripName() != NULL) $TEMP_QUERY.="s_transcript_name='".$this->getTranskripName()."',";
+		if($this->getCodeCokie() != NULL) $TEMP_QUERY.="s_code_cookie='".$this->getCodeCokie()."',";
+		if($this->getNipReview1() != NULL) $TEMP_QUERY.="s_nip_review_1='".$this->getNipReview1()."',";
+		if($this->getNipReview2() != NULL) $TEMP_QUERY.="s_nip_review_2='".$this->getNipReview2()."',";
+		if($this->getNipReview3() != NULL) $TEMP_QUERY.="s_nip_review_3='".$this->getNipReview3()."',";
+		if($this->getForceSemTog() != NULL) $TEMP_QUERY.="s_force_seminar_together='".$this->getForceSemTog()."',";
+		return substr($TEMP_QUERY,0,strlen($TEMP_QUERY)-1);
+	}
+	//array Builder 
+	protected function arrayBuilder(){
+		if($this->getNim() != NULL) $TEMP_QUERY["s_nim"] = $this->getNim();
+		if($this->getName() != NULL) $TEMP_QUERY["s_name"] = $this->getName();
+		if($this->getPassword() != NULL) $TEMP_QUERY["s_password"] = $this->getPassword();
+		if($this->getEmail() != NULL) $TEMP_QUERY["s_email"] = $this->getEmail();
+		if($this->getStatus() != NULL) $TEMP_QUERY["s_statue"] = $this->getStatus();
+		if($this->getPeminatan() != NULL) $TEMP_QUERY["s_p"] = $this->getPeminatan();
+		if($this->getNohp() != NULL) $TEMP_QUERY["s_nohp"] = $this->getNohp();
+		if($this->getAktifTahun() != NULL) $TEMP_QUERY["s_active_year"] = $this->getAktifTahun();
+		if($this->getNamaOrtu() != NULL) $TEMP_QUERY["s_name_parent"] = $this->getNamaOrtu();
+		if($this->getNoHpOrtu() != NULL) $TEMP_QUERY["s_nohp_parent"] = $this->getNoHpOrtu();
+		if($this->getSemester() != NULL) $TEMP_QUERY["s_semester"] = $this->getSemester();
+		if($this->getOpenForm() != NULL) $TEMP_QUERY["s_new_form"] = $this->getOpenForm();
+		if($this->getForceRegNew() != NULL) $TEMP_QUERY["s_force_registrasi"] = $this->getForceRegNew();
+		if($this->getForceRegLama() != NULL) $TEMP_QUERY["s_force_registrasi_lama"] = $this->getForceRegLama();
+		if($this->getSeminarTA1() != NULL) $TEMP_QUERY["s_seminar_ta1"] = $this->getSeminarTA1();
+		if($this->getSeminarTA2() != NULL) $TEMP_QUERY["s_seminar_ta2"] = $this->getSeminarTA2();
+		if($this->getFotoname() != NULL) $TEMP_QUERY["s_foto_name"] = $this->getFotoname();
+		if($this->getTranskripName() != NULL) $TEMP_QUERY["s_transcript_name"] = $this->getTranskripName();
+		if($this->getCodeCokie() != NULL) $TEMP_QUERY["s_code_cookie"] = $this->getCodeCokie();
+		if($this->getForceSemTog() != NULL) $TEMP_QUERY["s_force_seminar_together"] = $this->getForceSemTog();
+		if($this->getNipReview1() != NULL) $TEMP_QUERY["s_nip_review_1"] = $this->getNipReview1();
+		if($this->getNipReview2() != NULL) $TEMP_QUERY["s_nip_review_2"] = $this->getNipReview2();
+		if($this->getNipReview3() != NULL) $TEMP_QUERY["s_nip_review_3"] = $this->getNipReview3();
+		return $TEMP_QUERY;
+	}
+	//set Automa setting from array
 	protected function automaSetContent($TEMP_ARRAY){
-		$this->setNim($TEMP_ARRAY['s_nim']);
-		$this->setName($TEMP_ARRAY['s_name']);
-		$this->setPassword($TEMP_ARRAY['s_password']);
-		$this->setEmail($TEMP_ARRAY['s_email']);
-		$this->setStatus($TEMP_ARRAY['s_statue']);
-		$this->setPeminatan($TEMP_ARRAY['s_p']);
-		$this->setNohp($TEMP_ARRAY['s_nohp']);
-		$this->setAktifTahun($TEMP_ARRAY['s_active_year']);
-		$this->setNamaOrtu($TEMP_ARRAY['s_name_parent']);
-		$this->setNoHpOrtu($TEMP_ARRAY['s_nohp_parent']);
-		$this->setSemester($TEMP_ARRAY['s_semester']);
-		$this->setOpenForm($TEMP_ARRAY['s_new_form']);
-		$this->setForceRegNew($TEMP_ARRAY['s_force_registrasi']);
-		$this->setForceRegLama($TEMP_ARRAY['s_force_registrasi_lama']);
-		$this->setSeminarTA1($TEMP_ARRAY['s_seminar_ta1']);
-		$this->setSeminarTA2($TEMP_ARRAY['s_seminar_ta2']);
-		$this->setFotoname($TEMP_ARRAY['s_foto_name']);
-		$this->setTranskripName($TEMP_ARRAY['s_transcript_name']);
-		$this->setCodeCokie($TEMP_ARRAY['s_code_cookie']);
-		$this->setNipReview1($TEMP_ARRAY['s_nip_review_1']);
-		$this->setNipReview2($TEMP_ARRAY['s_nip_review_2']);
-		$this->setNipReview3($TEMP_ARRAY['s_nip_review_3']);
-		$this->forceSemTog($TEMP_ARRAY['s_force_seminar_together']);
+		$this->resetValue();
+		foreach($TEMP_ARRAY as $TEMP_INDEX_ARRAY => $TEMP_VALUE){
+			switch($TEMP_INDEX_ARRAY){
+				case 's_nim' : $this->setNim($TEMP_ARRAY['s_nim']);break;
+				case 's_name' : $this->setName($TEMP_ARRAY['s_name']);break;
+				case 's_password' : $this->setPassword($TEMP_ARRAY['s_password']);break;
+				case 's_email' : $this->setEmail($TEMP_ARRAY['s_email']);break;
+				case 's_statue' : $this->setStatus($TEMP_ARRAY['s_statue']);break;
+				case 's_p' : $this->setPeminatan($TEMP_ARRAY['s_p']);break;
+				case 's_nohp' : $this->setNohp($TEMP_ARRAY['s_nohp']);break;
+				case 's_active_year' : $this->setAktifTahun($TEMP_ARRAY['s_active_year']);break;
+				case 's_name_parent' : $this->setNamaOrtu($TEMP_ARRAY['s_name_parent']);break;
+				case 's_nohp_parent' : $this->setNoHpOrtu($TEMP_ARRAY['s_nohp_parent']);break;
+				case 's_semester' : $this->setSemester($TEMP_ARRAY['s_semester']);break;
+				case 's_new_form' : $this->setOpenForm($TEMP_ARRAY['s_new_form']);break;
+				case 's_force_registrasi' : $this->setForceRegNew($TEMP_ARRAY['s_force_registrasi']);break;
+				case 's_force_registrasi_lama' : $this->setForceRegLama($TEMP_ARRAY['s_force_registrasi_lama']);break;
+				case 's_seminar_ta1' : $this->setSeminarTA1($TEMP_ARRAY['s_seminar_ta1']);break;
+				case 's_seminar_ta2' : $this->setSeminarTA2($TEMP_ARRAY['s_seminar_ta2']);break;
+				case 's_foto_name' : $this->setFotoname($TEMP_ARRAY['s_foto_name']);break;
+				case 's_transcript_name' : $this->setTranskripName($TEMP_ARRAY['s_transcript_name']);break;
+				case 's_code_cookie' : $this->setCodeCokie($TEMP_ARRAY['s_code_cookie']);break;
+				case 's_nip_review_1' : $this->setNipReview1($TEMP_ARRAY['s_nip_review_1']);break;
+				case 's_nip_review_2' : $this->setNipReview2($TEMP_ARRAY['s_nip_review_2']);break;
+				case 's_nip_review_3' : $this->setNipReview3($TEMP_ARRAY['s_nip_review_3']);break;
+				case 's_force_seminar_together' : $this->setForceSemTog($TEMP_ARRAY['s_force_seminar_together']);break;
+			}
+		}
 	}
 	//private
     private $nim; private $name; private $password;	private $email;	private $status; private $peminatan;

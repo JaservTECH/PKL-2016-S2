@@ -10,47 +10,121 @@ class Mahasiswa extends Aktor{
 		$this->setModel('sc_lms');
 	}
 	//get code year now - valid
-	public function getYearNow(){ $year = DATE("Y"); $month = DATE("m"); if(intval($month) >= 1 && intval($month)<=6){	return intval((intval($year)-1)."2");}else{	return intval($year."1");}}
+	public function getYearNow(){ 
+		$year = DATE("Y"); 
+		$month = DATE("m"); 
+		if(intval($month) >= 1 && intval($month)<=6){
+			return intval((intval($year)-1)."2");
+		}else{
+			return intval($year."1");
+		}
+	}
 	//nim exist - valid
 	public function getIsNimExist($nim){ if(!$this->sc_sm->getDataNim($nim))	return false; if($this->sc_sm->getNim() != NULL){ if($this->sc_sm->getNim() == $nim) return true;	else return false;}else{return false;}	}
 	//try sign up new account - valid
 	public function getStatusSignUpMahasiswa($data=""){
-		$error = 0;	$errorMessage = "";	$temp = $this->getCheckNim($data['nim'],1);
-		if(!$temp[0]){	$error+=1;	$errorMessage.=$temp[1]."<br>";
+		$error = 0;	
+		$errorMessage = "";	
+		$temp = $this->getCheckNim($data['nim'],1);
+		if(!$temp[0]){	
+			$error+=1;	$errorMessage.=$temp[1]."<br>";
 		}else{	
 			$nim = $data['nim']; 
 			$this->sc_sm->getDataNim($nim); 
-			if($this->getIsNimExist($nim)){	return $this->setCategoryPrintMessage(0, false, "Maaf, nim anda sudah digunakan oleh mahasiswa lain, mohon maaf sebelumnya. pilih menu lupa password jika anda sudah daftar ssebelumnya");			}
+			if($this->getIsNimExist($nim)){	
+				return $this->setCategoryPrintMessage(0, false, "Maaf, nim anda sudah digunakan oleh mahasiswa lain, mohon maaf sebelumnya. pilih menu lupa password jika anda sudah daftar ssebelumnya");	
+			}
 		}
 		$temp = $this->getCheckName($data['name'],1);
-		if(!$temp[0]){	$error+=1;	$errorMessage.=$temp[1]."<br>";	}else{	$name = $data['name'];	} $temp = $this->getCheckPassword($data['password'],1);
-		if(!$temp[0]){	$error+=1;	$errorMessage.=$temp[1]."<br>";	}else{	$password1 = $data['password']; } $temp = $this->getCheckPassword($data['password1'],1);
-		if(!$temp[0]){	$error+=1;	$errorMessage.=$temp[1]."<br>";	}else{	$password2 = $data['password1'];} 
-		if($password1 != $password2){	$error+=1;	$errorMessage.="Password konfirmasi tidak sama dengan password utama<br>";	} $temp = $this->getCheckEmail($data['email'],1);
-		if(!$temp[0]){	$error+=1;	$errorMessage.=$temp[1]."<br>";	}else{	$email = $data['email']; }	$temp = $this->getCheckNuTelphone($data['telephone'],1);
-		if(!$temp[0]){	$error+=1;	$errorMessage.=$temp[1]."<br>";	}else{	$telephone = $data['telephone'];}
-		if($error > 0){	return $this->setCategoryPrintMessage(0, false, $errorMessage);	}
+		if(!$temp[0]){	
+			$error+=1;	
+			$errorMessage.=$temp[1]."<br>";	
+		}else{
+			$name = $data['name'];
+		} 
+		$temp = $this->getCheckPassword($data['password'],1);
+		if(!$temp[0]){
+			$error+=1;
+			$errorMessage.=$temp[1]."<br>";
+		}else{
+			$password1 = $data['password']; 
+		} 
+		$temp = $this->getCheckPassword($data['password1'],1);
+		if(!$temp[0]){
+			$error+=1;
+			$errorMessage.=$temp[1]."<br>";	
+		}else{	
+			$password2 = $data['password1'];
+		} 
+		if($password1 != $password2){
+			$error+=1;
+			$errorMessage.="Password konfirmasi tidak sama dengan password utama<br>";
+		} 
+		$temp = $this->getCheckEmail($data['email'],1);
+		if(!$temp[0]){
+			$error+=1;
+			$errorMessage.=$temp[1]."<br>";	
+		}else{
+			$email = $data['email']; 
+		}
+		$temp = $this->getCheckNuTelphone($data['telephone'],1);
+		if(!$temp[0]){
+			$error+=1;	$errorMessage.=$temp[1]."<br>";	}else{	$telephone = $data['telephone'];}
+		if($error > 0){
+			return $this->setCategoryPrintMessage(0, false, $errorMessage);	
+		}
 		$year = $this->getYearNow();
 		/*upload-foto*/
-		$conPic['upload_path'] = './upload/foto/';	$conPic['allowed_types'] = 'png|jpg'; $conPic['file_name'] = $nim."-foto";	$conPic['overwrite'] = true; $conPic['remove_spaces'] = true; $conPic['max_size'] = 500;	$conPic['max_width'] = 800;	$conPic['max_height'] = 600; 
+		$conPic['upload_path'] = './upload/foto/';	
+		$conPic['allowed_types'] = 'png|jpg'; 
+		$conPic['file_name'] = $nim."-foto";	
+		$conPic['overwrite'] = true; 
+		$conPic['remove_spaces'] = true; 
+		$conPic['max_size'] = 500;	
+		$conPic['max_width'] = 800;	
+		$conPic['max_height'] = 600; 
 		$this->setLibrary('upload');
 		//$this->load->library('upload',$conPic);
 		$this->upload->initialize($conPic);
-		if(!$this->upload->do_upload($data['foto'])){return $this->setCategoryPrintMessage(0, false, 'gagal upload foto, format yang didukung png dan jpg, maksimal resolusi 800 x 600 pixel, dengan ukuran file 500kb');		}
+		if(!$this->upload->do_upload($data['foto'])){
+			return $this->setCategoryPrintMessage(0, false, 'gagal upload foto, format yang didukung png dan jpg, maksimal resolusi 800 x 600 pixel, dengan ukuran file 500kb');		
+		}
 		$fotoname = $this->upload->data('file_name');
 		/*upload-translrip*/
-		$conTrans['upload_path'] = './upload/transkrip/'; $conTrans['file_name'] = $nim."-transkrip"; $conTrans['allowed_types'] = 'pdf|PDF'; $conTrans['max_size'] = 1024;	$conTrans['overwrite'] = true; $conTrans['remove_spaces'] = true;
+		$conTrans['upload_path'] = './upload/transkrip/'; 
+		$conTrans['file_name'] = $nim."-transkrip"; 
+		$conTrans['allowed_types'] = 'pdf|PDF'; 
+		$conTrans['max_size'] = 1024;	
+		$conTrans['overwrite'] = true; 
+		$conTrans['remove_spaces'] = true;
 		$this->upload->initialize($conTrans);
-		if(!$this->upload->do_upload($data['trans'])){	return $this->setCategoryPrintMessage(0, false, "gagal upload transkrip, format yang didukung transkrip adalah pdf, dengan maksimum ukuran file 1 mb");		}
+		if(!$this->upload->do_upload($data['trans'])){
+			return $this->setCategoryPrintMessage(0, false, "gagal upload transkrip, format yang didukung transkrip adalah pdf, dengan maksimum ukuran file 1 mb");		
+		}
 		$transkripname = $this->upload->data('file_name');
 		/*upload-data-support*/
-		$this->sc_sm->setNim($nim);	$this->sc_sm->setName($name); $this->sc_sm->setPassword(md5($password1)); $this->sc_sm->setEmail($email);	$this->sc_sm->setNoHp($telephone); $this->sc_sm->setAktifTahun($year); $this->sc_sm->setFotoname($fotoname); $this->sc_sm->setTranskripName($transkripname); $this->sc_sm->setCodeCokie(md5($nim+DATE('Y-m-d'))); $this->sc_sm->unloackAktor("JASERVTECH.MAHASISWA");
+		
+		$this->sc_sm->setNim($nim);	
+		$this->sc_sm->setName($name); 
+		$this->sc_sm->setPassword($password1); 
+		$this->sc_sm->setEmail($email);	
+		$this->sc_sm->setNoHp($telephone); 
+		$this->sc_sm->setAktifTahun($year); 
+		$this->sc_sm->setFotoname($fotoname); 
+		$this->sc_sm->setTranskripName($transkripname); 
+		$this->sc_sm->setCodeCokie(md5($nim+DATE('Y-m-d'))); 
 		$succ = 0;
+		//exit("0hohohkokokoohlokk");
 		$succ+=$this->sc_sm->signUp();
-		$this->sc_lms->setNim($nim); $this->sc_lms->setTanggal(DATE("Y-m-d H:i:s")); $this->sc_lms->setEvent("mendaftar baru");
+		$this->sc_lms->setNim($nim); 
+		$this->sc_lms->setTanggal(DATE("Y-m-d H:i:s")); 
+		$this->sc_lms->setEvent("mendaftar baru");
 		$succ+=$this->sc_lms->addNew();
         /*check success*/
-		if($succ == 2)	return $this->setCategoryPrintMessage(0, true, "Data Berhasil dimasukan ");	else return $this->setCategoryPrintMessage(0, false, "Terjadi kesalahan, silahkan ulangi atau tunggu beberapa saat");
+		if($succ == 2)
+			return $this->setCategoryPrintMessage(0, true, "Data Berhasil dimasukan ");	
+		else 
+			return $this->setCategoryPrintMessage(0, false, "Terjadi kesalahan, silahkan ulangi atau tunggu beberapa saat");
 	}
 	//check status login - valid
 	public function getStatusLoginMahasiswa(){
@@ -65,17 +139,17 @@ class Mahasiswa extends Aktor{
 	}
 	//try login and make session - valid
 	public function setLoginMahasiswa($nim="",$password=""){   
-		if(!$this->sc_sm->getDataNim($nim))	return $this->setCategoryPrintMessage(1, false, "nim dan kata kunci tidak terdaftar");
-		if($this->sc_sm->getNim() != $nim)	return $this->setCategoryPrintMessage(1, false, "nim dan kata kunci tidak terdaftar");
-		if($this->sc_sm->getPassword() != md5($password))	return $this->setCategoryPrintMessage(1, false, "nim dan kata kunci tidak terdaftar");
+		if(!$this->sc_sm->getDataNim($nim))	return $this->setCategoryPrintMessage(0, false, "nim dan kata kunci tidak terdaftar");
+		if($this->sc_sm->getNim() != $nim)	return $this->setCategoryPrintMessage(0, false, "nim dan kata kunci tidak terdaftar");
+		if($this->sc_sm->getPassword() != md5($password))	return $this->setCategoryPrintMessage(0, false, "nim dan kata kunci tidak terdaftar");
 		if($this->getStatusLoginMahasiswa()){
-			if($this->session->userdata('nim') == $nim){ return $this->setCategoryPrintMessage(1,true, "Classroom.aspx");}
+			if($this->session->userdata('nim') == $nim){ return $this->setCategoryPrintMessage(0,true, "Classroom.aspx");}
 		}
 		$this->session->set_userdata("login",'true');
 		$this->session->set_userdata("nim",$this->sc_sm->getNim());
 		$this->session->set_userdata("name",$his->sc_sm->getName());
 		$this->session->set_userdata("pass",$this->getResultEncryptMahasiswaString($$this->sc_sm->getName()));
-		return $this->setCategoryPrintMessage(1,true,"Classroom.aspx");
+		return $this->setCategoryPrintMessage(0,true,"Classroom.aspx");
 	}
 	//logout - valid
 	public function setStatusLogOutMahasiswa(){

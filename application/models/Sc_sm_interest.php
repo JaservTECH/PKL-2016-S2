@@ -1,4 +1,8 @@
 <?php
+//query builder - Ok
+	//arrayBuilder - Ok
+	//automaSetContent - Ok
+	//resetValue - Ok
 defined('BASEPATH') OR exit('No direct script access allowed');
 class Sc_sm_interest extends CI_Model {
 	private $tablename;
@@ -28,12 +32,30 @@ class Sc_sm_interest extends CI_Model {
 	}
 	//kode standard
 	protected function automaSetContent($TEMP_ARRAY){
+		$this->resetValue();
+		foreach($TEMP_ARRAY as $TEMP_INDEX_ARRAY => $TEMP_VALUE){
+			switch($TEMP_INDEX_ARRAY){
+				case 'si_id' : $this->setNim($TEMP_ARRAY['si_id']);break;
+				case 'si_name' : $this->setTanggal($TEMP_ARRAY['si_name']);break;
+			}
+		}
 		$this->setId($TEMP_ARRAY['si_id']);
 		$this->setName($TEMP_ARRAY('si_name'));
 	}
 	protected function resetValue(){
 		$this->setId(null);
 		$this->setName(null);
+	}
+	protected function arrayBuilder(){
+		if($this->getId() != NULL) $TEMP_QUERY["si_id"] = $this->getId();
+		if($this->getName() != NULL) $TEMP_QUERY["si_name"] = $this->getName();
+		return $TEMP_QUERY;
+	}
+	protected function queryBuilder(){
+		$TEMP_QUERY = "";
+		if($this->getId() != NULL) $TEMP_QUERY.="si_id='".$this->getId()."',";
+		if($this->getName() != NULL) $TEMP_QUERY.="si_name='".$this->getName()."',";
+		return substr($TEMP_QUERY,0,strlen($TEMP_QUERY)-1);
 	}
 	private $id;
 	private $name;
