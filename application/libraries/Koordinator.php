@@ -29,7 +29,7 @@ class Koordinator extends Aktor{
 				$this->sc_ea->setJudul($TEMP_TITLE);
 				$this->sc_ea->setIsi($TEMP_SUMMARY);	
 				if($this->sc_ea->setUpdateEventActiveRegister())
-					return $this->setCategoryPrintMessage(0, TRUE, "Success, input data");
+					return $this->setCategoryPrintMessage(0, TRUE, "Berhasil, input data");
 				else
 					return $this->setCategoryPrintMessage(0, FALSE, "Gagal, input data");
 					
@@ -47,7 +47,7 @@ class Koordinator extends Aktor{
 					$this->sc_ea->setIsi($TEMP_SUMMARY);
 					$this->sc_ea->setJudul($TEMP_TITLE);
 					if($this->sc_ea->setNewEventActiveRegister())
-						return $this->setCategoryPrintMessage(0, TRUE, "Success, input data");
+						return $this->setCategoryPrintMessage(0, TRUE, "Berhasil, input data");
 					else
 						return $this->setCategoryPrintMessage(0, FALSE, "Gagal, input data");
 				}else
@@ -64,22 +64,25 @@ class Koordinator extends Aktor{
 			$this->sc_ea->setIsi($TEMP_SUMMARY);
 			$this->sc_ea->setJudul($TEMP_TITLE);
 			if($this->sc_ea->setNewEventActiveRegister())
-				return $this->setCategoryPrintMessage(0, TRUE, "Success, input data");
+				return $this->setCategoryPrintMessage(0, TRUE, "Berhasil, input data");
 			else
 				return $this->setCategoryPrintMessage(0, FALSE, "Gagal, input data");
 		}
 	}
+	//update aktif event koordinator - valid
 	public function setAktifAkademikEvent($TEMP_START,$TEMP_END,$TEMP_TITLE,$TEMP_SUMMARY,$TEMP_ID){
 		$this->sc_ea->resetValue();
+		$this->sc_ea->setId($TEMP_ID);
 		$this->sc_ea->setStart($TEMP_START);
 		$this->sc_ea->setEnd($TEMP_END);
 		$this->sc_ea->setJudul($TEMP_TITLE);
 		$this->sc_ea->setIsi($TEMP_SUMMARY);
-		if($this->sc_ea->setUpdateEventKoordinator($TEMP_ID))
-			return $this->setCategoryPrintMessage(0, TRUE, "Success, input data");
+		if($this->sc_ea->setUpdateEventKoordinator())
+			return $this->setCategoryPrintMessage(0, TRUE, "Berhasil, input data");
 		else
 			return $this->setCategoryPrintMessage(0, FALSE, "Gagal, input data");
 	}
+	//new aktif akademik - valid 
 	public function setNewAktifAkademikEvent($TEMP_START,$TEMP_END,$TEMP_TITLE,$TEMP_SUMMARY){
 		if(intval(DATE("m")) > 6){
 			$YEAR = intval(date("Y"));
@@ -98,11 +101,13 @@ class Koordinator extends Aktor{
 		$this->sc_ea->setStatus("1");
 		$this->sc_ea->setCategory("3");
 		if($this->sc_ea->setNewEventKoordinator())
-			return $this->setCategoryPrintMessage(0, TRUE, "Success, input data");
+			return $this->setCategoryPrintMessage(0, TRUE, "Berhasil, input data");
 		else
 			return $this->setCategoryPrintMessage(0, FALSE, "Gagal, input data");
 	}
 	//cursor edit in here <<<<<<<<<<<<<---------------------
+	
+	/*
 	public function getFullDataRegistrasi($year,$semester){
 		return $this->sc_ea->query("*","e_year=".$year." AND e_semester=".$semester." AND e_event=1")->row_array();
 		$this->sc_ea->resetValue();
@@ -112,7 +117,7 @@ class Koordinator extends Aktor{
 	public function getFullDataRegistrasiNonDefault($id){
 		return $this->sc_ea->query("*","e_id=".$id." AND e_event=3")->row_array();
 	}
-	
+	*/
 	public function getListEventkoordinator($key){
 		$temp = $this->sc_ea->query("*","e_event=3 AND e_status=1")->result_array();
 		if(count($temp) > 0){
@@ -142,13 +147,29 @@ class Koordinator extends Aktor{
 			return $this->sc_ea->query("*","e_event=3 AND e_year=".$key." order by e_year desc,e_semester desc")->result_array();
 		}
 	}
+	//memperoleh daftar list acara sesi akademik
 	public function getListEventAcademic(){
 		return $this->sc_ea->query("*","e_event=1 order by e_id desc")->result_array();
 	}
+	//get code registrasi yang aktif - valid
 	public function getCodeRegisterAktif(){
-		return $this->sc_ea->getCodeRegistrasiAkademik();
-		
+		$this->sc_ea->getListAkademicActive();
+		$TEMP_INDEX_ARRAY = 0;
+		while($this->sc_ea->getCursorNext()){
+			$TEMP_ARRAY[$TEMP_INDEX_ARRAY]['id'] = $this->sc_ea->getId();
+			$TEMP_ARRAY[$TEMP_INDEX_ARRAY]['status'] = $this->sc_ea->getStatus();
+			$TEMP_ARRAY[$TEMP_INDEX_ARRAY]['start'] = $this->sc_ea->getStart();
+			$TEMP_ARRAY[$TEMP_INDEX_ARRAY]['end'] = $this->sc_ea->getEnd();
+			$TEMP_ARRAY[$TEMP_INDEX_ARRAY]['tahun'] = $this->sc_ea->getYear();
+			$TEMP_ARRAY[$TEMP_INDEX_ARRAY]['semester'] = $this->sc_ea->getSemester();
+			$TEMP_ARRAY[$TEMP_INDEX_ARRAY]['kategori'] = $this->sc_ea->getCategory();
+			$TEMP_ARRAY[$TEMP_INDEX_ARRAY]['judul'] = $this->sc_ea->getJudul();
+			$TEMP_ARRAY[$TEMP_INDEX_ARRAY]['isi'] = $this->sc_ea->getIsi();
+			$TEMP_INDEX_ARRAY+=1;
+		}
+		return $TEMP_ARRAY;
 	}
+	//chec format username koordinator - valid
 	public function getCheckKodeUsername($value="",$cat=0){
 		if(($value=="") || ($value == null)){
 			return $this->setCategoryPrintMessage($cat, false, "nilai tidak boleh kosong");
@@ -161,6 +182,7 @@ class Koordinator extends Aktor{
 			return $this->setCategoryPrintMessage($cat, false, "Username tidak valid");
 		return $this->setCategoryPrintMessage($cat, true, "valid");
 	}
+	//function check format judul suatu hal - valid
 	public function getCheckTitle($value="",$cat){
 		if(($value=="") || ($value == null)){
 			return $this->setCategoryPrintMessage($cat, false, "nilai tidak boleh kosong");
@@ -168,6 +190,7 @@ class Koordinator extends Aktor{
 		$temp = $this->inputjaservfilter->titleFiltering($value);
 		return $this->setCategoryPrintMessage($cat, $temp[0], $temp[1]);
 	}
+	//check format suatu isi text - valid
 	public function getCheckSummary($value="",$cat){
 		if(($value=="") || ($value == null)){
 			return $this->setCategoryPrintMessage($cat, false, "nilai tidak boleh kosong");
@@ -175,6 +198,7 @@ class Koordinator extends Aktor{
 		$temp = $this->inputjaservfilter->textFiltering($value);
 		return $this->setCategoryPrintMessage($cat, $temp[0], $temp[1]);
 	}
+	//check format koordinator password is true - valid
 	public function getCheckPassword($value="",$cat=0){
 		if(($value=="") || ($value == null)){
 			return $this->setCategoryPrintMessage($cat, false, "nilai tidak boleh kosong");
@@ -183,6 +207,7 @@ class Koordinator extends Aktor{
 		return $this->setCategoryPrintMessage($cat, $temp[0], $temp[1]);
 		
 	}
+	//check is login koordinator function - valid 
 	public function getStatusLoginKoordinator(){
 		$error = 0;
 		if(!$this->session->has_userdata('nama'))
@@ -203,6 +228,7 @@ class Koordinator extends Aktor{
 			return false;
 	}
 
+	//logout function - valid 
 	public function setStatusLogOutKordinator(){
 		if(!$this->getStatusLoginKoordinator())
 			return false;
@@ -210,32 +236,32 @@ class Koordinator extends Aktor{
 			$this->session->unset_userdata("kode");
 			return true;
 	}
-	public function setLoginKoordinator($username="",$password=""){
+	//login function - valid
+	public function setLoginKoordinator($TEMP_USERNAME="",$TEMP_PASSWORD=""){
 		if($this->getStatusLoginKoordinator()){
 			redirect(base_url()."Controlroom/");
 		}
-		if($username == "")
-			return $this->setCategoryPrintMessage(0, false, "Anda melakukan debugging terhadap username");
-		if($password == "")
-			return $this->setCategoryPrintMessage(0, false, "Anda melakukan debugging teerhadap password");
-		$this->sc_sk->query("*","s_kode='".$username."' AND s_password='".$password."'")->row_array();
-		if(!$this->getCheckKodeUsername($username,1)[0])
-			return $this->setCategoryPrintMessage(0,false,"Anda melakukan debugging");
-		if(!$this->getCheckPassword($password,1)[0])
-			return $this->setCategoryPrintMessage(0,false,"Anda melakukan debugging");
-		$temp = $this->sc_sk->query("*","s_kode='".$username."' AND s_password='".$password."'")->row_array();
-		if(count($temp)<=0)
-			return $this->setCategoryPrintMessage(0, false, "Kombinasi username dan password tidak cocok");
-		if($temp['s_kode'] != $username)
-			return $this->setCategoryPrintMessage(0, false, "Username tidak cocok");
-		if($temp['s_password'] != $password)
-			return $this->setCategoryPrintMessage(0, false, "Password tiidak cocok");
-		$this->session->set_userdata("nama","koordinator");
-		$this->session->set_userdata("kode",$this->encrypt("koordinator"));
-		if($this->getStatusLoginKoordinator()){
-			return $this->setCategoryPrintMessage(0,true, "Controlroom.aspx");
-		}else
-			return $this->setCategoryPrintMessage(0,false, "Terjadi kesalahan saat proses login");
+		if($TEMP_USERNAME == "") return $this->setCategoryPrintMessage(0, false, "Username atau password tidak dikenal");
+		if($TEMP_PASSWORD == "") return $this->setCategoryPrintMessage(0, false, "Username atau password tidak dikenal");
+		if(!$this->getCheckKodeUsername($TEMP_USERNAME,1)[0]) return $this->setCategoryPrintMessage(0,false,"Username atau password tidak dikenal");
+		if(!$this->getCheckPassword($TEMP_PASSWORD,1)[0]) return $this->setCategoryPrintMessage(0,false,"Username atau password tidak dikenal");
+		$this->sc_sk->resetValue();
+		$this->sc_sk->setKode($TEMP_USERNAME);
+		$this->sc_sk->setPassword($TEMP_PASSWORD);
+		if($this->sc_sk->getSignIn()){
+			if($this->sc_sk->getKode() != $TEMP_USERNAME)
+				return $this->setCategoryPrintMessage(0, false, "Username atau password tidak dikenal");
+			if($this->sc_sk->getPassword() != $TEMP_PASSWORD)
+				return $this->setCategoryPrintMessage(0, false, "Username atau password tidak dikenal");
+			$this->session->set_userdata("nama","koordinator");
+			$this->session->set_userdata("kode",$this->encrypt("koordinator"));
+			if($this->getStatusLoginKoordinator()){
+				return $this->setCategoryPrintMessage(0,true, "Controlroom.aspx");
+			}else
+				return $this->setCategoryPrintMessage(0,false, "Terjadi kesalahan saat proses login, silahkan ulangi");
+		}else{
+			return $this->setCategoryPrintMessage(0, false, "Username atau password tidak dikenal");
+		}
 	}
 	private function encrypt($string=""){
 		return sha1(md5($string."jaservFilter"));

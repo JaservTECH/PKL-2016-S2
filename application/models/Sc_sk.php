@@ -4,6 +4,40 @@
 	//resetValue - ok
 defined('BASEPATH') OR exit('No direct script access allowed');
 class Sc_sk extends CI_Model {
+	//function focus
+	public function getSignIn(){
+		if($this->getKode() == NULL)
+			return false;
+		if($this->getPassword() == NULL)
+			return false;
+		$TEMP_ARRAY = $this->query("*","s_kode='".$this->getKode()."' AND s_password='".$this->getPassword()."'")->row_array();
+		$this->resetValue();
+		$this->automaSetContent($TEMP_ARRAY);
+		if($this->getKode() == NULL)
+			return false;
+		else
+			return true;
+	}
+	
+	
+	
+	public function getNextCursor(){
+		if(is_array($TEMP_RESULT_ARRAY)){
+			if(array_key_exists($this->TEMP_INDEX_RESULT_ARRAY,$this->TEMP_RESULT_ARRAY)){
+				$this->automaSetContent($this->TEMP_RESULT_ARRAY($this->TEMP_INDEX_RESULT_ARRAY));
+				$this->TEMP_INDEX_RESULT_ARRAY+=1;
+				return true;
+			}else{
+				$this->resetValue();
+				return false;
+			}
+		}else{
+			$this->resetValue();
+			return false;
+		}
+	}
+	
+	//
 	private $tablename;
 	function __CONSTRUCT(){
 		parent::__CONSTRUCT();
@@ -38,11 +72,15 @@ class Sc_sk extends CI_Model {
 	public function getEmail(){		$TEMP_DATA = $this->email;		return $TEMP_DATA;	}
 	public function getNohp(){		$TEMP_DATA = $this->nohp;		return $TEMP_DATA;	}
 	public function arrayBuilder(){
+		$TEMP_QUERY = NULL;
 		if($this->getKode() != NULL) $TEMP_QUERY["s_kode"] = $this->getKode();
 		if($this->getPassword() != NULL) $TEMP_QUERY["s_password"] = $this->getPassword();
 		if($this->getEmail() != NULL) $TEMP_QUERY["s_email"] = $this->getEmail();
 		if($this->getNohp() != NULL) $TEMP_QUERY["s_contacs"] = $this->getNohp();
-		return $TEMP_QUERY;
+		if(count($TEMP_QUERY) > 0)
+			return $TEMP_QUERY;
+		else
+			return NULL;
 	}
 	public function queryBuilder(){
 		$TEMP_QUERY = "";
@@ -50,8 +88,10 @@ class Sc_sk extends CI_Model {
 		if($this->getPassword() != NULL) $TEMP_QUERY.="s_password='".$this->getPassword()."',";
 		if($this->getEmail() != NULL) $TEMP_QUERY.="s_email='".$this->getEmail()."',";
 		if($this->getNohp() != NULL) $TEMP_QUERY.="s_contacs='".$this->getNohp()."',";
-
-		return substr($TEMP_QUERY,0,strlen($TEMP_QUERY)-1);
+		if($TEMP_QUERY != "")
+			return substr($TEMP_QUERY,0,strlen($TEMP_QUERY)-1);
+		else
+			return $TEMP_QUERY;
 	}
 	public function resetValue(){
 		$this->setKode(NULL);

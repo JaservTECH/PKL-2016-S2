@@ -5,8 +5,18 @@
 	//resetValue - Ok
 defined('BASEPATH') OR exit('No direct script access allowed');
 class Sc_ea extends CI_Model {
-	
-	
+	private $TEMP_RESULT_ARRAY;
+	private $TEMP_INDEX_RESULT_ARRAY;
+	function __CONSTRUCT(){
+		parent::__CONSTRUCT();
+		$this->TEMP_RESULT_ARRAY = NULL;
+		$this->TEMP_INDEX_RESULT_ARRAY = 0;
+	}
+	//get list even akademik 
+	public function getListAkademicActive(){
+		$this->TEMP_RESULT_ARRAY = $this->query("*","e_event=1 order by e_id desc")->result_array();
+		$this->TEMP_INDEX_RESULT_ARRAY = 0;
+	}
 	//getAktiveEventRegistrasi
 	public function getEventActiveRegister(){
 		$TEMP_ARRAY = $this->query("*","e_status=1 AND e_event=1")->row_array();
@@ -28,7 +38,20 @@ class Sc_ea extends CI_Model {
 		else
 			return false;
 	}
-	public function setUpdateEventKoordinator($TEMP_ID=""){
+	
+	//update data full
+	public function setUpdateEventKoordinator(){
+		if($this->getId() == NULL)
+			return false;
+		$TEMP_ID = $this->getId();
+		$this->setId(NULL);
+		if($this->queryBuilder == "")
+			return false;
+		$this->update($this->queryBuilder(),"e_id=".$TEMP_ID." AND e_event=3");
+		return true;
+	}
+	/*
+	public function setUpdateEventKoordinator(){
 		if($id == "")
 			return false;
 		if($this->queryBuilder() == "")
@@ -38,6 +61,7 @@ class Sc_ea extends CI_Model {
 		else
 			return false;
 	}
+	*/
 	public function setNewEventKoordinator(){
 		if(count($this->arrayBuilder()) <= 0)
 			return false;
@@ -46,6 +70,21 @@ class Sc_ea extends CI_Model {
 			return true;
 		else
 			return false;
+	}
+	public function getNextCursor(){
+		if(is_array($TEMP_RESULT_ARRAY)){
+			if(array_key_exists($this->TEMP_INDEX_RESULT_ARRAY,$this->TEMP_RESULT_ARRAY)){
+				$this->automaSetContent($this->TEMP_RESULT_ARRAY($this->TEMP_INDEX_RESULT_ARRAY));
+				$this->TEMP_INDEX_RESULT_ARRAY+=1;
+				return true;
+			}else{
+				$this->resetValue();
+				return false;
+			}
+		}else{
+			$this->resetValue();
+			return false;
+		}
 	}
 	//
 	public function resetValue(){
@@ -87,19 +126,26 @@ class Sc_ea extends CI_Model {
 		if($this->getCategory() != NULL) $TEMP_QUERY.="e_event='".$this->getCategory()."',";
 		if($this->getJudul() != NULL) $TEMP_QUERY.="e_title='".$this->getJudul()."',";
 		if($this->getIsi() != NULL) $TEMP_QUERY.="e_summary='".$this->getIsi()."',";
-		return substr($TEMP_QUERY,0,strlen($TEMP_QUERY)-1);
+		if($TEMP_QUERY != "")
+			return substr($TEMP_QUERY,0,strlen($TEMP_QUERY)-1);
+		else
+			return $TEMP_QUERY;
 	}
 	protected function arrayBuilder(){
+		$TEMP_QUERY = NULL;
 		if($this->getId() != NULL) $TEMP_QUERY["e_id"] = $this->getId();
 		if($this->getYear() != NULL) $TEMP_QUERY["e_year"]=$this->getYear();
-		if($this->getSemester() != NULL) $TEMP_QUERY[e_semester] = $this->getSemester();
+		if($this->getSemester() != NULL) $TEMP_QUERY['e_semester'] = $this->getSemester();
 		if($this->getStatus() != NULL) $TEMP_QUERY["e_status"] = $this->getStatus();
 		if($this->getStart() != NULL) $TEMP_QUERY["e_start"] = $this->getStart();
 		if($this->getEnd() != NULL) $TEMP_QUERY["e_end"] = $this->getEnd();
 		if($this->getCategory() != NULL) $TEMP_QUERY["e_event"] = $this->getCategory();
 		if($this->getJudul() != NULL) $TEMP_QUERY["e_title"] = $this->getJudul();
 		if($this->getIsi() != NULL) $TEMP_QUERY["e_summary"] = $this->getIsi();
-		return $TEMP_QUERY;
+		if(count($TEMP_QUERY) > 0)
+			return $TEMP_QUERY;
+		else
+			return NULL;
 	}
 	//private
 	
@@ -247,27 +293,44 @@ class Sc_ea extends CI_Model {
 			$query=$query." WHERE ".$where;
 		$this->db->query($query);
 	}
+	//get FULL data non default
+	public function getFullDataRegistrasiNonDefault(){
+		if($this->getId() == NULL)
+			return false;
+		$TEMP_ARRAY = $this->query("*","e_id=".$this->getId()." AND e_event=3")->row_array();
+		$this->automaSetContent($TEMP_ARRAY);
+		return true;
+	}
+	//default
+	public function getFullDataRegistrasi(){
+		if($this->getYear() == NULL)
+			return false;
+		if($this->getSemester() == NULL)
+			return false;
+		$TEMP_ARRAY = $this->sc_ea->query("*","e_year=".$this->getYear()." AND e_semester=".$this->getSemester()." AND e_event=1")->row_array();
+		$this->automaSetContent($TEMP_ARRAY);
+	}
 	
-	
-	
-	//public realease
+	//public realease - valid
 	public function getIsRegisterTime($data){
 		if(!$this->isMahasiswaKeyAllowed())
 			return false;
 		$this->getStatusTimeInActiveRegistrasi($data)->isIn();
 	}
-	
+	//valid
 	public function getDataRegistrasiAktifNow(){
 		if(!$this->isKoordinatorKeyAllowed())
 			return false;
 		if(intval(DATE("m")) > 6){
-			$y = intval(date("Y"));
-			$s = 1;
+			$YEAR = intval(date("Y"));
+			$SEMESTER = 1;
 		}else {
-			$y = intval(date("Y"))-1;
-			$s = 2;
+			$YEAR = intval(date("Y"))-1;
+			$SEMESTER = 2;
 		}
-		return $this->sc_ea->query("*","e_year=".$y." AND e_semester=".$s." AND e_status=1 AND e_event=1")->row_array();
+		$TEMP_ARRAY = $this->query("*","e_year=".$YEAR." AND e_semester=".$SEMESTER." AND e_status=1 AND e_event=1")->row_array();
+		$this->automaSetContent($TEMP_ARRAY);
+		return true;
 	}
 	//end code
 	//end code

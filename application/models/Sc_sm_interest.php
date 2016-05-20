@@ -19,15 +19,19 @@ class Sc_sm_interest extends CI_Model {
 		$this->TEMP_RESULT_ARRAY = $this->sc_sm_interest->query("*")->result_array();
 		$this->TEMP_INDEX_RESULT_ARRAY = 0;
 	}
-	function getCursorNext(){
-		if($this->TEMP_RESULT_ARRAY == null) return false;
-		if($this->TEMP_INDEX_RESULT_ARRAY == null) return false;
-		if(!array_key_exists($this->TEMP_INDEX_RESULT_ARRAY, $this->TEMP_RESULT_ARRAY)){
+	public function getNextCursor(){
+		if(is_array($TEMP_RESULT_ARRAY)){
+			if(array_key_exists($this->TEMP_INDEX_RESULT_ARRAY,$this->TEMP_RESULT_ARRAY)){
+				$this->automaSetContent($this->TEMP_RESULT_ARRAY($this->TEMP_INDEX_RESULT_ARRAY));
+				$this->TEMP_INDEX_RESULT_ARRAY+=1;
+				return true;
+			}else{
+				$this->resetValue();
+				return false;
+			}
+		}else{
 			$this->resetValue();
 			return false;
-		}else{
-			$this->automaSetContent($this->TEMP_RESULT_ARRAY[$this->TEMP_INDEX_RESULT_ARRAY]);
-			return true;
 		}
 	}
 	//kode standard
@@ -47,15 +51,22 @@ class Sc_sm_interest extends CI_Model {
 		$this->setName(null);
 	}
 	protected function arrayBuilder(){
+		$TEMP_QUERY = NULL;
 		if($this->getId() != NULL) $TEMP_QUERY["si_id"] = $this->getId();
 		if($this->getName() != NULL) $TEMP_QUERY["si_name"] = $this->getName();
-		return $TEMP_QUERY;
+		if(count($TEMP_QUERY) > 0)
+			return $TEMP_QUERY;
+		else
+			return NULL;
 	}
 	protected function queryBuilder(){
 		$TEMP_QUERY = "";
 		if($this->getId() != NULL) $TEMP_QUERY.="si_id='".$this->getId()."',";
 		if($this->getName() != NULL) $TEMP_QUERY.="si_name='".$this->getName()."',";
-		return substr($TEMP_QUERY,0,strlen($TEMP_QUERY)-1);
+		if($TEMP_QUERY != "")
+			return substr($TEMP_QUERY,0,strlen($TEMP_QUERY)-1);
+		else
+			return $TEMP_QUERY;
 	}
 	private $id;
 	private $name;

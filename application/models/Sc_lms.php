@@ -33,15 +33,22 @@ class Sc_lms extends CI_Model {
 		if($this->getEvent() != NULL) $TEMP_QUERY.="l_event='".$this->getEvent()."',";
 		if($this->getKoor() != NULL) $TEMP_QUERY.="l_koor='".$this->getKoor()."',";
 		if($this->getMahasiswa() != NULL) $TEMP_QUERY.="l_mahasiswa='".$this->getMahasiswa()."',";
-		return substr($TEMP_QUERY,0,strlen($TEMP_QUERY)-1);
+		if($TEMP_QUERY != "")
+			return substr($TEMP_QUERY,0,strlen($TEMP_QUERY)-1);
+		else
+			return $TEMP_QUERY;
 	}
 	protected function arrayBuilder(){
+		$TEMP_QUERY = NULL;
 		if($this->getNim() != NULL) $TEMP_QUERY["l_nim"] = $this->getNim();
 		if($this->getTanggal() != NULL) $TEMP_QUERY["l_date"] = $this->getTanggal();
 		if($this->getEvent() != NULL) $TEMP_QUERY["l_event"] = $this->getEvent();
 		if($this->getKoor() != NULL) $TEMP_QUERY["l_koor"] = $this->getKoor();
 		if($this->getMahasiswa() != NULL) $TEMP_QUERY["l_mahasiswa"] = $this->getMahasiswa();
-		return $TEMP_QUERY;
+		if(count($TEMP_QUERY) > 0)
+			return $TEMP_QUERY;
+		else
+			return NULL;
 	}
 	protected function automaSetContent($TEMP_ARRAY){
 		$this->resetValue();
@@ -53,6 +60,22 @@ class Sc_lms extends CI_Model {
 				case 'l_koor' : $this->setKoor($TEMP_ARRAY['l_koor']);break;
 				case 'l_mahasiswa' : $this->setMahasiswa($TEMP_ARRAY['l_mahasiswa']);break;
 			}
+		}
+	}
+	
+	public function getNextCursor(){
+		if(is_array($TEMP_RESULT_ARRAY)){
+			if(array_key_exists($this->TEMP_INDEX_RESULT_ARRAY,$this->TEMP_RESULT_ARRAY)){
+				$this->automaSetContent($this->TEMP_RESULT_ARRAY($this->TEMP_INDEX_RESULT_ARRAY));
+				$this->TEMP_INDEX_RESULT_ARRAY+=1;
+				return true;
+			}else{
+				$this->resetValue();
+				return false;
+			}
+		}else{
+			$this->resetValue();
+			return false;
 		}
 	}
 	private $nim; private $tanggal; private $event; private $koor; private $mahasiswa;

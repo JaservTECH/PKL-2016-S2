@@ -70,23 +70,17 @@ class Koordinator extends Aktor{
 		}
 		return $this->setCategoryPrintMessage(0, true, "Success, input data");
 	}
-	public function setAktifAkademikEvent($start,$end,$title,$summary,$id){
-		if(!$this->getStatusLockPublic())
-			header("location:".base_url()."gateinout.aspx");
-			if(intval(DATE("m")) > 6){
-				$y = intval(date("Y"));
-				$s = 1;
-			}else {
-				$y = intval(date("Y"))-1;
-				$s = 2;
-			}
-			$this->sc_ea->update(
-					"e_start='".$start."',".
-					"e_end='".$end."',".
-					"e_title='".$title."',".
-					"e_summary='".$summary."'"
-					,"e_id=".$id." AND e_event=3");
-			return $this->setCategoryPrintMessage(0, true, "Success, input data");
+	//set aktif akademik event to aktif - valid
+	public function setAktifAkademikEvent($TEMP_START,$TEMP_END,$TEMP_TITLE,$TEMP_SUMMARY,$TEMP_ID){
+		$this->sc_ea->setId($TEMP_ID);
+		$this->sc_ea->setStart($TEMP_START);
+		$this->sc_ea->setEnd($TEMP_END);
+		$this->sc_ea->setJudul($TEMP_TITLE);
+		$this->sc_ea->setIsi($TEMP_SUMMARY);
+		if($this->sc_ea->getUpdateAkademikUpdateEvent())
+			return $this->setCategoryPrintMessage(0, true, "Berhasil, input data");
+		else
+			return $this->setCategoryPrintMessage(0, false, "Gagal, input data");
 	}
 	public function setNewAktifAkademikEvent($start,$end,$title,$summary){
 		if(!$this->getStatusLockPublic())

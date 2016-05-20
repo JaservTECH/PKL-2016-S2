@@ -17,17 +17,7 @@ class Sc_sm extends CI_Model {
 	public function signUp(){
 		if(!$this->mahasiswa)
 			return 0;
-		return $this->insert(array(
-			's_nim' => $this->getNim(),
-			's_name' => $this->getName(),
-			's_password' => md5($this->getPassword()),
-			's_email' => $this->getEmail(),
-			's_nohp' => $this->getNohp(),
-			's_active_year' => $this->getAktifTahun(),
-			's_foto_name' => $this->getFotoname(),
-			's_transcript_name' => $this->getTranskripName(),
-			's_code_cookie' => $this->getCodeCokie()
-		));
+		return $this->insert($this->arrayBuilder());
 	}
 	public function getAllData(){
 		$this->TEMP_RESULT_ARRAY = $this->query('*')->result_array();
@@ -35,11 +25,16 @@ class Sc_sm extends CI_Model {
 			$this->TEMP_INDEX_RESULT_ARRAY = 0;
 			return true;}else{return false;}
 	}
-	public function setNextCursor(){
-		if(array_key_exists($this->TEMP_INDEX_RESULT_ARRAY,$this->TEMP_RESULT_ARRAY)){
-			$this->automaSetContent($this->TEMP_RESULT_ARRAY($this->TEMP_INDEX_RESULT_ARRAY));
-			$this->TEMP_INDEX_RESULT_ARRAY+=1;
-			return true;
+	public function getNextCursor(){
+		if(is_array($TEMP_RESULT_ARRAY)){
+			if(array_key_exists($this->TEMP_INDEX_RESULT_ARRAY,$this->TEMP_RESULT_ARRAY)){
+				$this->automaSetContent($this->TEMP_RESULT_ARRAY($this->TEMP_INDEX_RESULT_ARRAY));
+				$this->TEMP_INDEX_RESULT_ARRAY+=1;
+				return true;
+			}else{
+				$this->resetValue();
+				return false;
+			}
 		}else{
 			$this->resetValue();
 			return false;
@@ -64,7 +59,7 @@ class Sc_sm extends CI_Model {
 		$TEMP_ROW_ARRAY = $this->getAllNipReview();
 		foreach($TEMP_ROW_ARRAY as $TEMP_INDEX_KEY => $TEMP_VALUE){
 			if($TEMP_VALUE == $TEMP_VALUE_NIP){
-				$this->sc_sm->update("`".$TEMP_INDEX_KEY."`='0'","s_nim='".$TEMP_VALUE_NIM."'");
+				$this->update("`".$TEMP_INDEX_KEY."`='0'","s_nim='".$TEMP_VALUE_NIM."'");
 				return true;
 			}
 		}
@@ -184,10 +179,14 @@ class Sc_sm extends CI_Model {
 		if($this->getNipReview2() != NULL) $TEMP_QUERY.="s_nip_review_2='".$this->getNipReview2()."',";
 		if($this->getNipReview3() != NULL) $TEMP_QUERY.="s_nip_review_3='".$this->getNipReview3()."',";
 		if($this->getForceSemTog() != NULL) $TEMP_QUERY.="s_force_seminar_together='".$this->getForceSemTog()."',";
-		return substr($TEMP_QUERY,0,strlen($TEMP_QUERY)-1);
+		if($TEMP_QUERY != "")
+			return substr($TEMP_QUERY,0,strlen($TEMP_QUERY)-1);
+		else
+			return $TEMP_QUERY;
 	}
 	//array Builder 
 	protected function arrayBuilder(){
+		$TEMP_QUERY = NULL;
 		if($this->getNim() != NULL) $TEMP_QUERY["s_nim"] = $this->getNim();
 		if($this->getName() != NULL) $TEMP_QUERY["s_name"] = $this->getName();
 		if($this->getPassword() != NULL) $TEMP_QUERY["s_password"] = $this->getPassword();
@@ -211,7 +210,10 @@ class Sc_sm extends CI_Model {
 		if($this->getNipReview1() != NULL) $TEMP_QUERY["s_nip_review_1"] = $this->getNipReview1();
 		if($this->getNipReview2() != NULL) $TEMP_QUERY["s_nip_review_2"] = $this->getNipReview2();
 		if($this->getNipReview3() != NULL) $TEMP_QUERY["s_nip_review_3"] = $this->getNipReview3();
-		return $TEMP_QUERY;
+		if(count($TEMP_QUERY) > 0)
+			return $TEMP_QUERY;
+		else
+			return NULL;
 	}
 	//set Automa setting from array
 	protected function automaSetContent($TEMP_ARRAY){
