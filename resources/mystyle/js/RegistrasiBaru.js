@@ -218,22 +218,40 @@ function reLoadFormBaru(){
             $($(this)[0].files).each(function () {
                 var file = $(this);
                 if (regex.test(file[0].name.toLowerCase())) {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-						baru['baru-krs'] = 1;
-						baruMessage['baru-krs'] = "Valid";
-						closeDialogAlert(j('#baru-krs').getObject());
-						return true;
-                    }
-                    reader.readAsDataURL(file[0]);
-                } else {
-						var t=file[0].name.substr(file[0].name.length-4,4);
-						if(t=='.PDF' || t.toLowerCase()==".pdf"){
-							//j("#preview-trans").getObject().src = e.target.result;
+					var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
+					if(parseFloat(TEMP_VIDEO_SIZE+"") > 1){
+						baru['baru-krs'] = 0;
+						baruMessage['baru-krs'] = file[0].name+" , Ukuran maksimal 1 mb";
+						j('#baru-krs').setValue(null);
+						openDialogAlertWithClick(baruMessage['baru-krs'],'baru-krs');
+						return false;						
+					}else{
+						var reader = new FileReader();
+						reader.onload = function (e) {
 							baru['baru-krs'] = 1;
 							baruMessage['baru-krs'] = "Valid";
 							closeDialogAlert(j('#baru-krs').getObject());
 							return true;
+						}
+						reader.readAsDataURL(file[0]);
+					}
+                } else {
+						var t=file[0].name.substr(file[0].name.length-4,4);
+						if(t=='.PDF' || t.toLowerCase()==".pdf"){
+							var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
+							if(parseFloat(TEMP_VIDEO_SIZE+"") > 1){
+								baru['baru-krs'] = 0;
+								baruMessage['baru-krs'] = file[0].name+" , Ukuran maksimal 1 mb";
+								j('#baru-krs').setValue(null);
+								openDialogAlertWithClick(baruMessage['baru-krs'],'baru-krs');
+								return false;								
+							}else{
+								//j("#preview-trans").getObject().src = e.target.result;
+								baru['baru-krs'] = 1;
+								baruMessage['baru-krs'] = "Valid";
+								closeDialogAlert(j('#baru-krs').getObject());
+								return true;
+							}
 						}else{
 							baru['baru-krs'] = 0;
 							baruMessage['baru-krs'] = file[0].name+" , format file yang di dukung pdf";

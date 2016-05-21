@@ -5,6 +5,7 @@ class Classroom extends CI_Controller {
 	function __construct(){
 		parent::__construct();
 		$this->load->model("sc_ea");
+		$this->load->model("sc_sm");
 		$this->load->helper('url');
 		$this->load->helper('html');
 		$this->load->library('mahasiswa');
@@ -253,45 +254,48 @@ class Classroom extends CI_Controller {
 	public function getLayoutRegistrasiBaru(){
 		if(!$this->mahasiswa->getStatusLoginMahasiswa())
 			redirect(base_url().'Gateinout.aspx');
-		if(!$this->mahasiswa->getCheckFormRegistrasiPemission()){
-			$data['message'] = "Maaf, anda sudah melakukan registrasi, silahkan kontak admin untuk melakukan perubahan";
+		$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
+		if(!$this->sc_sm->getCheckFormRegistrasiPemission()){
+			$TEMP_ARRAY['message'] = "Maaf, anda sudah melakukan registrasi, silahkan kontak admin untuk melakukan perubahan";
 			echo "0";
-			$this->load->view("Classroom_room/Body_right/failed_registrasi",$data);
+			$this->load->view("Classroom_room/Body_right/failed_registrasi",$TEMP_ARRAY);
 			return;
 		}
 		if(!$this->sc_ea->getIsRegisterTime(date("Y-m-d"))){
-			$data['message'] = "Maaf, waktu registrasi sudah / belum dimulai, silahkan menunggu hingga waktu diumumkan";
+			$TEMP_ARRAY['message'] = "Maaf, waktu registrasi sudah / belum dimulai, silahkan menunggu hingga waktu diumumkan";
 			echo"0";
-			$this->load->view("Classroom_room/Body_right/failed_registrasi",$data);
+			$this->load->view("Classroom_room/Body_right/failed_registrasi",$TEMP_ARRAY);
 			return ;
 		}
-		$temp = $this->mahasiswa->getCodeRegLastTA();
-		if($temp[0]){
-			if($this->mahasiswa->getHaveLastTAInfo($temp[1])[0]){
+		
+		$ARRAY_CODE = $this->mahasiswa->getCodeRegLastTA();
+		if($ARRAY_CODE[0]){
+			if($this->sc_st->getHaveLastTAInfo($ARRAY_CODE[1])){
 				if($this->input->post('force') === NULL){
-					if($this->mahasiswa->getResultForceRegistration()){
+					$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
+					if($this->sc_sm->getResultForceRegistration()){
 						echo "3";
-						$data = array(
+						$TEMP_ARRAY = array(
 								'message' => 'Telah ditemukan data Ta anda, anda yakin ingin membuat baru? konsultasikan dengan dosen pembimbing anda.',
 								'but1' => 'buat baru',
 								'but2' => 'form lama'
 						);
-						$this->load->view("Classroom_room/Body_right/warning-two-button-registrasi",$data);
+						$this->load->view("Classroom_room/Body_right/warning-two-button-registrasi",$TEMP_ARRAY);
 						return ;
 					}else{
 						echo "3";
-						$data = array(
+						$TEMP_ARRAY = array(
 								'message' => 'Telah ditemukan data Ta anda, anda yakin ingin membuat baru? konsultasikan dengan dosen pembimbing anda.',
 								'but2' => 'form lama'
 						);
-						$this->load->view("Classroom_room/Body_right/warning-one-button-registrasi",$data);
+						$this->load->view("Classroom_room/Body_right/warning-one-button-registrasi",$TEMP_ARRAY);
 						return ;
 					}
 				}else{
 					if($this->input->post('force') != "trueJaserv"){
-						$data['message'] = "Anda merubah susunan kode javascript system kami, tolong jangan lakukan itu";
+						$TEMP_ARRAY['message'] = "Anda merubah susunan kode javascript system kami, tolong jangan lakukan itu";
 						echo"0";
-						$this->load->view("Classroom_room/Body_right/failed_registrasi",$data);
+						$this->load->view("Classroom_room/Body_right/failed_registrasi",$TEMP_ARRAY);
 						return ;
 					}
 				}
@@ -299,53 +303,57 @@ class Classroom extends CI_Controller {
 			}
 		}
 		//$temp = $this->mahasiswa->getDataPersonalForRegistrasi();
-		$temp['peminatan'] = $this->mahasiswa->getListPeminatan(); 
+		$TEMP_ARRAY = NULL;
+		$TEMP_ARRAY['peminatan'] = $this->mahasiswa->getListPeminatan(); 
 		echo "1";
-		$this->load->view("Classroom_room/Body_right/registrasi_baru",$temp);
+		$this->load->view("Classroom_room/Body_right/registrasi_baru",$TEMP_ARRAY);
 	}
 	/*registrasi lama*/
 	public function getLayoutRegistrasiLama(){
 		if(!$this->mahasiswa->getStatusLoginMahasiswa())
 			redirect(base_url().'Gateinout.aspx');
-		if(!$this->mahasiswa->getCheckFormRegistrasiPemission()){
-			$data['message'] = "Maaf, anda sudah melakukan registrasi, silahkan kontak admin untuk melakukan perubahan";
+		$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
+		if(!$this->sc_sm->getCheckFormRegistrasiPemission()){
+			$TEMP_ARRAY['message'] = "Maaf, anda sudah melakukan registrasi, silahkan kontak admin untuk melakukan perubahan";
 			echo "0";
-			$this->load->view("Classroom_room/Body_right/failed_registrasi",$data);
+			$this->load->view("Classroom_room/Body_right/failed_registrasi",$TEMP_ARRAY);
 			return;
 		}
 		if(!$this->sc_ea->getIsRegisterTime(date("Y-m-d"))){
-			$data['message'] = "Maaf, waktu registrasi sudah / belum dimulai, silahkan menunggu hingga waktu diumumkan";
+			$TEMP_ARRAY['message'] = "Maaf, waktu registrasi sudah / belum dimulai, silahkan menunggu hingga waktu diumumkan";
 			echo"0";
-			$this->load->view("Classroom_room/Body_right/failed_registrasi",$data);
+			$this->load->view("Classroom_room/Body_right/failed_registrasi",$TEMP_ARRAY);
 			return ;
 		}
-		$temp = $this->mahasiswa->getCodeRegLastTA();
-		if($temp[0]){
-			if(!$this->mahasiswa->getHaveLastTAInfo($temp[1])[0]){
+		
+		$ARRAY_CODE = $this->mahasiswa->getCodeRegLastTA();
+		if($ARRAY_CODE[0]){
+			if($this->sc_st->getHaveLastTAInfo($ARRAY_CODE[1])){
 				if($this->input->post('force') === NULL){
-					if($this->mahasiswa->getResultForceRegistration(2)){
+					$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
+					if($this->sc_sm->getResultForceRegistration(2)){
 						echo "3";
-						$data = array(
+						$TEMP_ARRAY = array(
 								'message' => 'Judul Ta anda tidak ditemukan dimanapun, silhakan registrasi baru. Jika ini kesalahan silahkan hubungi akademik(Mbak Nisa)',
 								'but1' => 'buat lama',
 								'but2' => 'form baru'
 						);
-						$this->load->view("Classroom_room/Body_right/warning-two-button-registrasi",$data);
+						$this->load->view("Classroom_room/Body_right/warning-two-button-registrasi",$TEMP_ARRAY);
 						return ;
 					}else{
 						echo "3";
-						$data = array(
+						$TEMP_ARRAY = array(
 								'message' => 'Judul Ta anda tidak ditemukan dimanapun, silhakan registrasi baru. Jika ini kesalahan silahkan hubungi akademik(Mbak Nisa)',
 								'but2' => 'form baru'
 						);
-						$this->load->view("Classroom_room/Body_right/warning-one-button-registrasi",$data);
+						$this->load->view("Classroom_room/Body_right/warning-one-button-registrasi",$TEMP_ARRAY);
 						return ;
 					}
 				}else{
 					if($this->input->post('force') != "trueJaserv"){
-						$data['message'] = "Anda merubah susunan kode javascript system kami, tolong jangan lakukan itu";
+						$TEMP_ARRAY['message'] = "Anda merubah susunan kode javascript system kami, tolong jangan lakukan itu";
 						echo"0";
-						$this->load->view("Classroom_room/Body_right/failed_registrasi",$data);
+						$this->load->view("Classroom_room/Body_right/failed_registrasi",$TEMP_ARRAY);
 						return ;
 					}
 				}
@@ -354,137 +362,140 @@ class Classroom extends CI_Controller {
 
 			//$temp = $this->mahasiswa->getDataPersonalForRegistrasi();
 			//$this->koordinator->getCodeRegisterAktif()->previous(),array('judulta',"dosbing")
-			$temp['listdosen'] = $this->dosen->getListDosen();
+			$TEMP_ARRAY['listdosen'] = $this->dosen->getListDosen();
 			echo "1";
-			$this->load->view("Classroom_room/Body_right/registrasi_lama",$temp);
+			$this->load->view("Classroom_room/Body_right/registrasi_lama",$TEMP_ARRAY);
 		}else{
 			echo "3";
-			$data = array(
+			$TEMP_ARRAY = array(
 					'message' => 'Judul Ta anda tidak ditemukan dimanapun, silhakan registrasi baru. Jika ini kesalahan silahkan hubungi akademik(Mbak Nisa)',
 					'but2' => 'form baru'
 			);
-			$this->load->view("Classroom_room/Body_right/warning-one-button-registrasi",$data);
+			$this->load->view("Classroom_room/Body_right/warning-one-button-registrasi",$TEMP_ARRAY);
 			return ;
 		}
 	}
 	/**/
 	
 	
-	
+	//methode return view of Home - vaid 
 	public function getLayoutHome(){
 		if(!$this->mahasiswa->getStatusLoginMahasiswa())
 			redirect(base_url().'Gateinout.aspx');
 		$this->load->view("Classroom_room/Body_right/home");
 	}
+	//check any post is NULL , and if not NULL will be return - valid
 	protected function isNullPost($a){
 		if($this->input->post($a)===NULL)
 			exit('0anda melakukan percobaan terhadap halaman, jangan lakukan itu');
 		return $this->input->post($a);
 	}
+	//registrasi lama proses and get result of process
 	public function getResultRegistrasiLama(){
 		if(!$this->mahasiswa->getStatusLoginMahasiswa())
 			redirect(base_url().'Gateinout.aspx');
-			if(!$this->sc_ea->getIsRegisterTime(date("Y-m-d"))){
-				exit("0Anda mencoba register secara paksa, tolong jangan lakukan itu, terima kasih");
-			}
-			if(!$this->mahasiswa->getCheckFormRegistrasiPemission()){
-				exit("0Anda mencoba registrasi secara paksa, tolong jangan lakukan itu, terima kasih");
-			}
-			$this->mahasiswa->setOpenPermission("registrasi-con","JaservTech.Mahasiswa.Reg.Con.Controls");
-			$tempDataPersonal = $this->mahasiswa->getDataPersonal();
-			$tempDataTa = $this->mahasiswa;
-			//Nama
-			if($tempDataPersonal['nama'] === NULL){
-				$this->isNullPost('lama-nama');
-				$dataTemp['nama'] = $this->input->post('lama-nama');
-				$this->getCheck('lama-nama',$dataTemp['nama'],true);
-			}else{
-				$dataTemp['nama'] = $tempDataPersonal['nama'];
-			}
-			//Nim
-			if($tempDataPersonal['nim'] === NULL){
-				$this->isNullPost('lama-nim');
-				$dataTemp['nim'] = $this->input->post('lama-nim');
-				$this->getCheck('lama-nim',$dataTemp['nim'],true);
-			}else{
-				$dataTemp['nim'] = $tempDataPersonal['nim'];
-			}
-			//Email
-			if($tempDataPersonal['email'] === NULL){
-				$this->isNullPost('lama-email');
-				$dataTemp['email'] = $this->input->post('lama-email');
-				$this->getCheck('lama-email',$dataTemp['email'],true);
-			}else{
-				$dataTemp['email'] = $tempDataPersonal['email'];
-			}
-			//nohp
-			if($tempDataPersonal['nohp'] === NULL){
-				$this->isNullPost('lama-nohp');
-				$dataTemp['nohp'] = $this->input->post('lam-nohp');
-				$this->getCheck('lama-nohp',$dataTemp['nohp'],true);
-			}else{
-				$dataTemp['nohp'] = $tempDataPersonal['nohp'];
-			}
-			//nohportu
-			if($tempDataPersonal['nohportu'] === NULL){
-				$this->isNullPost('lama-nohportu');
-				$dataTemp['nohportu'] = $this->input->post('lama-nohportu');
-				$this->getCheck('lama-nohportu',$dataTemp['nohportu'],true);
-			}else{
-				$dataTemp['nohportu'] = $tempDataPersonal['nohportu'];
-			}
-			//ortu
-			if($tempDataPersonal['ortu'] === NULL){
-				$this->isNullPost('lama-ortu');
-				$dataTemp['ortu'] = $this->input->post('lama-ortu');
-				$this->getCheck('lama-ortu',$dataTemp['ortu'],true);
-			}else{
-				$dataTemp['ortu'] = $tempDataPersonal['ortu'];
-			}
-			$temps = $this->mahasiswa->getCodeRegLastTA();
-			if(!$temps[0]){
-				echo "0Maaf, anda mencoba memasukan paksa form registrasi lama";
-				return ;
-			}
-			$dataTemp['codeRegist'] = $temps[1];
-			$dataTemp['codereg'] = $this->koordinator->getCodeRegisterAktif()->now();
-			/*
-			$temp = $this->mahasiswa->getTAInfo($temps[1],array('judulta',"dosbing"));
-			if($temp[1]['judulta'] === NULL){
-				$this->isNullPost('lama-judulta');
-				$dataTemp['judulta'] = $this->input->post('lama-judulta');
-				$this->getCheck('lama-judulta',$dataTemp['judulta'],true);
-			}else{
-				$dataTemp['judulta'] = $temp[1]['judulta'];
-			}*/
+		if(!$this->sc_ea->getIsRegisterTime(date("Y-m-d"))){
+			exit("0Anda mencoba register secara paksa, tolong jangan lakukan itu, terima kasih");
+		}
+		$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
+		if(!$this->sc_sm->getCheckFormRegistrasiPemission()){
+			exit("0Anda mencoba registrasi secara paksa, tolong jangan lakukan itu, terima kasih");
+		}
+		$this->mahasiswa->setOpenPermission("registrasi-con","JaservTech.Mahasiswa.Reg.Con.Controls");
+		$tempDataPersonal = $this->mahasiswa->getDataPersonal();
+		$tempDataTa = $this->mahasiswa;
+		//Nama
+		if($tempDataPersonal['nama'] === NULL){
+			$this->isNullPost('lama-nama');
+			$dataTemp['nama'] = $this->input->post('lama-nama');
+			$this->getCheck('lama-nama',$dataTemp['nama'],true);
+		}else{
+			$dataTemp['nama'] = $tempDataPersonal['nama'];
+		}
+		//Nim
+		if($tempDataPersonal['nim'] === NULL){
+			$this->isNullPost('lama-nim');
+			$dataTemp['nim'] = $this->input->post('lama-nim');
+			$this->getCheck('lama-nim',$dataTemp['nim'],true);
+		}else{
+			$dataTemp['nim'] = $tempDataPersonal['nim'];
+		}
+		//Email
+		if($tempDataPersonal['email'] === NULL){
+			$this->isNullPost('lama-email');
+			$dataTemp['email'] = $this->input->post('lama-email');
+			$this->getCheck('lama-email',$dataTemp['email'],true);
+		}else{
+			$dataTemp['email'] = $tempDataPersonal['email'];
+		}
+		//nohp
+		if($tempDataPersonal['nohp'] === NULL){
+			$this->isNullPost('lama-nohp');
+			$dataTemp['nohp'] = $this->input->post('lam-nohp');
+			$this->getCheck('lama-nohp',$dataTemp['nohp'],true);
+		}else{
+			$dataTemp['nohp'] = $tempDataPersonal['nohp'];
+		}
+		//nohportu
+		if($tempDataPersonal['nohportu'] === NULL){
+			$this->isNullPost('lama-nohportu');
+			$dataTemp['nohportu'] = $this->input->post('lama-nohportu');
+			$this->getCheck('lama-nohportu',$dataTemp['nohportu'],true);
+		}else{
+			$dataTemp['nohportu'] = $tempDataPersonal['nohportu'];
+		}
+		//ortu
+		if($tempDataPersonal['ortu'] === NULL){
+			$this->isNullPost('lama-ortu');
+			$dataTemp['ortu'] = $this->input->post('lama-ortu');
+			$this->getCheck('lama-ortu',$dataTemp['ortu'],true);
+		}else{
+			$dataTemp['ortu'] = $tempDataPersonal['ortu'];
+		}
+		$temps = $this->mahasiswa->getCodeRegLastTA();
+		if(!$temps[0]){
+			echo "0Maaf, anda mencoba memasukan paksa form registrasi lama";
+			return ;
+		}
+		$dataTemp['codeRegist'] = $temps[1];
+		$dataTemp['codereg'] = $this->koordinator->getCodeRegisterAktif()->now();
+		/*
+		$temp = $this->mahasiswa->getTAInfo($temps[1],array('judulta',"dosbing"));
+		if($temp[1]['judulta'] === NULL){
 			$this->isNullPost('lama-judulta');
 			$dataTemp['judulta'] = $this->input->post('lama-judulta');
 			$this->getCheck('lama-judulta',$dataTemp['judulta'],true);
-			/*
-			if($temp[1]['dosbing'] === NULL){
-				$this->isNullPost('lama-dosbing');
-				$dataTemp['dosbing'] = $this->input->post('lama-dosbing');
-				$this->getCheck('lama-dosbing',$dataTemp['dosbing'],true);
-			}else{
-				$dataTemp['dosbing'] = $temp[1]['dosbing'];
-			}
-			*/
-			//$this->isNullPost('lama-dosbing');
+		}else{
+			$dataTemp['judulta'] = $temp[1]['judulta'];
+		}*/
+		$this->isNullPost('lama-judulta');
+		$dataTemp['judulta'] = $this->input->post('lama-judulta');
+		$this->getCheck('lama-judulta',$dataTemp['judulta'],true);
+		/*
+		if($temp[1]['dosbing'] === NULL){
+			$this->isNullPost('lama-dosbing');
 			$dataTemp['dosbing'] = $this->input->post('lama-dosbing');
-			$dataTemp['newf'] = 2;
-			$dataTemp['krs'] = 'lama-krs';
-			//$this->getCheck('lama-dosbing',$dataTemp['dosbing'],true);
-			
-			//foreach($dataTemp as $key=>$value)
-				//echo $key." = ".$value."<br>";
-			$temp = $this->mahasiswa->setRegistrasiLama($dataTemp);
-			if(!$temp[0]){
-				echo "0".$temp[1];
-			}else{
-				echo "1";
-				$data['data'] = "Data berhasil dimasukan, terima kasih atas waktunya";
-				$this->load->view("Classroom_room/Body_right/success_registrasi",$data);
-			}
+			$this->getCheck('lama-dosbing',$dataTemp['dosbing'],true);
+		}else{
+			$dataTemp['dosbing'] = $temp[1]['dosbing'];
+		}
+		*/
+		//$this->isNullPost('lama-dosbing');
+		$dataTemp['dosbing'] = $this->input->post('lama-dosbing');
+		$dataTemp['newf'] = 2;
+		$dataTemp['krs'] = 'lama-krs';
+		//$this->getCheck('lama-dosbing',$dataTemp['dosbing'],true);
+		
+		//foreach($dataTemp as $key=>$value)
+			//echo $key." = ".$value."<br>";
+		$temp = $this->mahasiswa->setRegistrasiLama($dataTemp);
+		if(!$temp[0]){
+			echo "0".$temp[1];
+		}else{
+			echo "1";
+			$data['data'] = "Data berhasil dimasukan, terima kasih atas waktunya";
+			$this->load->view("Classroom_room/Body_right/success_registrasi",$data);
+		}
 	}
 	public function getResultRegistrasiBaru(){
 		if(!$this->mahasiswa->getStatusLoginMahasiswa())
@@ -492,10 +503,11 @@ class Classroom extends CI_Controller {
 		if(!$this->sc_ea->getIsRegisterTime(date("Y-m-d"))){
 			exit("0Anda mencoba register secara paksa, tolong jangan lakukan itu, terima kasih");
 		}
-		if(!$this->mahasiswa->getCheckFormRegistrasiPemission()){
+		
+		$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
+		if(!$this->sc_sm->getCheckFormRegistrasiPemission()){
 			exit("0Anda mencoba registrasi secara paksa, tolong jangan lakukan itu, terima kasih");
 		}
-		$this->mahasiswa->setOpenPermission("registrasi-new","JaservTech.Mahasiswa.Reg.New.Controls");
 		$tempDataPersonal = $this->mahasiswa->getDataPersonal();
 		//Nama
 		if($tempDataPersonal['nama'] === NULL){
@@ -583,7 +595,7 @@ class Classroom extends CI_Controller {
 				$this->getCheck('baru-ref3',$dataTemp['ref3'],true);	
 		}
 		$dataTemp['krs'] = 'baru-krs';
-		$dataTemp['codereg'] = $this->koordinator->getCodeRegisterAktif()->now();
+		$dataTemp['codereg'] = $this->sc_ea->getCodeRegistrasiAkademik()->now();
 		
 		$dataTemp['newf'] = 2;
 		//foreach($dataTemp as $k => $value){

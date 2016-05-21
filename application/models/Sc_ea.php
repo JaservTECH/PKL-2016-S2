@@ -7,11 +7,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class Sc_ea extends CI_Model {
 	private $TEMP_RESULT_ARRAY;
 	private $TEMP_INDEX_RESULT_ARRAY;
-	function __CONSTRUCT(){
-		parent::__CONSTRUCT();
-		$this->TEMP_RESULT_ARRAY = NULL;
-		$this->TEMP_INDEX_RESULT_ARRAY = 0;
-	}
 	//get list even akademik 
 	public function getListAkademicActive(){
 		$this->TEMP_RESULT_ARRAY = $this->query("*","e_event=1 order by e_id desc")->result_array();
@@ -72,9 +67,9 @@ class Sc_ea extends CI_Model {
 			return false;
 	}
 	public function getNextCursor(){
-		if(is_array($TEMP_RESULT_ARRAY)){
+		if(is_array($this->TEMP_RESULT_ARRAY)){
 			if(array_key_exists($this->TEMP_INDEX_RESULT_ARRAY,$this->TEMP_RESULT_ARRAY)){
-				$this->automaSetContent($this->TEMP_RESULT_ARRAY($this->TEMP_INDEX_RESULT_ARRAY));
+				$this->automaSetContent($this->TEMP_RESULT_ARRAY[$this->TEMP_INDEX_RESULT_ARRAY]);
 				$this->TEMP_INDEX_RESULT_ARRAY+=1;
 				return true;
 			}else{
@@ -277,6 +272,8 @@ class Sc_ea extends CI_Model {
 		$this->tablename = 'sc_ea';
 		$this->codeAkademik=array(false,null);
 		$this->stiar=array(false,null);
+		$this->TEMP_RESULT_ARRAY = NULL;
+		$this->TEMP_INDEX_RESULT_ARRAY = 0; 
 	}
 	public function query($select='*',$where=""){
 		$query="SELECT ".$select." FROM ".$this->tablename;
@@ -313,9 +310,7 @@ class Sc_ea extends CI_Model {
 	
 	//public realease - valid
 	public function getIsRegisterTime($data){
-		if(!$this->isMahasiswaKeyAllowed())
-			return false;
-		$this->getStatusTimeInActiveRegistrasi($data)->isIn();
+		return $this->getStatusTimeInActiveRegistrasi($data)->isIn();
 	}
 	//valid
 	public function getDataRegistrasiAktifNow(){
@@ -365,7 +360,7 @@ class Sc_ea extends CI_Model {
 	//getter
 	public function getId(){$id = $this->id; return $id;}
 	public function getYear(){$year = $this->year; return $year;}
-	public function getSemester(){$this->semester = $semester;}
+	public function getSemester(){$semester = $this->semester; return $semester;}
 	public function getStatus(){$status = $this->status; return $status;}
 	public function getStart(){$start = $this->start; return $start;}
 	public function getEnd(){$end = $this->end; return $end;}

@@ -13,6 +13,49 @@ class Sc_sm extends CI_Model {
 		$this->load->library('session');
 		
 	}
+	public function getCheckFormRegistrasiPemission(){
+		if($this->getNim() == NULL)
+			return false;
+		$TEMP_ARRAY = $this->query("s_new_form","s_nim='".$this->getNim()."'")->row_array();
+		$this->automaSetContent($TEMP_ARRAY);
+		if($this->getOpenForm() == NULL)
+			return false;
+		if(intval($this->getOpenForm()) == 1){
+			return true;
+		}else{
+			return FALSE;
+		}
+	}
+	//getResult force registrasi permission
+	public function getResultForceRegistration($TEMP_DATA=1){
+		if($this->getNim() == NULL)
+			return FALSE;
+		$TEMP_ARRAY = $this->query("*","s_nim='".$this->getNim()."'")->row_array();
+		$this->automaSetContent($TEMP_ARRAY);
+		if($TEMP_DATA == 1){
+			if(intval($this->getForceRegNew()) == 1){
+				return TRUE;
+			}
+			return FALSE;
+		}else{
+			if(intval($this->getForceRegLama()) == 1){
+				return TRUE;
+			}
+			return FALSE;
+		}
+	}
+	public function setGetAktiveYear(){
+		if($this->getNim() == NULL)
+			return false;
+		$TEMP_ARRAY = $this->query("s_active_year","s_nim='".$this->getNim()."'")->row_array();
+		if(count($TEMP_ARRAY) <= 0){
+			$this->resetValue();
+			return false;
+		}else{
+			$this->automaSetContent($TEMP_ARRAY);
+			return true;
+		}
+	} 
     //operasi
 	public function signUp(){
 		if(!$this->mahasiswa)
@@ -26,9 +69,9 @@ class Sc_sm extends CI_Model {
 			return true;}else{return false;}
 	}
 	public function getNextCursor(){
-		if(is_array($TEMP_RESULT_ARRAY)){
+		if(is_array($this->TEMP_RESULT_ARRAY)){
 			if(array_key_exists($this->TEMP_INDEX_RESULT_ARRAY,$this->TEMP_RESULT_ARRAY)){
-				$this->automaSetContent($this->TEMP_RESULT_ARRAY($this->TEMP_INDEX_RESULT_ARRAY));
+				$this->automaSetContent($this->TEMP_RESULT_ARRAY[$this->TEMP_INDEX_RESULT_ARRAY]);
 				$this->TEMP_INDEX_RESULT_ARRAY+=1;
 				return true;
 			}else{
@@ -47,6 +90,16 @@ class Sc_sm extends CI_Model {
 			$TEMP_ROW_ARRAY = $this->query('*','s_nim="'.$TEMP_VALUE_NIM.'"')->row_array();
 			if(count($TEMP_ROW_ARRAY) > 0){	$this->automaSetContent($TEMP_ROW_ARRAY); return true; }else{ $this->resetValue(); return false;}
 		}
+	}
+	public function updateData(){
+		if($this->getNim() == NULL)
+			return FALSE;
+		$TEMP_NIM = $this->getNim();
+		$this->setNim(NULL);
+		if($this->queryBuilder() == "")
+			return FALSE;
+		$this->update($this->queryBuilder(),"s_nim='".$TEMP_NIM."'");
+		return true;
 	}
 	//session NIP
 	protected function getAllNipReview(){	return $this->query("s_nip_review_1 , s_nip_review_2 , s_nip_review_3 ","s_nim='".$TEMP_VALUE_NIM."'")->row_array(); }

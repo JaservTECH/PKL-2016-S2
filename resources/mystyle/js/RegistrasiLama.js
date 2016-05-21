@@ -101,22 +101,41 @@ function reLoadFormLama(){
             $($(this)[0].files).each(function () {
                 var file = $(this);
                 if (regex.test(file[0].name.toLowerCase())) {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-						lama['lama-krs'] = 1;
-						lamaMessage['lama-krs'] = "Valid";
-						closeDialogAlert(j('#lama-krs').getObject());
-						return true;
-                    }
-                    reader.readAsDataURL(file[0]);
+					var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
+					if(parseFloat(TEMP_VIDEO_SIZE+"") > 1){
+						lama['lama-krs'] = 0;
+						lamaMessage['lama-krs'] = file[0].name+" , Ukuran maksimal 1 mb";
+						j('#lama-krs').setValue(null);
+						openDialogAlertWithClick(lamaMessage['lama-krs'],'lama-krs');
+						return false;
+					}else{
+						var reader = new FileReader();
+						reader.onload = function (e) {
+							lama['lama-krs'] = 1;
+							lamaMessage['lama-krs'] = "Valid";
+							closeDialogAlert(j('#lama-krs').getObject());
+							return true;
+						}
+						reader.readAsDataURL(file[0]);
+					}
                 } else {
 					var t=file[0].name.substr(file[0].name.length-4,4);
 					if(t=='.PDF' || t.toLowerCase()==".pdf"){
+						var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
+						if(parseFloat(TEMP_VIDEO_SIZE+"") > 1){
+							lama['lama-krs'] = 0;
+							lamaMessage['lama-krs'] = file[0].name+" , Ukuran maksimal 1 mb";
+							j('#lama-krs').setValue(null);
+							openDialogAlertWithClick(lamaMessage['lama-krs'],'lama-krs');
+							return false;
+						}else{
+							lama['lama-krs'] = 1;
+							lamaMessage['lama-krs'] = "Valid";
+							closeDialogAlert(j('#lama-krs').getObject());
+							return true;
+						}
 						//j("#preview-trans").getObject().src = e.target.result;
-						lama['lama-krs'] = 1;
-						lamaMessage['lama-krs'] = "Valid";
-						closeDialogAlert(j('#lama-krs').getObject());
-						return true;
+						
 					}else{
 						lama['lama-krs'] = 0;
 						lamaMessage['lama-krs'] = file[0].name+" , format file yang di dukung pdf";

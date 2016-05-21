@@ -155,7 +155,7 @@ class Koordinator extends Aktor{
 	public function getCodeRegisterAktif(){
 		$this->sc_ea->getListAkademicActive();
 		$TEMP_INDEX_ARRAY = 0;
-		while($this->sc_ea->getCursorNext()){
+		while($this->sc_ea->getNextCursor()){
 			$TEMP_ARRAY[$TEMP_INDEX_ARRAY]['id'] = $this->sc_ea->getId();
 			$TEMP_ARRAY[$TEMP_INDEX_ARRAY]['status'] = $this->sc_ea->getStatus();
 			$TEMP_ARRAY[$TEMP_INDEX_ARRAY]['start'] = $this->sc_ea->getStart();

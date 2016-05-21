@@ -7,6 +7,7 @@ class Mahasiswa extends Aktor{
 		PARENT::__CONSTRUCT();
 		$this->setLibrary('session');
 		$this->setModel('sc_sm');
+		$this->setModel('sc_sm_interest');
 		$this->setModel('sc_lms');
 	}
 	//get code year now - valid
@@ -106,7 +107,7 @@ class Mahasiswa extends Aktor{
 		
 		$this->sc_sm->setNim($nim);	
 		$this->sc_sm->setName($name); 
-		$this->sc_sm->setPassword($password1); 
+		$this->sc_sm->setPassword(md5($password1)); 
 		$this->sc_sm->setEmail($email);	
 		$this->sc_sm->setNoHp($telephone); 
 		$this->sc_sm->setAktifTahun($year); 
@@ -138,17 +139,17 @@ class Mahasiswa extends Aktor{
 		if($TEMP_ERROR >0) return false;	else return true;
 	}
 	//try login and make session - valid
-	public function setLoginMahasiswa($nim="",$password=""){   
-		if(!$this->sc_sm->getDataNim($nim))	return $this->setCategoryPrintMessage(0, false, "nim dan kata kunci tidak terdaftar");
-		if($this->sc_sm->getNim() != $nim)	return $this->setCategoryPrintMessage(0, false, "nim dan kata kunci tidak terdaftar");
-		if($this->sc_sm->getPassword() != md5($password))	return $this->setCategoryPrintMessage(0, false, "nim dan kata kunci tidak terdaftar");
+	public function setLoginMahasiswa($TEMP_NIM="",$TEMP_PASSWORD=""){   
+		if(!$this->sc_sm->getDataNim($TEMP_NIM))	return $this->setCategoryPrintMessage(0, false, "nim dan kata kunci tidak terdaftar");
+		if($this->sc_sm->getNim() != $TEMP_NIM)	return $this->setCategoryPrintMessage(0, false, "nim dan kata kunci tidak terdaftar");
+		if($this->sc_sm->getPassword() != md5($TEMP_PASSWORD))	return $this->setCategoryPrintMessage(0, false, "nim dan kata kunci tidak terdaftar");
 		if($this->getStatusLoginMahasiswa()){
-			if($this->session->userdata('nim') == $nim){ return $this->setCategoryPrintMessage(0,true, "Classroom.aspx");}
+			if($this->session->userdata('nim') == $TEMP_NIM){ return $this->setCategoryPrintMessage(0,true, "Classroom.aspx");}
 		}
 		$this->session->set_userdata("login",'true');
 		$this->session->set_userdata("nim",$this->sc_sm->getNim());
-		$this->session->set_userdata("name",$his->sc_sm->getName());
-		$this->session->set_userdata("pass",$this->getResultEncryptMahasiswaString($$this->sc_sm->getName()));
+		$this->session->set_userdata("name",$this->sc_sm->getName());
+		$this->session->set_userdata("pass",$this->getResultEncryptMahasiswaString($this->sc_sm->getName()));
 		return $this->setCategoryPrintMessage(0,true,"Classroom.aspx");
 	}
 	//logout - valid
@@ -160,7 +161,7 @@ class Mahasiswa extends Aktor{
 	public function getListPeminatan(){
 		$this->sc_sm_interest->getAllData();
 		$TEMP_INDEX_ARRAY = 0;
-		while($this->sc_sm_interest->getCursorNext()){
+		while($this->sc_sm_interest->getNextCursor()){
 			$TEMP_ARRAY[$TEMP_INDEX_ARRAY]['id'] = $this->sc_sm_interest->getId();
 			$TEMP_ARRAY[$TEMP_INDEX_ARRAY]['nama'] = $this->sc_sm_interest->getName();
 			$TEMP_INDEX_ARRAY += 1;
@@ -253,7 +254,7 @@ class Mahasiswa extends Aktor{
 		if($TEMP_VALUE_TITLE == "")
 			return $this->setCategoryPrintMessage($TEMP_CATEGORY, true, "valid"); //boleh kosong tau tidak
 		$TEMP_VALUE_TITLE = $this->inputjaservfilter->titleFiltering($TEMP_VALUE_TITLE);
-		return $this->setCategoryPrintMessage($cat, $TEMP_VALUE_TITLE[0], $TEMP_VALUE_TITLE[1]);
+		return $this->setCategoryPrintMessage($TEMP_CATEGORY, $TEMP_VALUE_TITLE[0], $TEMP_VALUE_TITLE[1]);
 	}
 	//check password - format - valid
 	public function getCheckPassword($TEMP_VALUE_PASS="",$TEMP_CATEGORY=0){
@@ -354,6 +355,7 @@ class Mahasiswa extends Aktor{
 	}
 	
 	//still review
+	/*
 	public function getCodeRegLastTA(){
 		if(!$this->getStatusLoginMahasiswa())
 			header("location:".base_url()."gateinout.aspx");
@@ -388,6 +390,48 @@ class Mahasiswa extends Aktor{
 		}
 		return array(false,null,null);
 	}
+	*/
+	public function getCodeRegLastTA(){
+		if(!$this->getStatusLoginMahasiswa())
+			header("location:".base_url()."gateinout.aspx");
+		$TEMP_YEAR=$this->getYearNow()."";
+		if(!$this->sc_sm->setGetAktiveYear())
+			return array(false,NULL,NULL);
+		$TEMP_END = substr($TEMP_YEAR, 0,strlen($TEMP_YEAR)-1);
+		$TEMP_END_K = $TEMP_YEAR[strlen($TEMP_YEAR)-1];
+		if(intval($TEMP_END_K) == 2){
+			$TEMP_END_K = "1";
+		}else{
+			$TEMP_END_K = "2";
+			$TEMP_END = (intval($TEMP_END)-1);
+		}
+		$TEMP_END_K_V = intval($TEMP_END."".$TEMP_END_K);
+		$TEMP_START = intval(substr($this->sc_sm->getAktifTahun(), 0,strlen($this->sc_sm->getAktifTahun())-1));
+		$TEMP_START_K = $this->sc_sm->getAktifTahun()[strlen($this->sc_sm->getAktifTahun())-1];
+		$TEMP_START_K_V = intval($TEMP_START."".$TEMP_START_K);
+		$TEMP_TOTAL_LOOR = 0;
+		for($i=$TEMP_END; $i>= $TEMP_START;$i--){
+			for($j=2;$j>=1;$j--){
+				$TEMP_ID_BEFORE = intval($i."".$j);
+				if($TEMP_ID_BEFORE < $TEMP_END_K_V && $TEMP_ID_BEFORE >= $TEMP_START_K_V){
+					$TEMP_TOTAL_LOOR+=1;
+				}
+				if($TEMP_ID_BEFORE <= $TEMP_END_K_V && $TEMP_ID_BEFORE >= $TEMP_START_K_V){
+					if($this->sc_st->getHaveLastTAInfo($TEMP_ID_BEFORE)){
+						return array(true,$TEMP_ID_BEFORE,$TEMP_TOTAL_LOOR);
+					}
+				}
+			}
+		}
+		return array(false,null,null);
+	}
+	//get nim login session aktif
+	public function getNimSessionLogin(){
+		if(!$this->getStatusLoginMahasiswa())
+			return NULL;
+		return $this->session->userdata('nim');
+	}
+	/*
 	public function getCheckFormRegistrasiPemission(){
 		$temp = $this->sc_sm->query("s_new_form as kode_registrasi","s_nim='".$this->session->userdata('nim')."'")->row_array();
 		if(intval($temp['kode_registrasi']) == 1){
@@ -396,6 +440,7 @@ class Mahasiswa extends Aktor{
 			return false;
 		}
 	}
+	*/
 	public function getTAInfo($srt,$data=null){
 		$temp = $this->sc_st->query("*","s_rt=".$srt." AND s_nim='".$this->session->userdata('nim')."'")->row_array(); 
 		if(count($temp)<=0)
@@ -436,6 +481,7 @@ class Mahasiswa extends Aktor{
 		}
 		return array(true,$temp2);
 	}
+	/*
 	public function getResultForceRegistration($data=1){
 		if(!$this->getStatusLoginMahasiswa())
 			header("location:".base_url()."gateinout.aspx");
@@ -452,6 +498,7 @@ class Mahasiswa extends Aktor{
 			return false;
 		}
 	}
+	*/
 	public function setRegistrasiLama($data){
 		if(!$this->getStatusLoginMahasiswa())
 			header("location:".base_url()."gateinout.aspx");
@@ -558,6 +605,7 @@ class Mahasiswa extends Aktor{
 		));
 		return $this->setCategoryPrintMessage(1, true, "Valid");
 	}
+	/*
 	public function getHaveLastTAInfo($idbefore){
 		if(!$this->getStatusLoginMahasiswa())
 			header("location:".base_url()."gateinout.aspx");
@@ -567,10 +615,27 @@ class Mahasiswa extends Aktor{
 		}
 		return array(true,$temp);
 	} 
+	*/
+	protected function filterContentDataPersonal($TEMP_DATA){
+		if($TEMP_DATA != "")
+			if($TEMP_DATA != " ")
+				if($TEMP_DATA != null)
+					if(strlen($TEMP_DATA) > 0){
+						if($TEMP_DATA == '0'){
+							return null;
+							continue;
+						}
+						return $TEMP_DATA;
+					}
+		return null;
+	}
 	public function getDataPersonal(){
 		if(!$this->getStatusLoginMahasiswa())
 			header("location:".base_url()."gateinout.aspx");
-		$temp = $this->sc_sm->query("*","s_nim='".$this->session->userdata('nim')."'")->row_array();
+		$this->sc_sm->getDataNim($this->session->userdata('nim'));
+		
+		
+		/*
 		foreach($temp as $key => $colomn){
 			if($colomn != "")
 				if($colomn != " ")
@@ -586,14 +651,15 @@ class Mahasiswa extends Aktor{
 			$temp2[$key]=null;
 							
 		}
+		*/
 		return  array(
-				'nama' => $temp2['s_name'],
-				'nim' => $temp2['s_nim'],
-				'nohp' => $temp2['s_nohp'],
-				'email' => $temp2['s_email'],
-				'ortu' => $temp2['s_name_parent'],
-				'nohportu' => $temp2['s_nohp_parent'],
-				'minat' =>$temp2['s_p']
+				'nama' => $this->filterContentDataPersonal($this->sc_sm->getName()),
+				'nim' => $this->filterContentDataPersonal($this->sc_sm->getNim()),
+				'nohp' => $this->filterContentDataPersonal($this->sc_sm->getNohp()),
+				'email' => $this->filterContentDataPersonal($this->sc_sm->getEmail()),
+				'ortu' => $this->filterContentDataPersonal($this->sc_sm->getNamaOrtu()),
+				'nohportu' => $this->filterContentDataPersonal($this->sc_sm->getNoHpOrtu()),
+				'minat' => $this->filterContentDataPersonal($this->sc_sm->getPeminatan())
 		);
 	}
 	//waiting

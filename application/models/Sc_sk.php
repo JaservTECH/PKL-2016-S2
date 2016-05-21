@@ -22,9 +22,9 @@ class Sc_sk extends CI_Model {
 	
 	
 	public function getNextCursor(){
-		if(is_array($TEMP_RESULT_ARRAY)){
+		if(is_array($this->TEMP_RESULT_ARRAY)){
 			if(array_key_exists($this->TEMP_INDEX_RESULT_ARRAY,$this->TEMP_RESULT_ARRAY)){
-				$this->automaSetContent($this->TEMP_RESULT_ARRAY($this->TEMP_INDEX_RESULT_ARRAY));
+				$this->automaSetContent($this->TEMP_RESULT_ARRAY[$this->TEMP_INDEX_RESULT_ARRAY]);
 				$this->TEMP_INDEX_RESULT_ARRAY+=1;
 				return true;
 			}else{

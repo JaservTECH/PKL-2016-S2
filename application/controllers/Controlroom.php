@@ -521,9 +521,30 @@ class Controlroom extends CI_Controller {
 		$kode = $this->isNullPost('kode');
 		if($kode!="JASERVCONTROL")
 			exit("0maaf, anda melakukan debugging");
-		$temp = $this->dosen->getAllListDosen();
+		//$temp = $this->dosen->getAllListDosen();
+		$this->sc_sd->getAllListDosen();
 		$srt = $this->koordinator->getCodeRegisterAktif()->now();
 		$rest="";
+		while($this->sc_sd->getCursorNext()){
+			$rest.="<tr>";
+			$rest.="<td>".$i."</td>";
+			$rest.="<td>".$this->sc_sd->getNip()."</td>";
+			$rest.="<td>".$this->sc_sd->getNama()."</td>";
+			$rest.="<td>".$this->sc_sd->getBidang()."</td>";
+			$rest.="<td>";
+			$rest.="<input type='button' value='lihat (".count($this->mahasiswa->getCountDospem($value['s_id'],$srt)[1]).")' class='btn btn-info' onclick='showListMahasiswaAmpuan(".'"'.$value['s_id'].'"'.")'>";
+			$rest.="</td>";
+			$rest.="<td><select onchange='statusDosen(".'"'.$this->sc_sd->getNip().'"'.",this.value);'>";
+			if(intval($this->sc_sd->getStatus()) == 1){
+				$rest.= "<option value='0'>Tidak Aktif</option>".
+						"<option  value='1' selected>Aktif</option>";
+			}else{
+				$rest.= "<option value='0' selected>Tidak Aktif</option>".
+						"<option value='1'>Aktif</option>";
+			}
+			$rest.="</tr>";
+			$i++;
+		}
 		if($temp[0]){
 			$i=1;
 			foreach ($temp[1] as $value){

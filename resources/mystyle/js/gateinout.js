@@ -88,21 +88,39 @@ $(document).ready(function(){
             $($(this)[0].files).each(function () {
                 var file = $(this);
                 if (regex.test(file[0].name.toLowerCase())) {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-						j("#preview-foto").getObject().src = e.target.result;
-						daftar['daftar-foto'] = 1;
-						daftarMessage['daftar-foto'] = "Valid";
-						return true;
-                    }
-                    reader.readAsDataURL(file[0]);
-                } else {
-						var t=file[0].name.substr(file[0].name.length-4,4);
-						if(t=='.JPG' || t.toLowerCase()==".jpg" || t=='.PNG' || t.toLowerCase()==".png"){
+					var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
+					if(parseFloat(TEMP_VIDEO_SIZE+"") > 0.5){
+						daftar['daftar-foto'] = 0;
+						daftarMessage['daftar-foto'] = file[0].name+" , memiliki ukuran lebih dari 500kb";
+						j('#daftar-foto-exe').setValue(null);
+						openAlertDialogWithClick(daftarMessage['daftar-foto'],'daftar-foto-exe');
+						return false;
+					}else{
+						var reader = new FileReader();
+						reader.onload = function (e) {
 							j("#preview-foto").getObject().src = e.target.result;
 							daftar['daftar-foto'] = 1;
 							daftarMessage['daftar-foto'] = "Valid";
 							return true;
+						}
+						reader.readAsDataURL(file[0]);	
+					}
+                } else {
+						var t=file[0].name.substr(file[0].name.length-4,4);
+						if(t=='.JPG' || t.toLowerCase()==".jpg" || t=='.PNG' || t.toLowerCase()==".png"){
+							var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
+							if(parseFloat(TEMP_VIDEO_SIZE+"") > 0.5){
+								daftar['daftar-foto'] = 0;
+								daftarMessage['daftar-foto'] = file[0].name+" , memiliki ukuran lebih dari 500kb";
+								j('#daftar-foto-exe').setValue(null);
+								openAlertDialogWithClick(daftarMessage['daftar-foto'],'daftar-foto-exe');
+								return false;
+							}else{							
+								j("#preview-foto").getObject().src = e.target.result;
+								daftar['daftar-foto'] = 1;
+								daftarMessage['daftar-foto'] = "Valid";
+								return true;	
+							}
 						}else{
 							daftar['daftar-foto'] = 0;
 							daftarMessage['daftar-foto'] = file[0].name+" , format file yang di dukung jpg atau png";
@@ -127,20 +145,39 @@ $(document).ready(function(){
             $($(this)[0].files).each(function () {
                 var file = $(this);
                 if (regex.test(file[0].name.toLowerCase())) {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-						daftar['daftar-trans'] = 1;
-						daftarMessage['daftar-trans'] = "Valid";
-						return true;
-                    }
-                    reader.readAsDataURL(file[0]);
-                } else {
-						var t=file[0].name.substr(file[0].name.length-4,4);
-						if(t=='.PDF' || t.toLowerCase()==".pdf"){
-							//j("#preview-trans").getObject().src = e.target.result;
+					var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
+					if(parseFloat(TEMP_VIDEO_SIZE+"") > 1){
+						daftar['daftar-trans'] = 0;
+						daftarMessage['daftar-trans'] = file[0].name+" , memiliki ukuran lebih dari 1 mb";
+						j('#daftar-trans-exe').setValue(null);
+						openAlertDialogWithClick(daftarMessage['daftar-trans'],'daftar-trans-exe');
+						return false;
+					}else{
+						var reader = new FileReader();
+						reader.onload = function (e) {
+							
 							daftar['daftar-trans'] = 1;
 							daftarMessage['daftar-trans'] = "Valid";
 							return true;
+						}
+						reader.readAsDataURL(file[0]);
+					}
+                } else {
+						var t=file[0].name.substr(file[0].name.length-4,4);
+						if(t=='.PDF' || t.toLowerCase()==".pdf"){
+							var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
+							if(parseFloat(TEMP_VIDEO_SIZE+"") > 1){
+								daftar['daftar-trans'] = 0;
+								daftarMessage['daftar-trans'] = file[0].name+" , memiliki ukuran lebih dari 1 mb";
+								j('#daftar-trans-exe').setValue(null);
+								openAlertDialogWithClick(daftarMessage['daftar-trans'],'daftar-trans-exe');
+								return false;
+							}else{
+								//j("#preview-trans").getObject().src = e.target.result;
+								daftar['daftar-trans'] = 1;
+								daftarMessage['daftar-trans'] = "Valid";
+								return true;
+							}
 						}else{
 							daftar['daftar-trans'] = 0;
 							daftarMessage['daftar-trans'] = file[0].name+" , format file yang di dukung pdf";
@@ -200,7 +237,7 @@ $(document).ready(function(){
 			}
 			if(j('#daftar-trans-exe').getValue() == ""){
 				daftar['daftar-trans'] = 0;
-				daftarMessage['daftar-trans'] = "foto belum di pilih sama sekali";
+				daftarMessage['daftar-trans'] = "transkrip belum di pilih sama sekali";
 			}
 			var qq='Kesalahan terjadi pada saat proses pendaftaran : <br>';
 			if(totalValidity()){

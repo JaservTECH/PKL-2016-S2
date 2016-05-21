@@ -20,9 +20,9 @@ class Sc_sm_interest extends CI_Model {
 		$this->TEMP_INDEX_RESULT_ARRAY = 0;
 	}
 	public function getNextCursor(){
-		if(is_array($TEMP_RESULT_ARRAY)){
+		if(is_array($this->TEMP_RESULT_ARRAY)){
 			if(array_key_exists($this->TEMP_INDEX_RESULT_ARRAY,$this->TEMP_RESULT_ARRAY)){
-				$this->automaSetContent($this->TEMP_RESULT_ARRAY($this->TEMP_INDEX_RESULT_ARRAY));
+				$this->automaSetContent($this->TEMP_RESULT_ARRAY[$this->TEMP_INDEX_RESULT_ARRAY]);
 				$this->TEMP_INDEX_RESULT_ARRAY+=1;
 				return true;
 			}else{
@@ -39,12 +39,12 @@ class Sc_sm_interest extends CI_Model {
 		$this->resetValue();
 		foreach($TEMP_ARRAY as $TEMP_INDEX_ARRAY => $TEMP_VALUE){
 			switch($TEMP_INDEX_ARRAY){
-				case 'si_id' : $this->setNim($TEMP_ARRAY['si_id']);break;
-				case 'si_name' : $this->setTanggal($TEMP_ARRAY['si_name']);break;
+				case 'si_id' : $this->setId($TEMP_ARRAY['si_id']);break;
+				case 'si_name' : $this->setName($TEMP_ARRAY['si_name']);break;
 			}
 		}
 		$this->setId($TEMP_ARRAY['si_id']);
-		$this->setName($TEMP_ARRAY('si_name'));
+		$this->setName($TEMP_ARRAY['si_name']);
 	}
 	protected function resetValue(){
 		$this->setId(null);

@@ -7,6 +7,25 @@ class Sc_st extends CI_Model {
 		$this->load->database();
 		$this->tablename = 'sc_st';
 	}
+	
+	//get TA before
+	public function getHaveLastTAInfo(){
+		if($this->getNim() == NULL)
+			return FALSE;
+		if($this->getKode() == NULL)
+			return false;
+		$TEMP_RESULT_ARRAY = $this->query("*","s_nim='".$this->session->userdata('nim')."' AND s_rt=".$idbefore)->result_array();
+		if(count($TEMP_RESULT_ARRAY)<=0){
+			$this->resetValue();
+			$TEMP_RESULT_ARRAY = NULL;
+			$TEMP_INDEX_RESULT_ARRAY = 0;
+			return false;
+		}else{
+			$TEMP_INDEX_RESULT_ARRAY = 0;
+			return true;
+		}
+	} 
+	//
 	protected function query($select='*',$where=""){
 		$query="SELECT ".$select." FROM ".$this->tablename;
 		if($where!="")
@@ -110,9 +129,9 @@ class Sc_st extends CI_Model {
 	}
 	
 	public function getNextCursor(){
-		if(is_array($TEMP_RESULT_ARRAY)){
+		if(is_array($this->TEMP_RESULT_ARRAY)){
 			if(array_key_exists($this->TEMP_INDEX_RESULT_ARRAY,$this->TEMP_RESULT_ARRAY)){
-				$this->automaSetContent($this->TEMP_RESULT_ARRAY($this->TEMP_INDEX_RESULT_ARRAY));
+				$this->automaSetContent($this->TEMP_RESULT_ARRAY[$this->TEMP_INDEX_RESULT_ARRAY]);
 				$this->TEMP_INDEX_RESULT_ARRAY+=1;
 				return true;
 			}else{
