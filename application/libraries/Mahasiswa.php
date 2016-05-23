@@ -7,6 +7,7 @@ class Mahasiswa extends Aktor{
 		PARENT::__CONSTRUCT();
 		$this->setLibrary('session');
 		$this->setModel('sc_sm');
+		$this->setModel('sc_st');
 		$this->setModel('sc_sm_interest');
 		$this->setModel('sc_lms');
 	}
@@ -117,6 +118,7 @@ class Mahasiswa extends Aktor{
 		$succ = 0;
 		//exit("0hohohkokokoohlokk");
 		$succ+=$this->sc_sm->signUp();
+		$this->sc_lms->resetValue();
 		$this->sc_lms->setNim($nim); 
 		$this->sc_lms->setTanggal(DATE("Y-m-d H:i:s")); 
 		$this->sc_lms->setEvent("mendaftar baru");
@@ -355,46 +357,13 @@ class Mahasiswa extends Aktor{
 	}
 	
 	//still review
-	/*
-	public function getCodeRegLastTA(){
-		if(!$this->getStatusLoginMahasiswa())
-			header("location:".base_url()."gateinout.aspx");
-		$idNow=$this->getYearNow()."";
-		$time = $this->sc_sm->query("s_active_year as codereg","s_nim='".$this->session->userdata('nim')."'")->row_array();
-		$time['codereg'] .="";
-		$end = substr($idNow, 0,strlen($idNow)-1);
-		$endK = $idNow[strlen($idNow)-1];
-		if(intval($endK) == 2){
-			$endK = "1";
-		}else{
-			$endK = "2";
-			$end = (intval($end)-1);
-		}
-		$endKV = intval($end."".$endK);
-		$start = intval(substr($time['codereg'], 0,strlen($time['codereg'])-1));
-		$startK = $time['codereg'][strlen($time['codereg'])-1];
-		$startKV = intval($start."".$startK);
-		$totalLoor = 0;
-		for($i=$end; $i>= $start;$i--){
-			for($j=2;$j>=1;$j--){
-				$contId = intval($i."".$j);
-				if($contId < $endKV && $contId >= $startKV){
-					$totalLoor+=1;
-				}
-				if($contId <= $endKV && $contId >= $startKV){
-					if($this->getHaveLastTAInfo("".$contId)[0]){
-						return array(true,$contId,$totalLoor);
-					}
-				}
-			}
-		}
-		return array(false,null,null);
-	}
-	*/
+	//get is have any last TA info, from last semester or las last last other - valid
 	public function getCodeRegLastTA(){
 		if(!$this->getStatusLoginMahasiswa())
 			header("location:".base_url()."gateinout.aspx");
 		$TEMP_YEAR=$this->getYearNow()."";
+		
+		$this->sc_sm->setNim($this->session->userdata('nim'));
 		if(!$this->sc_sm->setGetAktiveYear())
 			return array(false,NULL,NULL);
 		$TEMP_END = substr($TEMP_YEAR, 0,strlen($TEMP_YEAR)-1);
@@ -417,7 +386,10 @@ class Mahasiswa extends Aktor{
 					$TEMP_TOTAL_LOOR+=1;
 				}
 				if($TEMP_ID_BEFORE <= $TEMP_END_K_V && $TEMP_ID_BEFORE >= $TEMP_START_K_V){
-					if($this->sc_st->getHaveLastTAInfo($TEMP_ID_BEFORE)){
+					$this->sc_st->resetValue();
+					$this->sc_st->setNim($this->getNimSessionLogin());
+					$this->sc_st->setKode($TEMP_ID_BEFORE);
+					if($this->sc_st->getHaveLastTAInfo()){
 						return array(true,$TEMP_ID_BEFORE,$TEMP_TOTAL_LOOR);
 					}
 				}
@@ -425,22 +397,13 @@ class Mahasiswa extends Aktor{
 		}
 		return array(false,null,null);
 	}
-	//get nim login session aktif
+	//get nim login session aktif - valid
 	public function getNimSessionLogin(){
 		if(!$this->getStatusLoginMahasiswa())
 			return NULL;
 		return $this->session->userdata('nim');
 	}
-	/*
-	public function getCheckFormRegistrasiPemission(){
-		$temp = $this->sc_sm->query("s_new_form as kode_registrasi","s_nim='".$this->session->userdata('nim')."'")->row_array();
-		if(intval($temp['kode_registrasi']) == 1){
-			return true;
-		}else{
-			return false;
-		}
-	}
-	*/
+	
 	public function getTAInfo($srt,$data=null){
 		$temp = $this->sc_st->query("*","s_rt=".$srt." AND s_nim='".$this->session->userdata('nim')."'")->row_array(); 
 		if(count($temp)<=0)
@@ -513,6 +476,19 @@ class Mahasiswa extends Aktor{
 		if(!$this->upload->do_upload($data['krs'])){
 			return $this->setCategoryPrintMessage(1, false, 'file yang di upload adalah, pdf(yanng tidak ter password, maupun terenkripsi). dan ukuran maksimal 1 mb.');
 		}
+		$this->sc_st->resetValue();
+		$this->sc_st->setNim($this->mahasiswa->getNimSessionLogin());
+		$this->sc_st->setKode($data['codeRegist']);
+		if(!$this->sc_st->getHaveLastTAInfo())
+			return $this->setCategoryPrintMessage(1,false,"data tidak dtemukan untuk ta sebelumnya, lihat panduan registrasi");
+		$TEMP_ARRAY = array(
+			'METODE' => $this->sc_st->getMetode(),
+			'LOKASI' => $this->sc_st->getLokasi(),
+			'REF_S' => $this->sc_st->getReferensis(),
+			'REF_D' => $this->sc_st->getReferensid(),
+			'REF_T' => $this->sc_st->getReferensit()
+		);
+		/*
 		$tempsS= $this->getTAInfo($data['codeRegist']."",array(
 			'metode',
 			'lokasi',
@@ -520,8 +496,21 @@ class Mahasiswa extends Aktor{
 			'ref2',
 			'ref3'
 		));
+		*/
 		$krsname = $this->upload->data('file_name');
 		$tempsD = $this->getDataPersonal();
+		$this->sc_sm->resetValue();
+		$this->sc_sm->setNama($data['nama']);
+		$this->sc_sm->setEmail($data['email']);
+		$this->sc_sm->setPeminatan($data['minat']);
+		$this->sc_sm->setNohp($data['nohp']);
+		$this->sc_sm->setNoHpOrtu($data['nohportu']);
+		$this->sc_sm->setNamaOrtu($data['ortu']);
+		$this->sc_sm->setOpenForm($data['newf']);
+		$this->sc_sm->setForceRegLama('2');
+		if(!$this->sc_sm->updateData())
+			return $this->setCategoryPrintMessage(1,FALSE,"Terjadi kesalahan saat proses data");
+		/*
 		$this->sc_sm->update("
 				`s_name`='".$data['nama']."',
 				`s_email`='".$data['email']."',
@@ -532,6 +521,7 @@ class Mahasiswa extends Aktor{
 				`s_new_form`='".$data['newf']."',
 				`s_force_registrasi_lama`='2'
 				","s_nim='".$this->session->userdata('nim')."'");
+		*/
 		$temps = $this->sc_st->query("*","s_rt=".$data['codereg']." AND s_nim='".$data['nim']."'")->result_array();
 		$var = count($temps);
 		if($var > 0){
@@ -557,6 +547,7 @@ class Mahasiswa extends Aktor{
 		return $this->setCategoryPrintMessage(1, true, "Valid");
 		
 	}
+	//filtering kategori submit data
 	public function setRegistrasiBaru($data){
 		if(!$this->getStatusLoginMahasiswa())
 			header("location:".base_url()."gateinout.aspx");
@@ -572,50 +563,48 @@ class Mahasiswa extends Aktor{
 			return $this->setCategoryPrintMessage(1, false, 'file yang di upload adalah, pdf(yanng tidak ter password, maupun terenkripsi). dan ukuran maksimal 1 mb.');
 		}
 		$krsname = $this->upload->data('file_name');
-		$this->sc_sm->update("
-				`s_name`='".$data['nama']."',
-				`s_email`='".$data['email']."',
-				`s_p`='".$data['minat']."',
-				`s_nohp`='".$data['nohp']."',
-				`s_nohp_parent`='".$data['nohportu']."',
-				`s_name_parent`='".$data['ortu']."',
-				`s_new_form`='".$data['newf']."',
-				`s_force_registrasi`='2'
-				","s_nim='".$this->session->userdata('nim')."'");
-		$temps = $this->sc_st->query("*","s_rt=".$data['codereg']." AND s_nim='".$data['nim']."'")->result_array();
-		$var = count($temps);
-		if($var > 0){
-			$this->sc_st->update("`s_statue`='2', `s_data_statue`='".$var."'","s_rt=".$data['codereg']." AND s_nim='".$data['nim']."' AND s_statue=1");
+		$this->sc_sm->setNim($this->getNimSessionLogin());
+		$this->sc_sm->setName($data['nama']);
+		$this->sc_sm->setEmail($data['email']);
+		$this->sc_sm->setPeminatan($data['minat']);
+		$this->sc_sm->setNohp($data['nohp']);
+		$this->sc_sm->setNamaOrtu($data['ortu']);
+		$this->sc_sm->setNoHpOrtu($data['nohportu']);
+		$this->sc_sm->setForceRegNew("2");
+		$this->sc_sm->setOpenForm($data['newf']);
+		if(!$this->sc_sm->updateData())
+			return $this->setCategoryPrintMessage(1,false,"Terjadi kesalahan pada saat registrasi baru");
+		$this->sc_st->setNim($this->getNimSessionLogin());
+		$this->sc_st->setKode($data['codereg']);
+		if($this->sc_st->getHaveLastTAInfo()){
+			$TEMP_COUNT = $this->sc_st->getCount();
+			$this->sc_st->resetValue();
+			$this->sc_st->setKode($data['codereg']);
+			$this->sc_st->setNim($this->getNimSessionLogin());
+			$this->sc_st->setLogStatus($TEMP_COUNT);
+			$this->sc_st->setLog();
 		}
-		$this->sc_st->insert(array(
-			's_rt' => $data['codereg'],
-			's_nim' => $data['nim'],
-			's_judul_ta' => $data['judulta'],
-			's_metode' => $data['metode'],
-			's_lokasi' => $data['lokasi'],
-			's_ref_s' => $data['ref1'],
-			's_ref_d' => $data['ref2'],
-			's_ref_t' => $data['ref3'],
-			's_name_krs' => $krsname
-		));
-		$this->sc_lms->insert(array(
-			'l_nim' => $data['nim'],
-			'l_date' => DATE("Y-m-d H:i:s"),
-			'l_event' => "Rigistrasi Baru"
-		));
+		//add new item
+		$this->sc_st->resetValue();
+		$this->sc_st->setNim($this->getNimSessionLogin());
+		$this->sc_st->setKode($data['codereg']);
+		$this->sc_st->setJudulTa($data['judulta']);
+		$this->sc_st->setMetode($data['metode']);
+		$this->sc_st->setLokasi($data['lokasi']);
+		$this->sc_st->setReferensis($data['ref1']);
+		$this->sc_st->setReferensid($data['ref2']);
+		$this->sc_st->setReferensit($data['ref3']);
+		$this->sc_st->setNamaKrs($krsname);
+		$this->sc_st->setNewData();
+		//log
+		$this->sc_lms->resetValue();
+		$this->sc_lms->setNim($this->getNimSessionLogin()); 
+		$this->sc_lms->setTanggal(DATE("Y-m-d H:i:s")); 
+		$this->sc_lms->setEvent("Registrasi Baru");
+		$this->sc_lms->addNew();
 		return $this->setCategoryPrintMessage(1, true, "Valid");
 	}
-	/*
-	public function getHaveLastTAInfo($idbefore){
-		if(!$this->getStatusLoginMahasiswa())
-			header("location:".base_url()."gateinout.aspx");
-		$temp=$this->sc_st->query("*","s_nim='".$this->session->userdata('nim')."' AND s_rt=".$idbefore)->result_array();
-		if(count($temp)==0){
-			return array(false,null);
-		}
-		return array(true,$temp);
-	} 
-	*/
+	//
 	protected function filterContentDataPersonal($TEMP_DATA){
 		if($TEMP_DATA != "")
 			if($TEMP_DATA != " ")
@@ -632,26 +621,7 @@ class Mahasiswa extends Aktor{
 	public function getDataPersonal(){
 		if(!$this->getStatusLoginMahasiswa())
 			header("location:".base_url()."gateinout.aspx");
-		$this->sc_sm->getDataNim($this->session->userdata('nim'));
-		
-		
-		/*
-		foreach($temp as $key => $colomn){
-			if($colomn != "")
-				if($colomn != " ")
-					if($colomn != null)
-						if(strlen($colomn) > 0){
-							if($colomn == '0'){
-								$temp2[$key]=null;
-								continue;
-							}
-							$temp2[$key]=$colomn;
-							continue;
-						}
-			$temp2[$key]=null;
-							
-		}
-		*/
+		$this->sc_sm->getDataNim($this->getNimSessionLogin());
 		return  array(
 				'nama' => $this->filterContentDataPersonal($this->sc_sm->getName()),
 				'nim' => $this->filterContentDataPersonal($this->sc_sm->getNim()),

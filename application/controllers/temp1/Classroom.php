@@ -6,7 +6,6 @@ class Classroom extends CI_Controller {
 		parent::__construct();
 		$this->load->model("sc_ea");
 		$this->load->model("sc_sm");
-		$this->load->model("sc_st");
 		$this->load->helper('url');
 		$this->load->helper('html');
 		$this->load->library('mahasiswa');
@@ -270,49 +269,44 @@ class Classroom extends CI_Controller {
 		}
 		
 		$ARRAY_CODE = $this->mahasiswa->getCodeRegLastTA();
-		if($ARRAY_CODE[0]){//valid
-			$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
-			if($this->sc_sm->getResultForceRegistration()){
-				$TEMP_ARRAY = NULL;
-				$TEMP_ARRAY['peminatan'] = $this->mahasiswa->getListPeminatan(); 
-				echo "1";
-				$this->load->view("Classroom_room/Body_right/registrasi_baru",$TEMP_ARRAY);	
-			}else{
-				echo "3";
-				$TEMP_ARRAY = array(
-						'message' => 'Telah ditemukan data Ta anda, anda yakin ingin membuat baru? konsultasikan dengan dosen pembimbing anda. dan kontak admin(mbak nisa untuk mengaktifkan perubahan)',
-						'but2' => 'form lama'
-				);
-				$this->load->view("Classroom_room/Body_right/warning-one-button-registrasi",$TEMP_ARRAY);
-				return ;
-			}
-		}else{	
-			$this->sc_st->resetValue();
-			$this->sc_st->setNim($this->mahasiswa->getNimSessionLogin());
-			$this->sc_st->setKode($this->mahasiswa->getYearNow());
-			if($this->sc_st->getHaveLastTAInfo()){
-				$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
-				if($this->sc_sm->getResultForceRegistration()){
-					$TEMP_ARRAY = NULL;
-					$TEMP_ARRAY['peminatan'] = $this->mahasiswa->getListPeminatan(); 
-					echo "1";
-					$this->load->view("Classroom_room/Body_right/registrasi_baru",$TEMP_ARRAY);	
+		if($ARRAY_CODE[0]){
+			if($this->sc_st->getHaveLastTAInfo($ARRAY_CODE[1])){
+				if($this->input->post('force') === NULL){
+					$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
+					if($this->sc_sm->getResultForceRegistration()){
+						echo "3";
+						$TEMP_ARRAY = array(
+								'message' => 'Telah ditemukan data Ta anda, anda yakin ingin membuat baru? konsultasikan dengan dosen pembimbing anda.',
+								'but1' => 'buat baru',
+								'but2' => 'form lama'
+						);
+						$this->load->view("Classroom_room/Body_right/warning-two-button-registrasi",$TEMP_ARRAY);
+						return ;
+					}else{
+						echo "3";
+						$TEMP_ARRAY = array(
+								'message' => 'Telah ditemukan data Ta anda, anda yakin ingin membuat baru? konsultasikan dengan dosen pembimbing anda.',
+								'but2' => 'form lama'
+						);
+						$this->load->view("Classroom_room/Body_right/warning-one-button-registrasi",$TEMP_ARRAY);
+						return ;
+					}
 				}else{
-					echo "3";
-					$TEMP_ARRAY = array(
-							'message' => 'Anda sudah melakukan registrasi pada semster ini, silahkan lanjut ke registrasi TA lama karena anda adalah mahasiswa TA lama',
-							'but2' => 'form lama'
-					);
-					$this->load->view("Classroom_room/Body_right/warning-one-button-registrasi",$TEMP_ARRAY);
-					return ;
+					if($this->input->post('force') != "trueJaserv"){
+						$TEMP_ARRAY['message'] = "Anda merubah susunan kode javascript system kami, tolong jangan lakukan itu";
+						echo"0";
+						$this->load->view("Classroom_room/Body_right/failed_registrasi",$TEMP_ARRAY);
+						return ;
+					}
 				}
-			}else{		
-				$TEMP_ARRAY = NULL;
-				$TEMP_ARRAY['peminatan'] = $this->mahasiswa->getListPeminatan(); 
-				echo "1";
-				$this->load->view("Classroom_room/Body_right/registrasi_baru",$TEMP_ARRAY);	
-			}		
+					
+			}
 		}
+		//$temp = $this->mahasiswa->getDataPersonalForRegistrasi();
+		$TEMP_ARRAY = NULL;
+		$TEMP_ARRAY['peminatan'] = $this->mahasiswa->getListPeminatan(); 
+		echo "1";
+		$this->load->view("Classroom_room/Body_right/registrasi_baru",$TEMP_ARRAY);
 	}
 	/*registrasi lama*/
 	public function getLayoutRegistrasiLama(){
@@ -331,62 +325,95 @@ class Classroom extends CI_Controller {
 			$this->load->view("Classroom_room/Body_right/failed_registrasi",$TEMP_ARRAY);
 			return ;
 		}
+		
 		$ARRAY_CODE = $this->mahasiswa->getCodeRegLastTA();
-		if($ARRAY_CODE[0]){ //true if have last data before
-			$this->sc_st->resetValue();
-			$this->sc_st->setNim($this->mahasiswa->getNimSessionLogin());
-			$this->sc_st->setKode($this->mahasiswa->getYearNow());
-			if($this->sc_st->getHaveLastTAInfo()){
-				$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
-				if($this->sc_sm->getResultForceRegistration(2)){
-					$TEMP_ARRAY['listdosen'] = $this->dosen->getListDosen();
-					echo "1";
-					$this->load->view("Classroom_room/Body_right/registrasi_lama",$TEMP_ARRAY);
+		
+		//exit("hoho".var_dump($ARRAY_CODE));
+		if($ARRAY_CODE[0]){
+/*
+			if(!$this->sc_st->getHaveLastTAInfo($ARRAY_CODE[1])){
+				if($this->input->post('force') === NULL){
+					$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
+					if($this->sc_sm->getResultForceRegistration(2)){
+						echo "3";
+						$TEMP_ARRAY = array(
+								'message' => $this->sc_sm->getForceRegLama().'Judul Ta anda tidak ditemukan dimanapun, silhakan registrasi baru. Jika ini kesalahan silahkan hubungi akademik(Mbak Nisa)',
+								'but1' => 'buat lama',
+								'but2' => 'form baru'
+						);
+						$this->load->view("Classroom_room/Body_right/warning-two-button-registrasi",$TEMP_ARRAY);
+						return ;
+					}else{
+						echo "3";
+						$TEMP_ARRAY = array(
+								'message' => 'Judul Ta anda tidak ditemukan dimanapun, silhakan registrasi baru. Jika ini kesalahan silahkan hubungi akademik(Mbak Nisa)',
+								'but2' => 'form baru'
+						);
+						$this->load->view("Classroom_room/Body_right/warning-one-button-registrasi",$TEMP_ARRAY);
+						return ;
+					}
 				}else{
-					echo "3";
-					$TEMP_ARRAY = array(
-							'message' => 'Judul Ta anda tidak ditemukan dimanapun, silhakan registrasi baru. Jika ini kesalahan silahkan hubungi akademik(Mbak Nisa)',
-							'but2' => 'form baru'
-					);
-					$this->load->view("Classroom_room/Body_right/warning-one-button-registrasi",$TEMP_ARRAY);
-					return ;
+					if($this->input->post('force') != "trueJaserv"){
+						$TEMP_ARRAY['message'] = "Anda merubah susunan kode javascript system kami, tolong jangan lakukan itu";
+						echo"0";
+						$this->load->view("Classroom_room/Body_right/failed_registrasi",$TEMP_ARRAY);
+						return ;
+					}
 				}
-			}else{			
+			}
+*/
+
+			//$temp = $this->mahasiswa->getDataPersonalForRegistrasi();
+			//$this->koordinator->getCodeRegisterAktif()->previous(),array('judulta',"dosbing")
+			$TEMP_ARRAY['listdosen'] = $this->dosen->getListDosen();
+			echo "1";
+			$this->load->view("Classroom_room/Body_right/registrasi_lama",$TEMP_ARRAY);
+		}else{
+				if($this->input->post('force') === NULL){
+					$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
+					if($this->sc_sm->getResultForceRegistration(2)){
+						echo "3";
+						$TEMP_ARRAY = array(
+								'message' => $this->sc_sm->getForceRegLama().'Judul Ta anda tidak ditemukan dimanapun, silhakan registrasi baru. Jika ini kesalahan silahkan hubungi akademik(Mbak Nisa)',
+								'but1' => 'buat lama',
+								'but2' => 'form baru'
+						);
+						$this->load->view("Classroom_room/Body_right/warning-two-button-registrasi",$TEMP_ARRAY);
+						return ;
+					}else{
+						echo "3";
+						$TEMP_ARRAY = array(
+								'message' => 'Judul Ta anda tidak ditemukan dimanapun, silhakan registrasi baru. Jika ini kesalahan silahkan hubungi akademik(Mbak Nisa)',
+								'but2' => 'form baru'
+						);
+						$this->load->view("Classroom_room/Body_right/warning-one-button-registrasi",$TEMP_ARRAY);
+						return ;
+					}
+				}else{
+					if($this->input->post('force') != "trueJaserv"){
+						$TEMP_ARRAY['message'] = "Anda merubah susunan kode javascript system kami, tolong jangan lakukan itu";
+						echo"0";
+						$this->load->view("Classroom_room/Body_right/failed_registrasi",$TEMP_ARRAY);
+						return ;
+					}
+				}
 				$TEMP_ARRAY['listdosen'] = $this->dosen->getListDosen();
 				echo "1";
 				$this->load->view("Classroom_room/Body_right/registrasi_lama",$TEMP_ARRAY);
-			}
-		}else{
-			$this->sc_st->resetValue();
-			$this->sc_st->setNim($this->mahasiswa->getNimSessionLogin());
-			$this->sc_st->setKode($this->mahasiswa->getYearNow());
-			if($this->sc_st->getHaveLastTAInfo()){
-				$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
-				if($this->sc_sm->getResultForceRegistration(2)){
-					$TEMP_ARRAY['listdosen'] = $this->dosen->getListDosen();
-					echo "1";
-					$this->load->view("Classroom_room/Body_right/registrasi_lama",$TEMP_ARRAY);
-				}else{
-					echo "3";
-					$TEMP_ARRAY = array(
-							'message' => 'Judul Ta anda tidak ditemukan dimanapun, silhakan registrasi baru. Jika ini kesalahan silahkan hubungi akademik(Mbak Nisa)',
-							'but2' => 'form baru'
-					);
-					$this->load->view("Classroom_room/Body_right/warning-one-button-registrasi",$TEMP_ARRAY);
-					return ;
-				}
-			}else{					
-				echo "3";
-				$TEMP_ARRAY = array(
-						'message' => 'Judul Ta anda tidak ditemukan dimanapun, silhakan registrasi baru. Jika ini kesalahan silahkan hubungi akademik(Mbak Nisa) lihat petunjuk registrasi lama dan baru pada bantuan',
-						'but2' => 'form baru'
-				);
-				$this->load->view("Classroom_room/Body_right/warning-one-button-registrasi",$TEMP_ARRAY);
-				return ;
-			}
+			/*
+			echo "3";
+			$TEMP_ARRAY = array(
+					'message' => 'Judul Ta anda tidak ditemukan dimanapun, silhakan registrasi baru. Jika ini kesalahan silahkan hubungi akademik(Mbak Nisa)',
+					'but2' => 'form baru'
+			);
+			$this->load->view("Classroom_room/Body_right/warning-one-button-registrasi",$TEMP_ARRAY);
+			return ;
+*/
 		}
 	}
 	/**/
+	
+	
 	//methode return view of Home - vaid 
 	public function getLayoutHome(){
 		if(!$this->mahasiswa->getStatusLoginMahasiswa())
@@ -406,39 +433,11 @@ class Classroom extends CI_Controller {
 		if(!$this->sc_ea->getIsRegisterTime(date("Y-m-d"))){
 			exit("0Anda mencoba register secara paksa, tolong jangan lakukan itu, terima kasih");
 		}
-		//filter
-		$ARRAY_CODE = $this->mahasiswa->getCodeRegLastTA();
-		if($ARRAY_CODE[0]){ //true if have last data before
-			$this->sc_st->resetValue();
-			$this->sc_st->setNim($this->mahasiswa->getNimSessionLogin());
-			$this->sc_st->setKode($this->mahasiswa->getYearNow());
-			if($this->sc_st->getHaveLastTAInfo()){
-				$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
-				if(!$this->sc_sm->getResultForceRegistration(2)){
-					echo "0Anda melakukan perubahan secara paksa menggunakan form yang berbeda";
-					return;
-				}
-			}
-		}else{
-			$this->sc_st->resetValue();
-			$this->sc_st->setNim($this->mahasiswa->getNimSessionLogin());
-			$this->sc_st->setKode($this->mahasiswa->getYearNow());
-			if($this->sc_st->getHaveLastTAInfo()){
-				$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
-				if(!$this->sc_sm->getResultForceRegistration(2)){
-					echo "0Anda melakukan perubahan secara paksa menggunakan form yang berbeda";
-					return;
-				}
-			}else{
-					echo "0Anda melakukan perubahan secara paksa menggunakan form yang berbeda";
-					return;
-			}
-		}
-		//execute
 		$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
 		if(!$this->sc_sm->getCheckFormRegistrasiPemission()){
 			exit("0Anda mencoba registrasi secara paksa, tolong jangan lakukan itu, terima kasih");
 		}
+		$this->mahasiswa->setOpenPermission("registrasi-con","JaservTech.Mahasiswa.Reg.Con.Controls");
 		$tempDataPersonal = $this->mahasiswa->getDataPersonal();
 		$tempDataTa = $this->mahasiswa;
 		//Nama
@@ -491,17 +490,9 @@ class Classroom extends CI_Controller {
 		}
 		$temps = $this->mahasiswa->getCodeRegLastTA();
 		if(!$temps[0]){
-			$this->sc_st->resetValue();
-			$this->sc_st->setNim($this->mahasiswa->getNimSessionLogin());
-			$this->sc_st->setKode($this->mahasiswa->getYearNow());
-			if(!$this->sc_st->getHaveLastTAInfo($this->mahasiswa->getYearNow())){				
-				echo "0Maaf, anda mencoba memasukan paksa form registrasi lama";
-				return ;
-			}else{
-				$temps[1] = $this->mahasiswa->getYearNow();
-			}
+			echo "0Maaf, anda mencoba memasukan paksa form registrasi lama";
+			return ;
 		}
-		
 		$dataTemp['codeRegist'] = $temps[1];
 		$dataTemp['codereg'] = $this->koordinator->getCodeRegisterAktif()->now();
 		/*
@@ -548,25 +539,7 @@ class Classroom extends CI_Controller {
 		if(!$this->sc_ea->getIsRegisterTime(date("Y-m-d"))){
 			exit("0Anda mencoba register secara paksa, tolong jangan lakukan itu, terima kasih");
 		}
-		$ARRAY_CODE = $this->mahasiswa->getCodeRegLastTA();
-		if($ARRAY_CODE[0]){//valid
-			$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
-			if(!$this->sc_sm->getResultForceRegistration()){
-				echo "0Anda melakukan perubahan secara paksa menggunakan form yang berbeda";
-				return;
-			}
-		}else{
-			$this->sc_st->resetValue();
-			$this->sc_st->setNim($this->mahasiswa->getNimSessionLogin());
-			$this->sc_st->setKode($this->mahasiswa->getYearNow());
-			if($this->sc_st->getHaveLastTAInfo()){
-				$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
-				if(!$this->sc_sm->getResultForceRegistration()){
-					echo "0Anda melakukan perubahan secara paksa menggunakan form yang berbeda";
-					return;
-				}
-			}
-		}		
+		
 		$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
 		if(!$this->sc_sm->getCheckFormRegistrasiPemission()){
 			exit("0Anda mencoba registrasi secara paksa, tolong jangan lakukan itu, terima kasih");
@@ -660,12 +633,7 @@ class Classroom extends CI_Controller {
 		$dataTemp['krs'] = 'baru-krs';
 		$dataTemp['codereg'] = $this->sc_ea->getCodeRegistrasiAkademik()->now();
 		
-		$this->sc_sm->getDataNim($this->session->userdata('nim'));
-		if(intval($this->sc_sm->getForceRegLama()) == 1){
-			$dataTemp['newf'] = 1;
-		}else{
-			$dataTemp['newf'] = 2;
-		}
+		$dataTemp['newf'] = 2;
 		//foreach($dataTemp as $k => $value){
 		//	echo $k." ".$value."<br>";
 		//}

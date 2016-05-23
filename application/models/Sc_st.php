@@ -7,24 +7,62 @@ class Sc_st extends CI_Model {
 		$this->load->database();
 		$this->tablename = 'sc_st';
 	}
-	
+	//gett data include log, on spesific getNim 
 	//get TA before
 	public function getHaveLastTAInfo(){
+		$this->TEMP_RESULT_ARRAY = NULL;
+		$this->TEMP_INDEX_RESULT_ARRAY = 0;
+		if($this->getNim() == NULL)
+			return false;
+		if($this->getKode() == NULL){
+			$this->TEMP_RESULT_ARRAY = $this->query("*","s_nim='".$this->getNim()."' AND s_statue=1 AND s_data_statue=0")->result_array();
+			if(count($this->TEMP_RESULT_ARRAY)<=0){
+				$this->resetValue();
+				$this->TEMP_RESULT_ARRAY = NULL;
+				return false;
+			}else{
+				return true;
+			}
+		}else{
+			$TEMP_ARRAY = $this->query("*","s_nim='".$this->getNim()."' AND s_rt=".$this->getKode()." AND s_statue=1 AND s_data_statue=0")->row_array();
+			if(count($TEMP_ARRAY)<=0){
+				return false;
+			}else{
+				$this->automaSetContent($TEMP_ARRAY);
+				return true;
+			}
+		}
+		
+	} 
+	//make log
+	public function setLog(){
 		if($this->getNim() == NULL)
 			return FALSE;
 		if($this->getKode() == NULL)
+			return FALSE;
+		if($this->getLogStatus() == NULL)
 			return false;
-		$TEMP_RESULT_ARRAY = $this->query("*","s_nim='".$this->session->userdata('nim')."' AND s_rt=".$idbefore)->result_array();
-		if(count($TEMP_RESULT_ARRAY)<=0){
-			$this->resetValue();
-			$TEMP_RESULT_ARRAY = NULL;
-			$TEMP_INDEX_RESULT_ARRAY = 0;
-			return false;
-		}else{
-			$TEMP_INDEX_RESULT_ARRAY = 0;
-			return true;
-		}
-	} 
+		$this->update("`s_statue`='2', `s_data_statue`='".$this->getLogStatus()."'","s_rt=".$this->getKode()." AND s_nim='".$this->getNim()."' AND s_statue=1");
+		return true;
+	}
+	//count array of cursor
+	public function getCount(){
+		if($this->TEMP_RESULT_ARRAY == NULL)
+			return 0;
+		if(!is_array($this->TEMP_RESULT_ARRAY))
+			return 0;
+		return count($this->TEMP_RESULT_ARRAY);
+	}
+	//insert new date_add
+	public function setNewData(){
+		$TEMP_ARRAY = $this->arrayBuilder();
+		if($TEMP_ARRAY == NULL)
+			return FALSE;
+		if(!is_array($TEMP_ARRAY))
+			return FALSE;
+		$this->insert($TEMP_ARRAY);
+		return TRUE;
+	}
 	//
 	protected function query($select='*',$where=""){
 		$query="SELECT ".$select." FROM ".$this->tablename;
@@ -67,7 +105,7 @@ class Sc_st extends CI_Model {
 		$this->setName($TEMP_ARRAY('si_name'));
 	}
 	//reset all value
-	protected function resetValue(){
+	public function resetValue(){
 		$this->setKode(NULL);
 		$this->setNim(NULL);
 		$this->setNip(NULL);
