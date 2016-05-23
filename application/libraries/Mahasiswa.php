@@ -477,7 +477,7 @@ class Mahasiswa extends Aktor{
 			return $this->setCategoryPrintMessage(1, false, 'file yang di upload adalah, pdf(yanng tidak ter password, maupun terenkripsi). dan ukuran maksimal 1 mb.');
 		}
 		$this->sc_st->resetValue();
-		$this->sc_st->setNim($this->mahasiswa->getNimSessionLogin());
+		$this->sc_st->setNim($this->getNimSessionLogin());
 		$this->sc_st->setKode($data['codeRegist']);
 		if(!$this->sc_st->getHaveLastTAInfo())
 			return $this->setCategoryPrintMessage(1,false,"data tidak dtemukan untuk ta sebelumnya, lihat panduan registrasi");
@@ -500,9 +500,10 @@ class Mahasiswa extends Aktor{
 		$krsname = $this->upload->data('file_name');
 		$tempsD = $this->getDataPersonal();
 		$this->sc_sm->resetValue();
-		$this->sc_sm->setNama($data['nama']);
+		$this->sc_sm->setNim($tempsD['nim']);
+		$this->sc_sm->setName($data['nama']);
 		$this->sc_sm->setEmail($data['email']);
-		$this->sc_sm->setPeminatan($data['minat']);
+		$this->sc_sm->setPeminatan($tempsD['minat']);
 		$this->sc_sm->setNohp($data['nohp']);
 		$this->sc_sm->setNoHpOrtu($data['nohportu']);
 		$this->sc_sm->setNamaOrtu($data['ortu']);
@@ -522,22 +523,57 @@ class Mahasiswa extends Aktor{
 				`s_force_registrasi_lama`='2'
 				","s_nim='".$this->session->userdata('nim')."'");
 		*/
+		//Log data
+		$this->sc_st->setNim($this->getNimSessionLogin());
+		$this->sc_st->setKode($data['codeRegist']);
+		if($this->sc_st->getHaveLastTAInfo(FALSE)){
+			$TEMP_COUNT = $this->sc_st->getCount();
+			$this->sc_st->resetValue();
+			$this->sc_st->setKode($data['codeRegist']);
+			$this->sc_st->setNim($this->getNimSessionLogin());
+			$this->sc_st->setLogStatus($TEMP_COUNT);
+			$this->sc_st->setLog();
+		}
+		/*
 		$temps = $this->sc_st->query("*","s_rt=".$data['codereg']." AND s_nim='".$data['nim']."'")->result_array();
 		$var = count($temps);
 		if($var > 0){
 			$this->sc_st->update("`s_statue`='2', `s_data_statue`='".$var."'","s_rt=".$data['codereg']." AND s_nim='".$data['nim']."' AND s_statue=1");
 		}
+		*/
+		//add new item
+		$this->sc_st->resetValue();
+		$this->sc_st->setNim($this->getNimSessionLogin());
+		$this->sc_st->setKode($data['codereg']);
+		$this->sc_st->setJudulTa($data['judulta']);
+		$this->sc_st->setNip($data['dosbing']);
+		$this->sc_st->setMetode($TEMP_ARRAY['METODE']);
+		$this->sc_st->setLokasi($TEMP_ARRAY['LOKASI']);
+		$this->sc_st->setReferensis($TEMP_ARRAY['REF_S']);
+		$this->sc_st->setReferensid($TEMP_ARRAY['REF_D']);
+		$this->sc_st->setReferensit($TEMP_ARRAY['REF_T']);
+		$this->sc_st->setNamaKrs($krsname);
+		$this->sc_st->setNewData();
+		//log
+		$this->sc_lms->resetValue();
+		$this->sc_lms->setNim($this->getNimSessionLogin()); 
+		$this->sc_lms->setTanggal(DATE("Y-m-d H:i:s")); 
+		$this->sc_lms->setEvent("Registrasi Lama");
+		$this->sc_lms->addNew();
+		return $this->setCategoryPrintMessage(1, true, "Valid");
+		/*
 		$this->sc_st->insert(array(
-				's_rt' => $data['codereg'],
-				's_nim' => $data['nim'],
-				's_nip' => $data['dosbing'],
-				's_judul_ta' => $data['judulta'],
-				's_metode' => $tempsS[1]['metode'],
-				's_lokasi' => $tempsS[1]['metode'],
-				's_ref_s' => $tempsS[1]['ref1'],
-				's_ref_d' => $tempsS[1]['ref2'],
-				's_ref_t' => $tempsS[1]['ref3'],
-				's_name_krs' => $krsname
+				's_rt' => $data['codereg'],-
+				's_nim' => $data['nim'],-
+				's_nip' => $data['dosbing'],-
+				's_judul_ta' => $data['judulta'],-
+				's_metode' => $tempsS[1]['metode'],-
+				's_lokasi' => $tempsS[1]['metode'],-
+				's_ref_s' => $tempsS[1]['ref1'],-
+				's_ref_d' => $tempsS[1]['ref2'],-
+				's_ref_t' => $tempsS[1]['ref3'],-
+				's_name_krs' => $krsname-
+				
 		));
 		$this->sc_lms->insert(array(
 				'l_nim' => $data['nim'],
@@ -545,7 +581,7 @@ class Mahasiswa extends Aktor{
 				'l_event' => "Rigistrasi Melanjutkan"
 		));
 		return $this->setCategoryPrintMessage(1, true, "Valid");
-		
+		*/
 	}
 	//filtering kategori submit data
 	public function setRegistrasiBaru($data){
@@ -563,6 +599,7 @@ class Mahasiswa extends Aktor{
 			return $this->setCategoryPrintMessage(1, false, 'file yang di upload adalah, pdf(yanng tidak ter password, maupun terenkripsi). dan ukuran maksimal 1 mb.');
 		}
 		$krsname = $this->upload->data('file_name');
+		//update data
 		$this->sc_sm->setNim($this->getNimSessionLogin());
 		$this->sc_sm->setName($data['nama']);
 		$this->sc_sm->setEmail($data['email']);
@@ -574,9 +611,11 @@ class Mahasiswa extends Aktor{
 		$this->sc_sm->setOpenForm($data['newf']);
 		if(!$this->sc_sm->updateData())
 			return $this->setCategoryPrintMessage(1,false,"Terjadi kesalahan pada saat registrasi baru");
+		
+		//log data
 		$this->sc_st->setNim($this->getNimSessionLogin());
 		$this->sc_st->setKode($data['codereg']);
-		if($this->sc_st->getHaveLastTAInfo()){
+		if($this->sc_st->getHaveLastTAInfo(FALSE)){
 			$TEMP_COUNT = $this->sc_st->getCount();
 			$this->sc_st->resetValue();
 			$this->sc_st->setKode($data['codereg']);

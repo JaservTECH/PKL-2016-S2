@@ -9,30 +9,51 @@ class Sc_st extends CI_Model {
 	}
 	//gett data include log, on spesific getNim 
 	//get TA before
-	public function getHaveLastTAInfo(){
+	public function getHaveLastTAInfo($TEMP_BOOL=TRUE){
 		$this->TEMP_RESULT_ARRAY = NULL;
 		$this->TEMP_INDEX_RESULT_ARRAY = 0;
 		if($this->getNim() == NULL)
 			return false;
-		if($this->getKode() == NULL){
-			$this->TEMP_RESULT_ARRAY = $this->query("*","s_nim='".$this->getNim()."' AND s_statue=1 AND s_data_statue=0")->result_array();
-			if(count($this->TEMP_RESULT_ARRAY)<=0){
-				$this->resetValue();
-				$this->TEMP_RESULT_ARRAY = NULL;
-				return false;
+		if($TEMP_BOOL){
+			if($this->getKode() == NULL){
+				$this->TEMP_RESULT_ARRAY = $this->query("*","s_nim='".$this->getNim()."' AND s_statue=1 AND s_data_statue=0")->result_array();
+				if(count($this->TEMP_RESULT_ARRAY)<=0){
+					$this->resetValue();
+					$this->TEMP_RESULT_ARRAY = NULL;
+					return false;
+				}else{
+					return true;
+				}
 			}else{
-				return true;
+				$TEMP_ARRAY = $this->query("*","s_nim='".$this->getNim()."' AND s_rt=".$this->getKode()." AND s_statue=1 AND s_data_statue=0")->row_array();
+				if(count($TEMP_ARRAY)<=0){
+					return false;
+				}else{
+					$this->automaSetContent($TEMP_ARRAY);
+					return true;
+				}
 			}
 		}else{
-			$TEMP_ARRAY = $this->query("*","s_nim='".$this->getNim()."' AND s_rt=".$this->getKode()." AND s_statue=1 AND s_data_statue=0")->row_array();
-			if(count($TEMP_ARRAY)<=0){
-				return false;
+			if($this->getKode() == NULL){
+				$this->TEMP_RESULT_ARRAY = $this->query("*","s_nim='".$this->getNim()."'")->result_array();
+				if(count($this->TEMP_RESULT_ARRAY)<=0){
+					$this->resetValue();
+					$this->TEMP_RESULT_ARRAY = NULL;
+					return false;
+				}else{
+					return true;
+				}
 			}else{
-				$this->automaSetContent($TEMP_ARRAY);
-				return true;
+				$this->TEMP_RESULT_ARRAY = $this->query("*","s_nim='".$this->getNim()."' AND s_rt=".$this->getKode())->result_array();
+				if(count($this->TEMP_RESULT_ARRAY)<=0){
+					$this->resetValue();
+					$this->TEMP_RESULT_ARRAY = NULL;
+					return false;
+				}else{
+					return true;
+				}
 			}
 		}
-		
 	} 
 	//make log
 	public function setLog(){
@@ -101,8 +122,6 @@ class Sc_st extends CI_Model {
 				case 's_data_process' : $this->setDataProses($TEMP_ARRAY['s_data_process']);break;
 			}
 		}
-		$this->setId($TEMP_ARRAY['si_id']);
-		$this->setName($TEMP_ARRAY('si_name'));
 	}
 	//reset all value
 	public function resetValue(){

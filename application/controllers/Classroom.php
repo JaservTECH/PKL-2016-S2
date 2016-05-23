@@ -501,9 +501,8 @@ class Classroom extends CI_Controller {
 				$temps[1] = $this->mahasiswa->getYearNow();
 			}
 		}
-		
 		$dataTemp['codeRegist'] = $temps[1];
-		$dataTemp['codereg'] = $this->koordinator->getCodeRegisterAktif()->now();
+		$dataTemp['codereg'] = $this->sc_ea->getCodeRegistrasiAkademik()->now();
 		/*
 		$temp = $this->mahasiswa->getTAInfo($temps[1],array('judulta',"dosbing"));
 		if($temp[1]['judulta'] === NULL){
@@ -533,6 +532,7 @@ class Classroom extends CI_Controller {
 		
 		//foreach($dataTemp as $key=>$value)
 			//echo $key." = ".$value."<br>";
+		//exit("0jojojo");
 		$temp = $this->mahasiswa->setRegistrasiLama($dataTemp);
 		if(!$temp[0]){
 			echo "0".$temp[1];
