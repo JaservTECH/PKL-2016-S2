@@ -102,27 +102,23 @@ class Sc_sm extends CI_Model {
 		return true;
 	}
 	//session NIP
-	protected function getAllNipReview(){	return $this->query("s_nip_review_1 , s_nip_review_2 , s_nip_review_3 ","s_nim='".$TEMP_VALUE_NIM."'")->row_array(); }
-	public function dropNipPreview($TEMP_VALUE_NIM = "",$TEMP_VALUE_NIP){
-		if($TEMP_VALUE_NIM == ""){
-			if(!$this->session->has_userdata('nim'))
-				return false;
-			$TEMP_VALUE_NIM = $this->session->userdata('nim');
-		}
+	protected function getAllNipReview(){	return $this->query("s_nip_review_1 , s_nip_review_2 , s_nip_review_3 ","s_nim='".$this->getNim()."'")->row_array(); }
+	public function dropNipPreview($TEMP_VALUE_NIP){
+		if($this->getNim() == NULL)
+			return false;
 		$TEMP_ROW_ARRAY = $this->getAllNipReview();
 		foreach($TEMP_ROW_ARRAY as $TEMP_INDEX_KEY => $TEMP_VALUE){
 			if($TEMP_VALUE == $TEMP_VALUE_NIP){
-				$this->update("`".$TEMP_INDEX_KEY."`='0'","s_nim='".$TEMP_VALUE_NIM."'");
+				$this->update("`".$TEMP_INDEX_KEY."`='0'","s_nim='".$this->getNim()."'");
 				return true;
 			}
 		}
 		return false;
 	}
-	public function isInThisNipInReview($TEMP_VALUE_NIM = "",$TEMP_VALUE_NIP){
-		if($TEMP_VALUE_NIM == ""){
-			if(!$this->session->has_userdata('nim'))
-				return false;
-			$TEMP_VALUE_NIM = $this->session->userdata('nim');
+	
+	public function isInThisNipInReview($TEMP_VALUE_NIP){
+		if($this->getNim() == NULL){
+			return false;
 		}
 		$TEMP_ROW_ARRAY = $this->getAllNipReview();
 		foreach($TEMP_ROW_ARRAY as $TEMP_VALUE){
@@ -132,11 +128,11 @@ class Sc_sm extends CI_Model {
 		}
 		return false;
 	}
-	public function addNipPreview($TEMP_VALUE_NIM = "",$TEMP_VALUE_NIP){
-		if($TEMP_VALUE_NIM == ""){
-			if(!$this->session->has_userdata('nim'))
-				return false;
-			$TEMP_VALUE_NIM = $this->session->userdata('nim');
+	
+	//on review
+	public function addNipPreview($TEMP_VALUE_NIP){
+		if($this->getNim() == NULL){
+			return false;
 		}
 		$TEMP_ROW_ARRAY = $this->getAllNipReview();
 		foreach($TEMP_ROW_ARRAY as $TEMP_INDEX_KEY => $TEMP_VALUE){
@@ -146,11 +142,17 @@ class Sc_sm extends CI_Model {
 		}
 		foreach($TEMP_ROW_ARRAY as $TEMP_INDEX_KEY => $TEMP_VALUE){
 			if(intval($TEMP_VALUE) == 0){
-				$this->update("`".$TEMP_INDEX_KEY."`='".$$TEMP_VALUE_NIP."'","s_nim='".$TEMP_VALUE_NIM."'");
+				$this->update("`".$TEMP_INDEX_KEY."`='".$TEMP_VALUE_NIP."'","s_nim='".$this->getNim()."'");
 				return true;
 			}
 		}
 		return false;
+	}
+	public function getTableDosenReview(){
+		if($this->getNim() == NULL) return false;
+		$TEMP_ARRAY = $this->getAllNipReview();
+		$this->automaSetContent($TEMP_ARRAY);
+		return true;
 	}
 	//end session
 	/*

@@ -71,6 +71,7 @@ class Dosen extends Aktor {
 		return $this->sc_sd->query("s_name as nama","s_id=".$nip."")->row_array();
 		
 	}
+	/*
 	public function getDosenInfo($nip){
 		if(!$this->getCheckNip($nip,1)[0])
 			return $this->getCheckNip($nip,1);
@@ -84,5 +85,5 @@ class Dosen extends Aktor {
 				"s_id=".$nip
 				)->row_array());
 		
-	}
+	}*/
 }

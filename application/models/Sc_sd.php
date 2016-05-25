@@ -20,13 +20,44 @@ class Sc_sd extends CI_Model {
 		$query="UPDATE `".$this->tablename."` SET ".$set;
 		if($where!="")
 			$query=$query." WHERE ".$where;
-			$this->db->query($query);
+		$this->db->query($query);
 	}
 	public function getAllListDosen(){
-		$TEMP_RESULT_ARRAY = $this->query("*")->result_array();
-		$TEMP_INDEX_RESULT_ARRAY = 0;
+		$this->TEMP_RESULT_ARRAY = $this->query("*")->result_array();
+		return $this->neutralizedResultArray();
 	}
 	
+	public function getDosenInfo(){
+		if($this->getNip() == NULL)
+			return false;
+		$TEMP_ARRAY = $this->query("*","s_id=".$this->getNip())->row_array();
+		if(count($TEMP_ARRAY) > 0){
+			$this->automaSetContent($TEMP_ARRAY);
+			return true;
+		}else{
+			$this->resetValue();
+			return false;
+		}
+		
+	}
+	public function getListDosenActive(){
+		$this->TEMP_RESULT_ARRAY = $this->sc_sd->query("s_id, s_name","s_status=1")->result_array();
+		return $this->neutralizedResultArray();
+	}
+	protected function neutralizedResultArray(){
+		$this->TEMP_INDEX_RESULT_ARRAY = 0;
+		if(!is_array($this->TEMP_RESULT_ARRAY)){
+			$this->TEMP_RESULT_ARRAY = NULL;
+			return FALSE;
+		}
+		if(count($this->TEMP_RESULT_ARRAY) <= 0){
+			$this->TEMP_RESULT_ARRAY = NULL;
+			return FALSE;
+		}
+		return TRUE;
+		
+		
+	}
 	public function getNextCursor(){
 		if(is_array($this->TEMP_RESULT_ARRAY)){
 			if(array_key_exists($this->TEMP_INDEX_RESULT_ARRAY,$this->TEMP_RESULT_ARRAY)){

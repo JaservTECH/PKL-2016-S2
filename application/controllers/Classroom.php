@@ -126,12 +126,14 @@ class Classroom extends CI_Controller {
 			return true;
 		}
 	}
+	// - valid
 	public function getListDosenAktif(){
 		if(!$this->mahasiswa->getStatusLoginMahasiswa())
 			redirect(base_url().'Gateinout.aspx');
 		echo "1";
 		$this->load->view('Classroom_room/Body_right/lihat_dosen');
 	}
+	// - valid
 	public function getTableListDosen(){
 		if(!$this->mahasiswa->getStatusLoginMahasiswa())
 			redirect(base_url().'Gateinout.aspx');
@@ -139,41 +141,46 @@ class Classroom extends CI_Controller {
 		$kode = $this->input->post('kode');
 		if($kode != 'JASERVTECH-KODE')
 			exit("0anda melakukan debugging terhadap system");
-		$temp = $this->dosen->getListDosen();
+		
 		$i=1;
 		$strings="";
-		foreach($temp as $value){
-			$strings .= "<tr><td>".$i."</td><td>";
-			$strings .= $value['id']."</td><td>" ;
-			$strings .= $value['nama']."</td>" ;
-			$strings .= "
-						<td>
-							<div style='text-align : center;'>
-								<div class='col-md-6'>
-									<span class='icon-eye-open pointer' onclick='seeThisGuys(".'"'.$value['id'].'"'.");' style='color : green' title='Lihat Profil Dosen : ya'></span>
-								</div>
-								";
-			if($this->mahasiswa->getIsMyDosenReview($value['id']))
-				$strings .=	"
-								<div class='col-md-6'>
-									<span class='icon-thumbs-up pointer' onclick='beNotMyFavorThisGuys(".'"'.$value['id'].'"'.",2)' style='color:green' title='Dosen Favorit : ya'></span>
-								</div>
-								";
-			else 
+		if($this->sc_sd->getListDosenActive()){
+			while($this->sc_sd->getNextCursor()){
+				$strings .= "<tr><td>".$i."</td><td>";
+				$strings .= $this->sc_sd->getNip()."</td><td>" ;
+				$strings .= $this->sc_sd->getNama()."</td>" ;
+				$strings .= "
+							<td>
+								<div style='text-align : center;'>
+									<div class='col-md-6'>
+										<span class='icon-eye-open pointer' onclick='seeThisGuys(".'"'.$this->sc_sd->getNip().'"'.");' style='color : green' title='Lihat Profil Dosen : ya'></span>
+									</div>
+									";
+				if($this->mahasiswa->getIsMyDosenReview($this->sc_sd->getNip()))
+					$strings .=	"
+									<div class='col-md-6'>
+										<span class='icon-thumbs-up pointer' onclick='beNotMyFavorThisGuys(".'"'.$this->sc_sd->getNip().'"'.",2)' style='color:green' title='Dosen Favorit : ya'></span>
+									</div>
+									";
+				else 
 
-				$strings .=	"
-								<div class='col-md-6'>
-									<span class='icon-thumbs-up pointer' onclick='beMyFavorThisGuys(".'"'.$value['id'].'"'.",2)' style='color:red' title='Dosen Favorit : tidak'></span>
+					$strings .=	"
+									<div class='col-md-6'>
+										<span class='icon-thumbs-up pointer' onclick='beMyFavorThisGuys(".'"'.$this->sc_sd->getNip().'"'.",2)' style='color:red' title='Dosen Favorit : tidak'></span>
+									</div>
+									";
+				$strings .= "
 								</div>
-								";
-			$strings .= "
-							</div>
-						</td></tr>
-					";
-			$i++;
+							</td></tr>
+						";
+				$i++;
+			}
+			echo "1".$strings;
+		}else{
+			exit("0Data Kosong, dosen tidak ada yang aktif");
 		}
-		echo "1".$strings;
 	}
+	// -- valid
 	public function getInfoDosenFull(){
 		if(!$this->mahasiswa->getStatusLoginMahasiswa())
 			redirect(base_url().'Gateinout.aspx');
@@ -184,32 +191,60 @@ class Classroom extends CI_Controller {
 			exit('0anda melakukan debugging terhadap system');
 		if(!$this->dosen->getCheckNip($this->input->post('nip'),1)[0])
 			exit('0anda melakukan debugging terhadap system');
-		$temp = $this->dosen->getDosenInfo($this->input->post('nip'));
-		if(!$temp[0])
+		$this->sc_sd->setNip($this->input->post('nip'));
+		if(!$this->sc_sd->getDosenInfo()){
 			exit("0anda melakukan debugging terhadap system");
+		}
 		$intNo = 1;
 		$yourTable = null;
-		foreach ($this->mahasiswa->getTableDosenReview() as $key => $value){
-			if(intval($value) != 0){
-				$yourTable[$key][0] = $intNo;
-				$yourTable[$key][1] = $value;
-				$yourTable[$key][2] = $this->dosen->getDosenName($value)['nama'];
-				$intNo++;
-			}
+		$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
+		if(!$this->sc_sm->getTableDosenReview()){
+			exit("0anda melakukan debugging terhadap system");
 		}
+		if(intval($this->sc_sm->getNipReview1()) != 0){
+			$yourTable['nip_1'][0] = $intNo;
+			$yourTable['nip_1'][1] = $this->sc_sm->getNipReview1();
+			$this->sc_sd->resetValue();
+			$this->sc_sd->setNip($this->sc_sm->getNipReview1());
+			$this->sc_sd->getDosenInfo();
+			$yourTable['nip_1'][2] = $this->sc_sd->getNama();
+			$intNo++;
+		}
+		if(intval($this->sc_sm->getNipReview2()) != 0){
+			$yourTable['nip_2'][0] = $intNo;
+			$yourTable['nip_2'][1] = $this->sc_sm->getNipReview2();
+			$this->sc_sd->resetValue();
+			$this->sc_sd->setNip($this->sc_sm->getNipReview2());
+			$this->sc_sd->getDosenInfo();
+			$yourTable['nip_2'][2] = $this->sc_sd->getNama();
+			$intNo++;
+		}
+		if(intval($this->sc_sm->getNipReview3()) != 0){
+			$yourTable['nip_3'][0] = $intNo;
+			$yourTable['nip_3'][1] = $this->sc_sm->getNipReview3();
+			$this->sc_sd->resetValue();
+			$this->sc_sd->setNip($this->sc_sm->getNipReview3());
+			$this->sc_sd->getDosenInfo();
+			$yourTable['nip_3'][2] = $this->sc_sd->getNama();
+			$intNo++;
+		}
+		$this->sc_sd->resetValue();
+		$this->sc_sd->setNip($this->input->post('nip'));
+		$this->sc_sd->getDosenInfo();
 		$data = array(
-				'nip' => $temp[1]['nip'],
-				'nama' => $temp[1]['nama'],
-				'bidris' => $temp[1]['bidris'],
-				'alamat' => $temp[1]['alamat'],
-				'email' => $temp[1]['email'],
-				'notelp' => $temp[1]['notelp'],
-				'mydosen' => $this->mahasiswa->getIsMyDosenReview($temp[1]['nip']),
+				'nip' => $this->sc_sd->getNip(),
+				'nama' => $this->sc_sd->getNama(),
+				'bidris' => $this->sc_sd->getBidang(),
+				'alamat' => $this->sc_sd->getAlamat(),
+				'email' => $this->sc_sd->getEmail(),
+				'notelp' => $this->sc_sd->getNohp(),
+				'mydosen' => $this->mahasiswa->getIsMyDosenReview($this->sc_sd->getNip()),
 				'favorite' => $yourTable
 		);
 		echo "1";
 		$this->load->view('Classroom_room/Body_right/Info_dosen_view',$data);
 	}
+	//
 	public function setLikeThisGuys(){
 		if(!$this->mahasiswa->getStatusLoginMahasiswa())
 			redirect(base_url().'Gateinout.aspx');
@@ -222,6 +257,7 @@ class Classroom extends CI_Controller {
 			exit("0".$temp[1]);
 		$temp = $this->mahasiswa->setAddNewFavor($nip);
 	}
+	//
 	public function setNotLikeThisGuys(){
 		if(!$this->mahasiswa->getStatusLoginMahasiswa())
 			redirect(base_url().'Gateinout.aspx');
@@ -236,6 +272,11 @@ class Classroom extends CI_Controller {
 			exit("0".$temp[1]);
 		$temp = $this->mahasiswa->setRemoveOldFavor($nip);
 	}
+	//end session dosen review
+	
+	
+	
+	
 	protected function getGenerateSimpleJson($a,$b){
 		if(!$this->mahasiswa->getStatusLoginMahasiswa())
 			redirect(base_url().'Gateinout.aspx');

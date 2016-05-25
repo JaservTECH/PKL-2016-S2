@@ -172,21 +172,30 @@ class Mahasiswa extends Aktor{
 	} 
 	//remove dosenfavorite - valid
 	public function setRemoveOldFavor($TEMP_VALUE_NIP,$TEMP_VALUE_NIM = ""){
-		if($this->sc_sm->dropNipPreview($TEMP_VALUE_NIM,$TEMP_VALUE_NIP))
+		if($TEMP_VALUE_NIM == "")
+			$TEMP_VALUE_NIM = $this->getNimSessionLogin();
+		$this->sc_sm->setNim($TEMP_VALUE_NIM);
+		if($this->sc_sm->dropNipPreview($TEMP_VALUE_NIP))
 			return $this->setCategoryPrintMessage(0,true,"Berhasil menghapus data");
 		else
 			return $this->setCategoryPrintMessage(0,false,"Gagal menghapus data");
 	} 
-	//add dosen favorite - valid
-	public function setAddNewFavor($TEMP_VALUE_NIP,$TEMP_VALUE_NIM = ""){
-		if($this->addNipPreview($TEMP_VALUE_NIM,$TEMP_VALUE_NIP))
+	//add dosen favorite - 
+	public function setAddNewFavor($TEMP_VALUE_NIP,$TEMP_VALUE_NIM=""){
+		if($TEMP_VALUE_NIM == "")
+			$TEMP_VALUE_NIM = $this->getNimSessionLogin();
+		$this->sc_sm->setNim($TEMP_VALUE_NIM);
+		if($this->sc_sm->addNipPreview($TEMP_VALUE_NIP))
 			return $this->setCategoryPrintMessage(0,true,"Berhasil memasukan data");
 		else
 			return $this->setCategoryPrintMessage(0,false,"Gagal menambahkan data");
 	}
 	//check is dosen review - valid
 	public function getIsMyDosenReview($TEMP_VALUE_NIP,$TEMP_VALUE_NIM = ""){
-		return $this->sc_sm->isInThisNipInReview($TEMP_VALUE_NIM,$TEMP_VALUE_NIP);
+		if($TEMP_VALUE_NIM == "")
+			$TEMP_VALUE_NIM = $this->getNimSessionLogin();
+		$this->sc_sm->setNim($TEMP_VALUE_NIM);
+		return $this->sc_sm->isInThisNipInReview($TEMP_VALUE_NIP);
 	}
 	//nim check - format - valid
 	public function getCheckNim($TEMP_VALUE_NIM="",$TEMP_CATEGORY=0){
