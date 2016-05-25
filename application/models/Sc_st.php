@@ -100,7 +100,34 @@ class Sc_st extends CI_Model {
 			$query=$query." WHERE ".$where;
 		$this->db->query($query);
 	}
-	
+	public function getAllDateTABimbingan(){
+		$this->TEMP_INDEX_RESULT_ARRAY = 0;
+		if($this->getNip() == NULL){
+			$this->TEMP_RESULT_ARRAY = NULL;
+			return FALSE;
+		}
+		if($this->getKode() == NULL){
+			$this->TEMP_RESULT_ARRAY = NULL;
+			return FALSE;
+		}
+		$this->TEMP_RESULT_ARRAY = $this->query("*","s_rt='".$this->getKode()."' AND s_nip='".$this->getNip()."' AND s_statue=1 AND s_data_statue=0")->result_array();
+		return $this->neutralizedResultArray();
+	}
+	//neutralized
+	protected function neutralizedResultArray(){
+		$this->TEMP_INDEX_RESULT_ARRAY = 0;
+		if(!is_array($this->TEMP_RESULT_ARRAY)){
+			$this->TEMP_RESULT_ARRAY = NULL;
+			return FALSE;
+		}
+		if(count($this->TEMP_RESULT_ARRAY) <= 0){
+			$this->TEMP_RESULT_ARRAY = NULL;
+			return FALSE;
+		}
+		return TRUE;
+		
+		
+	}
 	//set automa content
 	protected function automaSetContent($TEMP_ARRAY){
 		$this->resetValue();

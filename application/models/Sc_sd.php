@@ -41,7 +41,7 @@ class Sc_sd extends CI_Model {
 		
 	}
 	public function getListDosenActive(){
-		$this->TEMP_RESULT_ARRAY = $this->sc_sd->query("s_id, s_name","s_status=1")->result_array();
+		$this->TEMP_RESULT_ARRAY = $this->sc_sd->query("s_id, s_name","s_status=1 ORDER BY s_id ASC")->result_array();
 		return $this->neutralizedResultArray();
 	}
 	protected function neutralizedResultArray(){

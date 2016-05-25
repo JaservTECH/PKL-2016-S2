@@ -152,6 +152,9 @@ $(document).ready(function(){
 				resetControlNavigasi();
 				navbarNavigation['bimbingan']=1;
 				setBreadCrumb({0:'Lihat',1:"bimbingan"});
+				setNewContentIntern2("getLayoutBimbingan",function(){
+					mainBimbingan();
+				});
 			}
 		}
 	});

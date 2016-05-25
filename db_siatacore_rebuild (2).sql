@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: May 24, 2016 at 11:50 AM
+-- Generation Time: May 25, 2016 at 04:16 PM
 -- Server version: 10.1.9-MariaDB
 -- PHP Version: 5.6.15
 
@@ -342,7 +342,7 @@ CREATE TABLE `sc_sm` (
 INSERT INTO `sc_sm` (`s_nim`, `s_name`, `s_password`, `s_email`, `s_statue`, `s_p`, `s_nohp`, `s_active_year`, `s_name_parent`, `s_nohp_parent`, `s_semester`, `s_new_form`, `s_force_registrasi`, `s_force_registrasi_lama`, `s_seminar_ta1`, `s_seminar_ta2`, `s_foto_name`, `s_transcript_name`, `s_code_cookie`, `s_nip_review_1`, `s_nip_review_2`, `s_nip_review_3`, `s_force_seminar_together`) VALUES
 ('24010313130005', 'Not Mickey Mouse', 'jafar56AA', 'deadmou5@gmail.com', 1, 0, '087829374856', 20152, '', '', 0, 1, 2, 2, 1, 2, '24010313130005-foto.jpg', '24010313130005-transkrip.pdf', '9013c9724ec337888f964426d5a860b0', 0, 0, 0, 0),
 ('24010313130006', 'Not Mickey Mouse', '912b2928a97f9ec50107292b0a9e8e59', 'deadmou5@gmail.com', 1, 2, '087829315699', 20152, 'siti', '0878293819892', 0, 2, 2, 2, 1, 2, '24010313130006-foto.jpg', '24010313130006-transkrip.pdf', '81c5fa5833ba1efb4dbe3b0f00ea4043', 0, 0, 0, 0),
-('24010313130007', 'Not Mickey Mouse', '912b2928a97f9ec50107292b0a9e8e59', 'deadmou5@gmail.com', 1, 1, '087829315699', 20151, 'Husnul', '0878293819892', 0, 2, 2, 2, 1, 2, '24010313130007-foto.jpg', '24010313130007-transkrip.pdf', 'b658f365f5b034664c6dc7a52408a925', 0, 0, 0, 0),
+('24010313130007', 'Jafar Abdurrahman', '912b2928a97f9ec50107292b0a9e8e59', 'deadmou5@gmail.com', 1, 1, '087829315699', 20151, 'Husnul', '0878293819892', 0, 2, 2, 2, 1, 2, '24010313130007-foto.jpg', '24010313130007-transkrip.pdf', 'b658f365f5b034664c6dc7a52408a925', 195306281980031001, 0, 0, 0),
 ('24010313130125', 'Jafar Abdurrahman Albasyir', '912b2928a97f9ec50107292b0a9e8e59', 'jafarabdurrahmanalbasyir@gmail.com', 1, 1, '087829315699', 20152, 'machludi', '087829315699', 0, 1, 1, 1, 1, 2, '24010313130125-foto.jpg', '24010313130125-transkrip.pdf', 'b1dbe1aae0411a7d20a4143c84d87019', 0, 0, 0, 0),
 ('24010313130127', 'Lulu Uljannah', '9d6a1d4313083fb7f34f72735ccde982', 'lulu.uljannah@gmail.com', 1, 3, '087829315689', 20152, 'Ujannah', '081256456372', 0, 2, 2, 2, 1, 2, '24010313130127-foto.jpg', '24010313130127-transkrip.pdf', 'b520649f78c64abfc208e33317c051e3', 0, 0, 0, 0),
 ('24010313130128', 'Julia Indah Pratiwi', '763baa6a33e71f21c22ddfe5cdeb411b', 'juliaindahpratiwi@ugm.ac.id', 1, 2, '087829331678', 20141, 'Pratiwi', '0832893283298', 0, 2, 2, 2, 1, 2, '24010313130128-foto.png', '24010313130128-transkrip.pdf', 'f8c8bd10492e08330b654d4a283c4474', 0, 0, 0, 0),
@@ -438,8 +438,8 @@ CREATE TABLE `sc_st` (
 
 INSERT INTO `sc_st` (`s_rt`, `s_nim`, `s_nip`, `s_judul_ta`, `s_metode`, `s_ref_s`, `s_ref_d`, `s_ref_t`, `s_lokasi`, `s_name_krs`, `s_statue`, `s_data_statue`, `s_category`, `s_data_process`) VALUES
 (20142, '24010313130128', 197805022005012002, 'SIstem Informasi Rumah Sakit Ibu Dan Anak', 'waterfall', 'UML modellong for beginner', '', '', 'California', '20152-24010313130128-krs.pdf', 1, 0, 1, 1),
-(20152, '24010313130006', 1197308291998022001, 'SIATA NOR MANSK', 'clustering fuzzy ', 'ian sommrvile', '', '', 'Semarang', '20152-24010313130006-krs.pdf', 1, 0, 1, 1),
-(20152, '24010313130006', 0, 'Breaking the habit', 'clustering fuzzy ', 'ian sommrvile', '', '', 'Semarang', '20152-24010313130006-krs.pdf', 2, 1, 1, 1),
+(20152, '24010313130006', 198104212008121002, 'SIATA NOR MANSK', 'clustering fuzzy ', 'ian sommrvile', '', '', 'Semarang', '20152-24010313130006-krs.pdf', 1, 0, 1, 1),
+(20152, '24010313130006', 197902122008121002, 'Breaking the habit', 'clustering fuzzy ', 'ian sommrvile', '', '', 'Semarang', '20152-24010313130006-krs.pdf', 2, 1, 1, 1),
 (20152, '24010313130007', 198104212008121002, 'Degradasi penurunan mesin', 'black box', 'fuzzy clusterring', 'kokokoko', '', 'Semarang', '20152-24010313130007-krs.pdf', 1, 0, 2, 1),
 (20152, '24010313130007', 0, 'Degradasi penurunan mesin', 'black box', 'fuzzy clusterring', 'kokokoko', '', 'Semarang', '20152-24010313130007-krs.pdf', 2, 1, 1, 1),
 (20152, '24010313130125', 197907202003121002, 'Single picture redeclare', 'deviasi picture control', 'grafika komputasi visual', '', '', 'Cirebon', '20152-24010313130125-krs.pdf', 1, 0, 1, 1),

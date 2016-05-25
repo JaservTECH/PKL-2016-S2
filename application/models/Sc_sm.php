@@ -83,6 +83,7 @@ class Sc_sm extends CI_Model {
 			return false;
 		}
 	}
+	
 	public function getDataNim($TEMP_VALUE_NIM=""){
 		if($TEMP_VALUE_NIM == ""){
 			return false;
