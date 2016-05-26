@@ -43,8 +43,6 @@ class Sc_sm_interest extends CI_Model {
 				case 'si_name' : $this->setName($TEMP_ARRAY['si_name']);break;
 			}
 		}
-		$this->setId($TEMP_ARRAY['si_id']);
-		$this->setName($TEMP_ARRAY['si_name']);
 	}
 	protected function resetValue(){
 		$this->setId(null);
