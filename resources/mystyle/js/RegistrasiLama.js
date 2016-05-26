@@ -28,28 +28,28 @@ function reLoadFormLama(){
 		$('#lama-krs').trigger('click');
 	});
 	$('#lama-nama').on('change',function(){
-		checkInputLama('lama-nama',$(this).val(),'Classroom/getCheck',true);
+		checkInputLama('lama-nama',$(this).val(),'Classregistrasilama/getCheck',true);
 	});
 	$('#lama-nim').on('change',function(){
-		checkInputLama('lama-nim',$(this).val(),'Classroom/getCheck',true);
+		checkInputLama('lama-nim',$(this).val(),'Classregistrasilama/getCheck',true);
 	});
 	$('#lama-email').on('change',function(){
-		checkInputLama('lama-email',$(this).val(),'Classroom/getCheck',true);
+		checkInputLama('lama-email',$(this).val(),'Classregistrasilama/getCheck',true);
 	});
 	$('#lama-ortu').on('change',function(){
-		checkInputLama('lama-ortu',$(this).val(),'Classroom/getCheck',true);
+		checkInputLama('lama-ortu',$(this).val(),'Classregistrasilama/getCheck',true);
 	});
 	$('#lama-nohportu').on('change',function(){
-		checkInputLama('lama-nohportu',$(this).val(),'Classroom/getCheck',true);
+		checkInputLama('lama-nohportu',$(this).val(),'Classregistrasilama/getCheck',true);
 	});
 	$('#lama-nohp').on('change',function(){
-		checkInputLama('lama-nohp',$(this).val(),'Classroom/getCheck',true);
+		checkInputLama('lama-nohp',$(this).val(),'Classregistrasilama/getCheck',true);
 	});
 	$('#lama-judulta').on('change',function(){
-		checkInputLama('lama-judulta',$(this).val(),'Classroom/getCheck',true);
+		checkInputLama('lama-judulta',$(this).val(),'Classregistrasilama/getCheck',true);
 	});
 	$('#lama-dosbing').on('change',function(){
-		checkInputLama('lama-dosbing',$(this).val(),'Classroom/getCheck',true);
+		checkInputLama('lama-dosbing',$(this).val(),'Classregistrasilama/getCheck',true);
 	});
 	$('#rest-lama').on('click',function(){
 		resetFormLama();
@@ -178,58 +178,58 @@ function resetFormLama(){
 	}
 	j('#setAjax').setAjax({
 		methode : 'GET',
-		url : "Classroom/getJsonDataPersonal.aspx",
+		url : "Classregistrasilama/getJsonDataPersonal.aspx",
 		bool : true,
 		content : "",
 		sucOk : function(a){
 			var tempJson = JSON.parse(a);
 			if(tempJson.nama.status){
 				j('#lama-nama').setValue(tempJson.nama.value);
-				checkInputLama('lama-nama',j('#lama-nama').getValue(),'Classroom/getCheck',true);
+				checkInputLama('lama-nama',j('#lama-nama').getValue(),'Classregistrasilama/getCheck',true);
 				$('#lama-nama').prop('disabled',"true");
 			}
 			if(tempJson.nim.status){
 				j('#lama-nim').setValue(tempJson.nim.value);
-				checkInputLama('lama-nim',j('#lama-nim').getValue(),'Classroom/getCheck',true);
+				checkInputLama('lama-nim',j('#lama-nim').getValue(),'Classregistrasilama/getCheck',true);
 				$('#lama-nim').prop('disabled',"true");
 			}
 			if(tempJson.email.status){
 				j('#lama-email').setValue(tempJson.email.value);
-				checkInputLama('lama-email',j('#lama-email').getValue(),'Classroom/getCheck',true);
+				checkInputLama('lama-email',j('#lama-email').getValue(),'Classregistrasilama/getCheck',true);
 				$('#lama-email').prop('disabled',"true");
 			}
 			if(tempJson.nohp.status){
 				j('#lama-nohp').setValue(tempJson.nohp.value);
-				checkInputLama('lama-nohp',j('#lama-nohp').getValue(),'Classroom/getCheck',true);
+				checkInputLama('lama-nohp',j('#lama-nohp').getValue(),'Classregistrasilama/getCheck',true);
 				$('#lama-nohp').prop('disabled',"true");
 			}
 			if(tempJson.nohportu.status){
 				j('#lama-nohportu').setValue(tempJson.nohportu.value);
-				checkInputLama('lama-nohportu',j('#lama-nohportu').getValue(),'Classroom/getCheck',true);
+				checkInputLama('lama-nohportu',j('#lama-nohportu').getValue(),'Classregistrasilama/getCheck',true);
 				$('#lama-nohportu').prop('disabled',"true");
 			}
 			if(tempJson.ortu.status){
 				j('#lama-ortu').setValue(tempJson.ortu.value);
-				checkInputLama('lama-ortu',j('#lama-ortu').getValue(),'Classroom/getCheck',true);
+				checkInputLama('lama-ortu',j('#lama-ortu').getValue(),'Classregistrasilama/getCheck',true);
 				$('#lama-ortu').prop('disabled',"true");
 			}
 		}
 	});
 	j('#setAjax').setAjax({
 		methode : 'GET',
-		url : "Classroom/getJsonDataTA.aspx",
+		url : "Classregistrasilama/getJsonDataTA.aspx",
 		bool : true,
 		content : "",
 		sucOk : function(a){
 			var tempJson = JSON.parse(a);
 			if(tempJson.judulta.status){
 				j('#lama-judulta').setValue(tempJson.judulta.value);
-				checkInputLama('lama-judulta',j('#lama-judulta').getValue(),'Classroom/getCheck',true);
+				checkInputLama('lama-judulta',j('#lama-judulta').getValue(),'Classregistrasilama/getCheck',true);
 			//	$('#lama-judulta').prop('disabled',"true");
 			}
 			if(tempJson.dosbing.status){
 				j('#lama-dosbing').setValue(tempJson.dosbing.value);
-				checkInputLama('lama-dosbing',j('#lama-dosbing').getValue(),'Classroom/getCheck',true);
+				checkInputLama('lama-dosbing',j('#lama-dosbing').getValue(),'Classregistrasilama/getCheck',true);
 			//	$('#lama-dosbing').prop('disabled',"true");
 			}
 		}

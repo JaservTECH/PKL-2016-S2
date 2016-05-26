@@ -6,7 +6,7 @@ function seeAllCadetThisGuys(g){
 	j("#setAjax").setAjax(
 	{
 		methode : 'POST',
-		url : 'Classroom/getJsonListMahasiswa.aspx',
+		url : 'Classbimbingan/getJsonListMahasiswa.aspx',
 		bool : true,
 		content : "nip="+g,
 		sucOk : function(a){
@@ -33,8 +33,4 @@ function seeAllCadetThisGuys(g){
 		}
 	}
 	);
-}
-
-function showListMahasiswaAmpuan(g){
-	
 }

@@ -3,7 +3,7 @@ $(document).ready(function(){
 	resetControlNavigasi();
 	navbarNavigation['form-control']=0;
 	navbarNavigation['home'] = 1;
-	setNewContentIntern("getLayoutHome",function(){},function(){},function(){});	
+	setNewContentIntern("Classroom/getLayoutHome",function(){},function(){},function(){});	
 	$('#keluar-confirm-exe').on('click',function(){
 		modalStaticMultipleButton('Apakah anda yakin ingin keluar',function(){
 			$(location).attr('href', "Classroom/signOut.aspx");
@@ -23,7 +23,7 @@ $(document).ready(function(){
 				resetControlNavigasi();
 				navbarNavigation['home']=1;
 				setBreadCrumb({0:'Beranda'});
-				setNewContentIntern("getLayoutHome",function(){},function(){},function(){});	
+				setNewContentIntern("Classroom/getLayoutHome",function(){},function(){},function(){});	
 			}
 		}
 	});
@@ -36,14 +36,14 @@ $(document).ready(function(){
 				navbarNavigation['baru']=1;
 				setBreadCrumb({0:'Registrasi TA',1:"baru"});
 				setNewContentIntern(
-					"getLayoutRegistrasiBaru",
+					"Classregistrasibaru/getLayoutRegistrasiBaru",
 					function(){reLoadFormBaru();},
 					function(){
 						$("#content-intern").slideUp('slow',function(){
 							j("#content-intern").setInHtml();
 							j("#setAjax").setAjax({
 								methode : 'POST',
-								url : "Classroom/getLayoutRegistrasiBaru.aspx",
+								url : "Classregistrasibaru/getLayoutRegistrasiBaru.aspx",
 								bool : true,
 								content : "force=trueJaserv",
 								sucOk : function(a){
@@ -75,14 +75,14 @@ $(document).ready(function(){
 				navbarNavigation['lama']=1;
 				setBreadCrumb({0:'Registrasi TA',1:"lama"});
 				setNewContentIntern(
-					"getLayoutRegistrasiLama",
+					"Classregistrasilama/getLayoutRegistrasiLama",
 					function(){reLoadFormLama();},
 					function(){
 						$("#content-intern").slideUp('slow',function(){
 							j("#content-intern").setInHtml();
 							j("#setAjax").setAjax({
 								methode : 'POST',
-								url : "Classroom/getLayoutRegistrasiLama.aspx",
+								url : "Classregistrasilama/getLayoutRegistrasiLama.aspx",
 								bool : true,
 								content : "force=trueJaserv",
 								sucOk : function(a){
@@ -113,7 +113,7 @@ $(document).ready(function(){
 				resetControlNavigasi();
 				navbarNavigation['t1']=1;
 				setBreadCrumb({0:'Seminar TA',1:"pertama"});
-				setNewContentIntern("getLayoutTaS",function(){
+				setNewContentIntern("Classseminartas/getLayoutTaS",function(){
 					SeminarTAS();
 				},function(){},function(){});
 			}
@@ -138,7 +138,7 @@ $(document).ready(function(){
 				resetControlNavigasi();
 				navbarNavigation['dosen']=1;
 				setBreadCrumb({0:'Lihat',1:"dosen"});
-				setNewContentIntern2("getListDosenAktif",function(){
+				setNewContentIntern2("Classdosenpreview/getListDosenAktif",function(){
 					mainListDosen();
 				});
 			}
@@ -152,7 +152,7 @@ $(document).ready(function(){
 				resetControlNavigasi();
 				navbarNavigation['bimbingan']=1;
 				setBreadCrumb({0:'Lihat',1:"bimbingan"});
-				setNewContentIntern2("getLayoutBimbingan",function(){
+				setNewContentIntern2("Classbimbingan/getLayoutBimbingan",function(){
 					mainBimbingan();
 				});
 			}
@@ -196,7 +196,7 @@ function setNewContentIntern(data,aa,yes,not){
 		j("#content-intern").setInHtml();
 		j("#setAjax").setAjax({
 			methode : 'POST',
-			url : "Classroom/"+data+".aspx",
+			url : data+".aspx",
 			bool : true,
 			content : "",
 			sucOk : function(a){
@@ -234,7 +234,7 @@ function setNewContentIntern2(data,aa){
 		j("#content-intern").setInHtml();
 		j("#setAjax").setAjax({
 			methode : 'POST',
-			url : "Classroom/"+data+".aspx",
+			url : data+".aspx",
 			bool : true,
 			content : "",
 			sucOk : function(a){

@@ -14,6 +14,8 @@ class Sc_std extends CI_Model {
 		$this->TEMP_INDEX_RESULT_ARRAY = null;
 		$this->resetValue();
 	}
+	//public function
+	
     //protected
 	protected function query($select='*',$where=""){$query="SELECT ".$select." FROM ".$this->tablename;	if($where!="")	$query=$query." WHERE ".$where;	return $this->db->query($query);}
 	protected function insert($data){ return $this->db->insert($this->tablename,$data);}

@@ -5,7 +5,7 @@ function beNotMyFavorThisGuys(v,cc){
 	openLoadingBar("proses men-non-favorit-kan");
 	j('#setAjax').setAjax({
 		methode : "POST",
-		url : "Classroom/setNotLikeThisGuys.aspx",
+		url : "Classdosenpreview/setNotLikeThisGuys.aspx",
 		bool : true,
 		content : "kode=JASERVTECH-KODE&nip="+v,
 		sucOk : function(a){
@@ -38,7 +38,7 @@ function beMyFavorThisGuys(v,cc){
 	openLoadingBar("proses men-favorit-kan");
 	j('#setAjax').setAjax({
 		methode : "POST",
-		url : "Classroom/setLikeThisGuys.aspx",
+		url : "Classdosenpreview/setLikeThisGuys.aspx",
 		bool : true,
 		content : "kode=JASERVTECH-KODE&nip="+v,
 		sucOk : function(a){
@@ -71,7 +71,7 @@ function refreshListDosen(){
 	openLoadingBar("mengambil data");
 	j('#setAjax').setAjax({
 		methode : "POST",
-		url : "Classroom/getTableListDosen.aspx",
+		url : "Classdosenpreview/getTableListDosen.aspx",
 		bool : true,
 		content : "kode=JASERVTECH-KODE",
 		sucOk : function(a){
@@ -96,7 +96,7 @@ function seeThisGuys(a){
 	openLoadingBar("mengambil data dosen");
 	j('#setAjax').setAjax({
 		methode : 'POST',
-		url : 'Classroom/getInfoDosenFull.aspx',
+		url : 'Classdosenpreview/getInfoDosenFull.aspx',
 		bool : true,
 		content : "kode=JASERVTECH-KODE&nip="+a,
 		sucOk : function(a){

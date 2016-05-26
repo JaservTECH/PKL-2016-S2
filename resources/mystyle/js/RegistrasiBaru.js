@@ -90,34 +90,34 @@ function reLoadFormBaru(){
 		},2000);
 	});
 	$('#baru-nama').on('change',function(){
-		checkInput('baru-nama',$(this).val(),'Classroom/getCheck',true);
+		checkInput('baru-nama',$(this).val(),'Classregistrasibaru/getCheck',true);
 	});
 	$('#baru-nim').on('change',function(){
-		checkInput('baru-nim',$(this).val(),'Classroom/getCheck',true);
+		checkInput('baru-nim',$(this).val(),'Classregistrasibaru/getCheck',true);
 	});
 	$('#baru-nohp').on('change',function(){
-		checkInput('baru-nohp',$(this).val(),'Classroom/getCheck',true);
+		checkInput('baru-nohp',$(this).val(),'Classregistrasibaru/getCheck',true);
 	});
 	$('#baru-ortu').on('change',function(){
-		checkInput('baru-ortu',$(this).val(),'Classroom/getCheck',true);
+		checkInput('baru-ortu',$(this).val(),'Classregistrasibaru/getCheck',true);
 	});
 	$('#baru-nohportu').on('change',function(){
-		checkInput('baru-nohportu',$(this).val(),'Classroom/getCheck',true);
+		checkInput('baru-nohportu',$(this).val(),'Classregistrasibaru/getCheck',true);
 	});
 	$('#baru-email').on('change',function(){
-		checkInput('baru-email',$(this).val(),'Classroom/getCheck',true);
+		checkInput('baru-email',$(this).val(),'Classregistrasibaru/getCheck',true);
 	});
 	$('#baru-minat').on('change',function(){
-		checkInput('baru-minat',$(this).val(),'Classroom/getCheck',false);
+		checkInput('baru-minat',$(this).val(),'Classregistrasibaru/getCheck',false);
 	});
 	$('#baru-judulta').on('change',function(){
-		checkInput('baru-judulta',$(this).val(),'Classroom/getCheck',true);
+		checkInput('baru-judulta',$(this).val(),'Classregistrasibaru/getCheck',true);
 	});
 	$('#baru-lokasi').on('change',function(){
-		checkInput('baru-lokasi',$(this).val(),'Classroom/getCheck',true);
+		checkInput('baru-lokasi',$(this).val(),'Classregistrasibaru/getCheck',true);
 	});
 	$('#baru-metode').on('change',function(){
-		checkInput('baru-metode',$(this).val(),'Classroom/getCheck',true);
+		checkInput('baru-metode',$(this).val(),'Classregistrasibaru/getCheck',true);
 	});
 	$('#baru-ref1').on('change',function(){
 		if($('#baru-ref1').val() == ""){
@@ -128,7 +128,7 @@ function reLoadFormBaru(){
 			$('#baru-ref1').focus();
 			openDialogAlert(baruMessage['#baru-ref1'],j('#baru-ref1').getObject());
 		}else{
-			checkInput('baru-ref1',$(this).val(),'Classroom/getCheck',true);
+			checkInput('baru-ref1',$(this).val(),'Classregistrasibaru/getCheck',true);
 		}
 	});
 	$('#baru-ref2').on('change',function(){
@@ -139,7 +139,7 @@ function reLoadFormBaru(){
 		}else if($('#baru-ref2').val() == "")
 			j('#baru-ref3').setValue("");
 		else{
-			checkInput('baru-ref2',$(this).val(),'Classroom/getCheck',true);
+			checkInput('baru-ref2',$(this).val(),'Classregistrasibaru/getCheck',true);
 		}
 		/*
 		if($('#baru-ref1').val()+"" == ""){
@@ -176,7 +176,7 @@ function reLoadFormBaru(){
 			openDialogAlert("silahkan isikan terlebih dahulu",j('#baru-ref2').getObject());
 			$('#baru-ref2').focus();
 		}else{
-			checkInput('baru-ref3',$(this).val(),'Classroom/getCheck',true);
+			checkInput('baru-ref3',$(this).val(),'Classregistrasibaru/getCheck',true);
 		}
 		/*
 		if($('#baru-ref2').val()+"" == ""){
@@ -308,44 +308,44 @@ function resetForm(){
 	
 	j('#setAjax').setAjax({
 		methode : 'GET',
-		url : "Classroom/getJsonDataPersonal.aspx",
+		url : "Classregistrasibaru/getJsonDataPersonal.aspx",
 		bool : true,
 		content : "",
 		sucOk : function(a){
 			var tempJson = JSON.parse(a);
 			if(tempJson.nama.status){
 				j('#baru-nama').setValue(tempJson.nama.value);
-				checkInput('baru-nama',j('#baru-nama').getValue(),'Classroom/getCheck',true);
+				checkInput('baru-nama',j('#baru-nama').getValue(),'Classregistrasibaru/getCheck',true);
 				$('#baru-nama').prop('disabled',"true");
 			}
 			if(tempJson.nim.status){
 				j('#baru-nim').setValue(tempJson.nim.value);
-				checkInput('baru-nim',j('#baru-nim').getValue(),'Classroom/getCheck',true);
+				checkInput('baru-nim',j('#baru-nim').getValue(),'Classregistrasibaru/getCheck',true);
 				$('#baru-nim').prop('disabled',"true");
 			}
 			if(tempJson.email.status){
 				j('#baru-email').setValue(tempJson.email.value);
-				checkInput('baru-email',j('#baru-email').getValue(),'Classroom/getCheck',true);
+				checkInput('baru-email',j('#baru-email').getValue(),'Classregistrasibaru/getCheck',true);
 				$('#baru-email').prop('disabled',"true");
 			}
 			if(tempJson.nohp.status){
 				j('#baru-nohp').setValue(tempJson.nohp.value);
-				checkInput('baru-nohp',j('#baru-nohp').getValue(),'Classroom/getCheck',true);
+				checkInput('baru-nohp',j('#baru-nohp').getValue(),'Classregistrasibaru/getCheck',true);
 				$('#baru-nohp').prop('disabled',"true");
 			}
 			if(tempJson.nohportu.status){
 				j('#baru-nohportu').setValue(tempJson.nohportu.value);
-				checkInput('baru-nohportu',j('#baru-nohportu').getValue(),'Classroom/getCheck',true);
+				checkInput('baru-nohportu',j('#baru-nohportu').getValue(),'Classregistrasibaru/getCheck',true);
 				$('#baru-nohportu').prop('disabled',"true");
 			}
 			if(tempJson.ortu.status){
 				j('#baru-ortu').setValue(tempJson.ortu.value);
-				checkInput('baru-ortu',j('#baru-ortu').getValue(),'Classroom/getCheck',true);
+				checkInput('baru-ortu',j('#baru-ortu').getValue(),'Classregistrasibaru/getCheck',true);
 				$('#baru-ortu').prop('disabled',"true");
 			}
 			if(tempJson.minat.status){
 				j('#baru-minat').setValue(tempJson.minat.value);
-				checkInput('baru-minat',j('#baru-minat').getValue(),'Classroom/getCheck',true);
+				checkInput('baru-minat',j('#baru-minat').getValue(),'Classregistrasibaru/getCheck',true);
 				$('#baru-minat').prop('disabled',"true");
 			}
 		}

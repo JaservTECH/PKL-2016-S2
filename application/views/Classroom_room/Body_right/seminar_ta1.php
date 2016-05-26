@@ -13,8 +13,10 @@ defined('BASEPATH') OR exit('What Are You Looking For ?');
 		</div> 
 		<div class=form-row>
 			<div class="col-md-3">Surat Pegantar </div>
-			<div class="col-md-2"><button class="btn btn-primary btn-block"><span class="icon-upload-alt" ></span> Unggah(.pdf)</button></div>
-			<div class="col-md-4">
+			<div class="col-md-3">
+				<button  id="exec-s-pengantar" class="btn btn-primary btn-block"><span class="icon-upload-alt"></span> Unggah(.pdf)</button>
+			</div>
+			<div class="col-md-3">
 				<a style="color : #666;"> : Data kosong</a>
 			</div>
 			<div class="col-md-3" style="font-size : 13px;">
@@ -28,8 +30,10 @@ defined('BASEPATH') OR exit('What Are You Looking For ?');
 		</div> 
 		<div class=form-row>
 			<div class="col-md-3">Scan Kartu Bimbingan TA </div>
-			<div class="col-md-2"><button class="btn btn-primary btn-block"><span class="icon-upload-alt"></span> Unggah(.foto)</button></div>
-			<div class="col-md-4">
+			<div class="col-md-3">
+				<button  id="exec-s-k-bimbingan"  class="btn btn-primary btn-block"><span class="icon-upload-alt"></span> Unggah(.foto)</button>
+			</div>
+			<div class="col-md-3">
 				<a style="color : #666;"> : Data kosong</a>
 			</div>
 			<div class="col-md-3" style="font-size : 13px;">
@@ -43,8 +47,10 @@ defined('BASEPATH') OR exit('What Are You Looking For ?');
 		</div> 
 		<div class=form-row>
 			<div class="col-md-3">Scan Kartu Peserta TA </div>
-			<div class="col-md-2"><button class="btn btn-primary btn-block"><span class="icon-upload-alt"></span> Unggah(.foto)</button></div>
-			<div class="col-md-4">
+			<div class="col-md-3">
+				<button  id="exec-s-k-peserta"  class="btn btn-primary btn-block"><span class="icon-upload-alt"></span> Unggah(.foto)</button>
+			</div>
+			<div class="col-md-3">
 				<a style="color : #666;"> : Data kosong</a>
 			</div>
 			<div class="col-md-3" style="font-size : 13px;">
@@ -58,8 +64,10 @@ defined('BASEPATH') OR exit('What Are You Looking For ?');
 		</div> 
 		<div class=form-row>
 			<div class="col-md-3">Transkrip </div>
-			<div class="col-md-2"><button class="btn btn-primary btn-block"><span class="icon-upload-alt"></span> Unggah(.pdf)</button></div>
-			<div class="col-md-4">
+			<div class="col-md-3">
+				<button  id="exec-s-transkrip"  class="btn btn-primary btn-block"><span class="icon-upload-alt"></span> Unggah(.pdf)</button>
+			</div>
+			<div class="col-md-3">
 				<a style="color : #666;"> : Data kosong</a>
 			</div>
 			<div class="col-md-3" style="font-size : 13px;">
@@ -113,5 +121,27 @@ defined('BASEPATH') OR exit('What Are You Looking For ?');
 			</div>
 		</div>
 	</div>
+	<form class="hidden">
+		<input class="hidden" type="file" id="s-pengantar" accept=".pdf">
+		<input class="hidden" type="file" id="s-k-bimbingan" accept=".pdf">
+		<input class="hidden" type="file" id="s-k-peserta"  accept=".pdf">
+		<input class="hidden" type="file" id="s-transkrip" accept=".pdf">
+	</form>
 	<div id='calendar'></div> 
+	
+	<div class="container">
+		<div class="row">
+			<div class='col-sm-6'>
+				<div class="form-group">
+					<div class='input-group date' id='datetimepicker2'>
+						<input type='text' class="form-control" />
+						<span class="input-group-addon">
+							<span class="icon-calendar"></span>
+						</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 </div>
