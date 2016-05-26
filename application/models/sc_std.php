@@ -61,13 +61,25 @@ class Sc_sm_interest extends CI_Model {
 	}
 	protected function queryBuilder(){
 		$TEMP_QUERY = "";
-		if($this->getId() != NULL) $TEMP_QUERY.="si_id='".$this->getId()."',";
-		if($this->getName() != NULL) $TEMP_QUERY.="si_name='".$this->getName()."',";
+		if($this->getKode() != NULL) $TEMP_QUERY.="s_rt='".$this->getKode()."',";
+        if($this->getNim() != NULL) $TEMP_QUERY.="s_nim='".$this->getNim()."',";
+        if($this->getNips() != NULL) $TEMP_QUERY.="s_nip_p_s='".$this->getNips()."',";
+        if($this->getNipd() != NULL) $TEMP_QUERY.="s_nip_p_d='".$this->getNipd()."',";
+        if($this->getNipt() != NULL) $TEMP_QUERY.="s_nip_p_t='".$this->getNipt()."',";
+        if($this->getDocp() != NULL) $TEMP_QUERY.="s_doc_p_pengantar='".$this->getDocp()."',";
+        if($this->getDocbta() != NULL) $TEMP_QUERY.="s_doc_p_b_ta='".$this->getDocbta()."',";
+        if($this->getDocpta() != NULL) $TEMP_QUERY.="s_doc_p_p_ta='".$this->getDocpta()."',";
+        if($this->getDocTranskrip() != NULL) $TEMP_QUERY.="s_doc_p_transkrip='".$this->getDocTranskrip()."',";
+        if($this->getTanggal() != NULL) $TEMP_QUERY.="s_tanggal='".$this->getTanggal()."',";
+        if($this->getDocppp() != NULL) $TEMP_QUERY.="s_doc_p_p_pengantar='".$this->getDocppp()."',";
+        if($this->getStatus() != NULL) $TEMP_QUERY.="s_status='".$this->getStatus()."',";
+        if($this->getRuang() != NULL) $TEMP_QUERY.="s_ruang='".$this->getRuang()."',";
 		if($TEMP_QUERY != "")
 			return substr($TEMP_QUERY,0,strlen($TEMP_QUERY)-1);
 		else
 			return $TEMP_QUERY;
 	}
+    //atribut
 	private $kode;
 	private $nim;
     private $nips;
@@ -81,18 +93,34 @@ class Sc_sm_interest extends CI_Model {
     private $docppp;
     private $status;
     private $ruang;
-    
+    //getter
     private function getKode(){$kode = $this->kode; return $kode;}
-    private function getKode(){$kode = $this->kode; return $kode;}
-    private function getKode(){$kode = $this->kode; return $kode;}
-    private function getKode(){$kode = $this->kode; return $kode;}
-    private function getKode(){$kode = $this->kode; return $kode;}
-    private function getKode(){$kode = $this->kode; return $kode;}
-    private function getKode(){$kode = $this->kode; return $kode;}
-    private function getKode(){$kode = $this->kode; return $kode;}
-    private function getKode(){$kode = $this->kode; return $kode;}
-    private function getKode(){$kode = $this->kode; return $kode;}
-    
+    private function getNim(){$nim = $this->nim; return $nim;}
+    private function getNips(){$nips = $this->nips; return $nips;}
+    private function getNipd(){$nipd = $this->nipd; return $nipd;}
+    private function getNipt(){$nipt = $this->nipt; return $nipt;}
+    private function getDocp(){$docp = $this->docp; return $docp;}
+    private function getDocbta(){$docbta = $this->docbta; return $docbta;}
+    private function getDocpta(){$docpta = $this->docpta; return $docpta;}
+    private function getDocTranskrip(){$doctranskrip = $this->doctranskrip; return $doctranskrip;}
+    private function getTanggal(){$tanggal = $this->tanggal; return $tanggal;}
+    private function getDocppp(){$docppp = $this->docppp; return $docppp;}
+    private function getStatus(){$status = $this->status; return $status;}
+    private function getRuang(){$ruang = $this->ruang; return $ruang;}
+    //setter
     private function setKode($kode){$this->kode = $kode;}
+    private function setNim($nim){$this->nim = $nim;}
+    private function setNips($nips){$this->nips = $nips;}
+    private function setNipd($nipd){$this->nipd = $nipd;}
+    private function setNipt($nipt){$this->nipt = $nipt;}
+    private function setDocp($docp){$this->docp = $docp;}
+    private function setDocbta($docbta){$this->docbta = $docbta;}
+    private function setDocpta($docpta){$this->docpta = $docpta;}
+    private function setDocTranskrip($doctranskrip){$this->doctranskrip = $doctranskrip;}
+    private function setTanggal($tanggal){$this->tanggal = $tanggal;}
+    private function setDocppp($docppp){$this->docppp = $docppp;}
+    private function setStatus($status){$this->status = $status;}
+    private function setRuang($ruang){$this->ruang = $ruang;}
+    
 	
 }
