@@ -31,7 +31,7 @@ defined('BASEPATH') OR exit('What Are You Looking For ?');
 		<div class=form-row>
 			<div class="col-md-3">Scan Kartu Bimbingan TA </div>
 			<div class="col-md-3">
-				<button  id="exec-s-k-bimbingan"  class="btn btn-primary btn-block"><span class="icon-upload-alt"></span> Unggah(.foto)</button>
+				<button  id="exec-s-k-bimbingan"  class="btn btn-primary btn-block"><span class="icon-upload-alt"></span> Unggah(.png)</button>
 			</div>
 			<div class="col-md-3">
 				<a style="color : #666;"> : Data kosong</a>
@@ -48,7 +48,7 @@ defined('BASEPATH') OR exit('What Are You Looking For ?');
 		<div class=form-row>
 			<div class="col-md-3">Scan Kartu Peserta TA </div>
 			<div class="col-md-3">
-				<button  id="exec-s-k-peserta"  class="btn btn-primary btn-block"><span class="icon-upload-alt"></span> Unggah(.foto)</button>
+				<button  id="exec-s-k-peserta"  class="btn btn-primary btn-block"><span class="icon-upload-alt"></span> Unggah(.png)</button>
 			</div>
 			<div class="col-md-3">
 				<a style="color : #666;"> : Data kosong</a>
@@ -123,25 +123,25 @@ defined('BASEPATH') OR exit('What Are You Looking For ?');
 	</div>
 	<form class="hidden">
 		<input class="hidden" type="file" id="s-pengantar" accept=".pdf">
-		<input class="hidden" type="file" id="s-k-bimbingan" accept=".pdf">
-		<input class="hidden" type="file" id="s-k-peserta"  accept=".pdf">
+		<input class="hidden" type="file" id="s-k-bimbingan" accept=".png">
+		<input class="hidden" type="file" id="s-k-peserta"  accept=".png">
 		<input class="hidden" type="file" id="s-transkrip" accept=".pdf">
 	</form>
 	<div id='calendar'></div> 
-	
 	<div class="container">
-		<div class="row">
-			<div class='col-sm-6'>
-				<div class="form-group">
-					<div class='input-group date' id='datetimepicker2'>
-						<input type='text' class="form-control" />
-						<span class="input-group-addon">
-							<span class="icon-calendar"></span>
-						</span>
-					</div>
+	<div class=form-row> 
+		<div class=col-md-3>Time:</div> 
+		<div class=col-md-9> 
+			<div class=input-group>
+				<div class=input-group-addon>
+					<span class=icon-time></span>
 				</div>
+				<input type=text class="datetimepicker form-control" value="12:17"/>
 			</div>
 		</div>
 	</div>
+     
+</div>
+
 	
 </div>

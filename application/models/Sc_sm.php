@@ -13,6 +13,31 @@ class Sc_sm extends CI_Model {
 		$this->load->library('session');
 		
 	}
+	//is could do seminar TA?
+	public function getCheckSeminarPermission($code=1){
+		if($this->getNim() == NULL)
+			return false;
+		$TEMP_ARRAY = $this->query("s_seminar_ta1,s_seminar_ta2","s_nim='".$this->getNim()."'")->row_array();
+		$this->automaSetContent($TEMP_ARRAY);
+		if($code == 1){
+			if($this->getSeminarTA1() == NULL)
+				return false;
+			if(intval($this->getSeminarTA1()) == 1){
+				return true;
+			}else{
+				return FALSE;
+			}
+		}else{
+			if($this->getSeminarTA2() == NULL)
+				return false;
+			if(intval($this->getSeminarTA2()) == 1){
+				return true;
+			}else{
+				return FALSE;
+			}
+		}
+	}
+	//registrasi form permission
 	public function getCheckFormRegistrasiPemission(){
 		if($this->getNim() == NULL)
 			return false;

@@ -27,22 +27,22 @@ class Classroom extends CI_Controller {
 				"resources/taurus/js/plugins/jquery/jquery-migrate.min.js",
 				"resources/taurus/js/plugins/jquery/globalize.js",
 				"resources/taurus/js/plugins/bootstrap/bootstrap.min.js",
-				"resources/taurus/js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js",
+				//"resources/taurus/js/plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js",
 				"resources/taurus/js/plugins/uniform/jquery.uniform.min.js",
-				"resources/taurus/js/plugins/knob/jquery.knob.js",
-				"resources/taurus/js/plugins/sparkline/jquery.sparkline.min.js",
-				"resources/taurus/js/plugins/flot/jquery.flot.js",
-				"resources/taurus/js/plugins/flot/jquery.flot.resize.js",
+				//"resources/taurus/js/plugins/knob/jquery.knob.js",
+				//"resources/taurus/js/plugins/sparkline/jquery.sparkline.min.js",
+				//"resources/taurus/js/plugins/flot/jquery.flot.js",
+				//"resources/taurus/js/plugins/flot/jquery.flot.resize.js",
 				"resources/taurus/js/plugins/select2/select2.min.js",
 				"resources/taurus/js/plugins/tagsinput/jquery.tagsinput.min.js",
 				"resources/taurus/js/plugins/jquery/jquery-ui-timepicker-addon.js",
-				"resources/taurus/js/plugins/ibutton/jquery.ibutton.js",
-				"resources/taurus/js/plugins/validationengine/languages/jquery.validationEngine-en.js",
-				"resources/taurus/js/plugins/validationengine/jquery.validationEngine.js",
-				"resources/taurus/js/plugins/maskedinput/jquery.maskedinput.min.js",
-				"resources/taurus/js/plugins/stepy/jquery.stepy.min.js",
+				//"resources/taurus/js/plugins/ibutton/jquery.ibutton.js",
+				//"resources/taurus/js/plugins/validationengine/languages/jquery.validationEngine-en.js",
+				//"resources/taurus/js/plugins/validationengine/jquery.validationEngine.js",
+				//"resources/taurus/js/plugins/maskedinput/jquery.maskedinput.min.js",
+				//"resources/taurus/js/plugins/stepy/jquery.stepy.min.js",
 				"resources/taurus/js/plugins/fullcalendar/fullcalendar.min.js",
-				"resources/taurus/js/js.js",
+				//"resources/taurus/js/js.js",
 				"resources/taurus/js/settings.js",
 				"resources/taurus/js/plugins/noty/jquery.noty.js",
 				"resources/taurus/js/plugins/noty/layouts/topCenter.js",
@@ -56,15 +56,22 @@ class Classroom extends CI_Controller {
 				"resources/mystyle/js/RegistrasiBaru.js",
 				"resources/mystyle/js/RegistrasiLama.js",
 				"resources/mystyle/js/list-dosen-mahasiswa.js",
-				"resources/mystyle/js/Bimbingan.js",
-				"resources/dist/temp/bootstrap-datepicker.js",
-				"resources/dist/temp/moment-with-locales.js"
+				"resources/mystyle/js/Bimbingan.js"
+				//"resources/dist/date/bootstrap.min.js",
+				//"resources/dist/date/moment-with-locales.js",
+				//"resources/dist/date/bootstrap-datetimepicker.js"
+				//"resources/dist/js/bootstrap-datetimepicker.js",
+				//"resources/dist/js/locales/bootstrap-datetimepicker.fr.js"
 		);
 		$data['url_link'] = array(
 				"resources/taurus/css/stylesheets.css",
 				"resources/mystyle/css/global-style.css",
+				
 				"resources/mystyle/css/classroom.css",
-				"resources/dist/temp/bootstrap-datepicker.css"
+				//"resources/dist/date/bootstrap.min.css",
+				//"resources/dist/date/bootstrap-datetimepicker.css"
+				
+				//"resources/dist/css/bootstrap-datetimepicker.min.css"
 		);
 		$data['nim'] = $temp[1]['nim'];
 		$data['nama'] = $temp[1]['nama'];

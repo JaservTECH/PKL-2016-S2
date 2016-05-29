@@ -10,8 +10,23 @@ function setBreadCrumb(a){
 	}
 	document.getElementById('content-breadcrumb').innerHTML = temp;
 }
+function modalStaticBodyMultipleButton(message,message2,a,b){
+	j('#msmb-message').setInHtml(message);
+	$("#msmb-body").html(message2);
+	var yes = function(){
+		$('#msmb').unbind('click',yes);
+		$('#mod-sta-mul-but').modal('hide');
+		a();
+	};
+	$('#msmb-yes').bind('click',yes).focus();
+	$('#mod-sta-mul-but').modal({backdrop : 'static'});
+	b();
+}
 function modalStaticMultipleButton(message,a){
 	j('#msmb-message').setInHtml(message);
+	$("#msmb-body").css({
+		"display" : "none"
+	});
 	var yes = function(){
 		$('#msmb').unbind('click',yes);
 		$('#mod-sta-mul-but').modal('hide');
@@ -188,6 +203,9 @@ $('document').ready(function(){
 						'<div class="modal-header">'+ 
 							'<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>'+
 							'<h4 class="modal-title" id="msmb-message"></h4>'+
+						'</div>'+
+						'<div class="modal-body" id="msmb-body">'+
+							
 						'</div>'+
 						'<div class="modal-footer">'+
 							'<button type="button" class="btn btn-success btn-clean" id="msmb-yes">ya</button>'+

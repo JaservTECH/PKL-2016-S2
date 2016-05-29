@@ -15,12 +15,40 @@ class Classseminartas extends CI_Controller {
 		$this->load->library("view");
 		$this->load->helper('url');
 		$this->load->helper('html');
+		$this->load->model('sc_sm');
 	}
 	//show form
 	public function getLayoutTaS(){
 		if(!$this->mahasiswa->getStatusLoginMahasiswa())
 			redirect(base_url().'Gateinout.aspx');
-		echo "1";
-		$this->load->view("Classroom_room/Body_right/seminar_ta1");
+		$this->sc_sm->resetValue();
+		$this->sc_sm->setNim($this->mahasiswa->getNimSessionLogin());
+		if($this->sc_sm->getCheckSeminarPermission()){
+			echo "1";
+			$this->load->view("Classroom_room/Body_right/seminar_ta1"); 			
+		}else{
+			$DATA['message'] = "Anda tidak memiliki izin untuk registrasi seminar ta 1, dikarenakan anda sudah pernah, atau anda sudah harus lanjut ke seminar ta 2. Terima kasih";
+			echo "0";
+			$this->load->view("Classroom_room/Body_right/warning-no-button-seminar-ta",$DATA);
+		}
+	}
+	public function getCheck($variabel=null,$value=null,$type=false){
+		if($variabel == null){
+			$this->view->isNullPost('variabel');
+			$variabel = $this->input->post('variabel');
+			$variabel.="";
+		}
+		if($value == null){
+			$this->view->isNullPost('value');
+			$value = $this->input->post('value');
+		}
+		$value.="";
+		switch ($variabel){
+			case 'TA' : 
+				break;
+			default :
+				echo "0Kode yang anda kirimkan tidak sesuai, kontak developer";
+				break;
+		}
 	}
 }

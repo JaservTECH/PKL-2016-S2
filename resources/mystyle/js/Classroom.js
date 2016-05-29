@@ -1,5 +1,6 @@
 var navbarNavigation = {};
 $(document).ready(function(){
+	if($(".datepickers").length>0)$(".datepickers").datepicker({nextText:"",prevText:""});
 	resetControlNavigasi();
 	navbarNavigation['form-control']=0;
 	navbarNavigation['home'] = 1;

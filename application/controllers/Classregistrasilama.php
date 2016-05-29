@@ -331,12 +331,12 @@ class Classregistrasilama extends CI_Controller {
 	}
 	public function getCheck($variabel=null,$value=null,$type=false){
 		if($variabel == null){
-			$this->isNullPost('variabel');
+			$this->view->isNullPost('variabel');
 			$variabel = $this->input->post('variabel');
 			$variabel.="";
 		}
 		if($value == null){
-			$this->isNullPost('value');
+			$this->view->isNullPost('value');
 			$value = $this->input->post('value');
 		}
 		$value.="";

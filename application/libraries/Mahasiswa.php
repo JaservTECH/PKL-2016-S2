@@ -351,20 +351,9 @@ class Mahasiswa extends Aktor{
 		
 	}
 	//load interface model
-	protected function getLoadClassInterface($name){
-		require_once 'Interface_'.$name;
-	}
-	public function setNewSeminarTA1($data){
-		if(!$this->getStatusLoginMahasiswa())
-			header("location:".base_url()."gateinout.aspx");
-		if(!$this->getStatusLockPermission("seminar-ta1"))
-			return $this->setCategoryPrintMessage(1, false, "class anda tidak dapat mengakses bagian objek ini");
-		if(!isset($data))
-			return false;
-		$data->setNim("24010313130125");
-		echo "hohoho".$data->getNim();
-	}
-	
+	//protected function getLoadClassInterface($name){
+	//	require_once 'Interface_'.$name;
+	//}	
 	//still review
 	//get is have any last TA info, from last semester or las last last other - valid
 	public function getCodeRegLastTA(){
@@ -590,7 +579,7 @@ class Mahasiswa extends Aktor{
 		$this->sc_lms->addNew();
 		return $this->setCategoryPrintMessage(1, true, "Valid");
 	}
-	//
+	// -- valid
 	protected function filterContentDataPersonal($TEMP_DATA){
 		if($TEMP_DATA != "")
 			if($TEMP_DATA != " ")
@@ -603,7 +592,8 @@ class Mahasiswa extends Aktor{
 						return $TEMP_DATA;
 					}
 		return null;
-	}
+	} 
+	//-- valid
 	public function getDataPersonal(){
 		if(!$this->getStatusLoginMahasiswa())
 			header("location:".base_url()."gateinout.aspx");
@@ -617,6 +607,27 @@ class Mahasiswa extends Aktor{
 				'nohportu' => $this->filterContentDataPersonal($this->sc_sm->getNoHpOrtu()),
 				'minat' => $this->filterContentDataPersonal($this->sc_sm->getPeminatan())
 		);
+	}
+	//Seminar TA
+	//Seminar TA 1
+	//-valid
+	public function setNewSeminarTA1($data){
+		if(!$this->getStatusLoginMahasiswa())
+			header("location:".base_url()."gateinout.aspx");
+		if(!$this->getStatusLockPermission("seminar-ta1"))
+			return $this->setCategoryPrintMessage(1, false, "class anda tidak dapat mengakses bagian objek ini");
+		if(!isset($data))
+			return false;
+		$data->setNim("24010313130125");
+		echo "hohoho".$data->getNim();
+	}
+
+	//-valid 
+	public function isAvailableRoomTAOn($TEMP_DATE_TIME,$SRT = NULL,$TEMP_ROOM_NUMBER=1,$CAT=1){
+		if(nice_date($TEMP_DATE_TIME,"Y-m-d H:i:s") == "Invalid Date"){
+			return $this->setCategoryPrintMessage($CAT, false, "");
+		}
+		
 	}
 	//waiting
 	/*
