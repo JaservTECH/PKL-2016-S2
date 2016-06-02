@@ -1,0 +1,49 @@
+modalStaticBodyMultipleButton("Masukan jam seminar anda",templateCalendarTAS,function(finalis){
+					
+					STRING_S = tanggalSewaRuangTA1_TEMP.getFullYear()+"-"+tanggalSewaRuangTA1_TEMP.getMonth()+"-"+tanggalSewaRuangTA1_TEMP.getDate()+" "+$('#jam-rung-tas').val()+"";
+					alert(Calenders);
+					ZZZ = moment(STRING_S, moment.ISO_8601);
+					console.log(ZZZ);
+					//var TEMP_TIME = new  Date(STRING_S);
+					//alert(ZZZ.hours()+" "+ZZZ.minutes()+" "+STRING_S);
+					//alert(ZZZ.year()+" "+ZZZ.month()+" "+ZZZ.date()+" "+(ZZZ.hours()+3)+" "+ZZZ.minutes());
+					YYY = moment(STRING_S, moment.ISO_8601);
+					YYY.hour(parseInt(ZZZ.hour())+3);
+					//alert(ZZZ.toISOString()+" "+YYY.toISOString());
+					if(idTanggal == null){
+						idTanggal = "aktifNow";	
+						$("#calendar").fullCalendar('addEventSource',{
+							id:idTanggal,
+							title:"Hari Seminar Saya",
+							start: ZZZ.toISOString(),
+							end: YYY.toISOString(),
+							allDay:TEMP_N},true);
+							finalis(true);
+					}else{
+						$("#calendar").fullCalendar('removeEvents', idTanggal);
+						$("#calendar").fullCalendar('renderEvent',{
+							id:idTanggal,
+							title:"Hari Seminar Saya",
+							start: ZZZ.toISOString(),
+							end: YYY.toISOString(),
+							allDay:TEMP_N},true);
+							finalis(true);
+					}
+				},function(){
+					$('#jam-rung-tas').on('blur', function(){
+						getCheckJam($(this).val(),function(){
+							$('#jam-rung-tas').css({
+								"borderColor" : "green",
+							});
+						},function(){
+							$('#jam-rung-tas').css({
+								"borderColor" : "red",
+							});
+							var TEMP_DATE = new Date();
+							$("#jam-rung-tas").val(TEMP_DATE.getHours()+":"+TEMP_DATE.getMinutes());
+							$('#jam-rung-tas').css({
+								"borderColor" : "green",
+							});
+						});
+					});
+				});

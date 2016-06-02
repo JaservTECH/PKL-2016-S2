@@ -1,4 +1,6 @@
 var tanggalSewaRuangTA1;
+var TEMP_N;
+var tanggalSewaRuangTA1_TEMP;
 var tanggalSewaRuangDefault;
 var uploadFileState = {
 	satu : false,
@@ -308,6 +310,7 @@ function refreshButton(){
 		}
 	});
 }
+var Calenders;
 function refreshCalendar(){
 	if($("#calendar").length>0){
 		var e=new Date();
@@ -318,7 +321,7 @@ function refreshCalendar(){
 			var e={title:$.trim($(this).text())};$(this).data("eventObject",e);
 		$(this).draggable({zIndex:999,revert:true,revertDuration:0})});
 		
-		var Calenders = $("#calendar").fullCalendar({
+		Calenders = $("#calendar").fullCalendar({
 			header:{
 				left:"prev,next today",
 				center:"",
@@ -368,26 +371,43 @@ function refreshCalendar(){
 			eventDurationEditable : false,
 			disableResizing : true,
 			select:function(e,t,n){
-				modalStaticBodyMultipleButton("Masukan jam seminar anda",templateCalendarTAS,function(){
-					var TEMP_TIME = new Date();
-					var test4 = new  Date(TEMP_TIME.getFullYear(),test.getMonth(),test.getDate(),test2.getHours()+2,test2.getMinutes(),0,0);
-					if(idTanggal == null){
-						idTanggal = "aktifNow";	
-						Calenders.fullCalendar("renderEvent",{
-							id:idTanggal,
-							title:"hohoho",
-							start: test3,
-							end:test4,
-							allDay:n},true)
-					}else{
-						$('#calendar').fullCalendar('removeEvents', idTanggal);
-						Calenders.fullCalendar("renderEvent",{
-							id:idTanggal,
-							title:"hohoho",
-							start:test3,
-							end:test4,
-							allDay:n},true)
-					}
+				TEMP_N = n;
+				tanggalSewaRuangTA1_TEMP = moment(e);
+				//alert(tanggalSewaRuangTA1_TEMP.toISOString());
+				modalStaticBodyMultipleButton("Masukan Jam Seminar anda",templateCalendarTAS,function(finalis){
+					var TEMP_DATE_TIME = moment("0000-00-00T"+$("#jam-rung-tas").val());
+					alert($("#jam-rung-tas").val());
+					tanggalSewaRuangTA1_TEMP.hour(TEMP_DATE_TIME.hours());
+					tanggalSewaRuangTA1_TEMP.minute(TEMP_DATE_TIME.minutes());
+					alert(TEMP_DATE_TIME.minute()+" "+tanggalSewaRuangTA1_TEMP.minute()+" "+tanggalSewaRuangTA1_TEMP.toISOString());
+					//alert();
+					j("#ajax").setAjax({
+						methode: "POST",
+						url:"Classsemestertas/getCheck.aspx",
+						bool : true,
+						content: "variabel=TA1&value="+tanggalSewaRuangTA1_TEMP.toISOString(),
+						sucOk : function(a){
+							if(parseInt(a[0]) ==  0){
+								
+								finalis(true);
+							}else{
+								
+							}
+						},
+						sucEr : function(a,b){
+							
+						}
+						
+					});
+					//= moment();
+					/*
+					Calenders.fullCalendar("renderEvent",{
+						title:"koklllloko",
+						start:tanggalSewaRuangTA1_TEMP,
+						end:tanggalSewaRuangTA1_TEMP,
+						allDay:TEMP_N},true);
+						finalis(true);
+						*/
 				},function(){
 					$('#jam-rung-tas').on('blur', function(){
 						getCheckJam($(this).val(),function(){
@@ -408,11 +428,6 @@ function refreshCalendar(){
 				});
 				if($(".timepicker").length>0)$(".timepicker").timepicker();
 				if($(".datepicker").length>0)$(".datepicker").datepicker({nextText:"",prevText:""});
-				//if(r){
-					
-				//}
-			//Calenders.fullCalendar("unselect")
-			//Object.freeze();
 			},
 			//	update Event
 		    /*
@@ -433,12 +448,40 @@ function refreshCalendar(){
 	}
 }
 function getCheckJam(jam,tr,fl){
-	var xx = Date.parse(jam);
-	xx = new Date(xx);
+	/*
+	xx = moment("0000-00-00T"+xx);
 	if(isNaN(xx.getHours()) || isNaN(xx.getMinutes())){
 		fl();
 		return false;
 	}
+	*/
+	
+	var TEMP_SPLIT = jam.split(":");
+	//alert(TEMP_SPLIT[0]+" "+TEMP_SPLIT[1]);
+	if(isNaN(parseInt(TEMP_SPLIT[0]))){
+		fl();
+		return false;	
+	}
+	if(isNaN(parseInt(TEMP_SPLIT[1]))){
+		fl();
+		return false;
+	}
+	var coy = parseInt(TEMP_SPLIT[0]);
+	if(coy > 23 || coy < 0){
+		fl();
+		return false;
+	}
+		//alert(TEMP_SPLIT[0]+" "+TEMP_SPLIT[1]);
+	coy = parseInt(TEMP_SPLIT[1]);
+	if(coy > 59 || coy < 0){
+		fl();
+		return false;	
+	}
+	if(!isNaN(parseInt(TEMP_SPLIT[3]))){
+		fl();
+		return false;
+	}
+	$("#jam-rung-tas").val(parseInt(TEMP_SPLIT[0])+":"+parseInt(TEMP_SPLIT[1]));
 	tr();
 	return true;
 }

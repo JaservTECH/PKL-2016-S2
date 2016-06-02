@@ -11,6 +11,22 @@ class Sc_ea extends CI_Model {
 	public function getListAkademicActive(){
 		$this->TEMP_RESULT_ARRAY = $this->query("*","e_event=1 order by e_id desc")->result_array();
 		$this->TEMP_INDEX_RESULT_ARRAY = 0;
+		return $this->neutralizedResultArray();
+	}
+	//neutralizedResultArray
+	protected function neutralizedResultArray(){
+		$this->TEMP_INDEX_RESULT_ARRAY = 0;
+		if(!is_array($this->TEMP_RESULT_ARRAY)){
+			$this->TEMP_RESULT_ARRAY = NULL;
+			return FALSE;
+		}
+		if(count($this->TEMP_RESULT_ARRAY) <= 0){
+			$this->TEMP_RESULT_ARRAY = NULL;
+			return FALSE;
+		}
+		return TRUE;
+		
+		
 	}
 	//getAktiveEventRegistrasi
 	public function getEventActiveRegister(){

@@ -1,0 +1,131 @@
+
+	if($("#calendar").length>0){
+		var e=new Date();
+		var t=e.getDate();
+		var n=e.getMonth();
+		var r=e.getFullYear(); //2016
+		$("#external-events .external-event").each(function(){
+			var e={title:$.trim($(this).text())};$(this).data("eventObject",e);
+		$(this).draggable({zIndex:999,revert:true,revertDuration:0})});
+		
+		var Calenders = $("#calendar").fullCalendar({
+			header:{
+				left:"prev,next today",
+				center:"",
+				right : ""
+				//center:"title",
+				//right:"month,agendaWeek,agendaDay"
+				}
+			,editable:true,events:[
+			{
+				title:"All Day Event",
+				start:new Date(r,n,1)},
+			{
+				title:"Long Event",
+				start:new Date(r,n,t-5),
+				end:new Date(r,n,t-2)},
+			{
+				id:999,title:"Repeating Event",
+				start:new Date(r,n,t-3,16,0),
+				allDay:false},
+			{
+				id:999,
+				title:"Repeating Event",
+				start:new Date(r,n,t+4,16,0),
+				allDay:false},
+			{
+				title:"Meeting",
+				start:new Date(r,n,t,10,30),
+				allDay:false},
+			{
+				title:"Meeting2",
+				start:new Date(r,n,t,22,30),
+				allDay:false},
+			{
+				title:"Lunch",
+				start:new Date(r,n,t,12,0),
+				end:new Date(r,n,t,14,0),
+				allDay:false},
+			{
+				title:"Birthday Party",
+				start:new Date(r,n,t+1,19,0),
+				end:new Date(r,n,t+1,22,30),
+				allDay:false}],
+			droppable:false,
+			selectable:true,
+			selectHelper:false,
+			eventStartEditable : false,
+			eventDurationEditable : false,
+			disableResizing : true,
+			select:function(e,t,n){
+				tanggalSewaRuangTA1_TEMP = new Date(e);
+				alert(tanggalSewaRuangTA1_TEMP.getFullYear()+" "+tanggalSewaRuangTA1_TEMP.getMonth()+" "+ tanggalSewaRuangTA1_TEMP.getDate());
+				modalStaticBodyMultipleButton("Masukan jam seminar anda",templateCalendarTAS,function(finalis){
+					
+					STRING_S = tanggalSewaRuangTA1_TEMP.getFullYear()+"-"+tanggalSewaRuangTA1_TEMP.getMonth()+"-"+tanggalSewaRuangTA1_TEMP.getDate()+"T"+$('#jam-rung-tas').val()+":00";
+					
+					ZZZ = $.fullCalendar.moment(STRING_S);
+					//var TEMP_TIME = new  Date(STRING_S);
+					alert(ZZZ.getHours()+" "+ZZZ.getMinutes()+" "+STRING_S);
+					if(idTanggal == null){
+						idTanggal = "aktifNow";	
+						Calenders.fullCalendar("renderEvent",{
+							id:idTanggal,
+							title:"Hari Seminar Saya",
+							start: new Date(tanggalSewaRuangTA1_TEMP.getFullYear(),tanggalSewaRuangTA1_TEMP.getMonth(), tanggalSewaRuangTA1_TEMP.getDate(),TEMP_TIME.getHours(),TEMP_TIME.getMinutes()),
+							end:new Date(tanggalSewaRuangTA1_TEMP.getFullYear(),tanggalSewaRuangTA1_TEMP.getMonth(), tanggalSewaRuangTA1_TEMP.getDate(),TEMP_TIME.getHours()+3,TEMP_TIME.getMinutes()),
+							allDay:false},true);
+							finalis(false);
+					}else{
+						$('#calendar').fullCalendar('removeEvents', idTanggal);
+						Calenders.fullCalendar("renderEvent",{
+							id:idTanggal,
+							title:"Hari Seminar Saya",
+							start: new Date(tanggalSewaRuangTA1_TEMP.getFullYear(),tanggalSewaRuangTA1_TEMP.getMonth(), tanggalSewaRuangTA1_TEMP.getDate(),TEMP_TIME.getHours(),TEMP_TIME.getMinutes()),
+							end:new Date(tanggalSewaRuangTA1_TEMP.getFullYear(),tanggalSewaRuangTA1_TEMP.getMonth(), tanggalSewaRuangTA1_TEMP.getDate(),TEMP_TIME.getHours()+3,TEMP_TIME.getMinutes()),
+							allDay:false},true);
+							finalis(false);
+					}
+				},function(){
+					$('#jam-rung-tas').on('blur', function(){
+						getCheckJam($(this).val(),function(){
+							$('#jam-rung-tas').css({
+								"borderColor" : "green",
+							});
+						},function(){
+							$('#jam-rung-tas').css({
+								"borderColor" : "red",
+							});
+							var TEMP_DATE = new Date();
+							$("#jam-rung-tas").val(TEMP_DATE.getHours()+":"+TEMP_DATE.getMinutes());
+							$('#jam-rung-tas').css({
+								"borderColor" : "green",
+							});
+						});
+					});
+				});
+				if($(".timepicker").length>0)$(".timepicker").timepicker();
+				if($(".datepicker").length>0)$(".datepicker").datepicker({nextText:"",prevText:""});
+				//if(r){
+					
+				//}
+			//Calenders.fullCalendar("unselect")
+			//Object.freeze();
+			},
+			//	update Event
+		    /*
+			eventClick: function(calEvent, jsEvent, view) {
+				modalStaticMultipleButton(message,a);
+				$('#calendar').fullCalendar('removeEvents', event.id);
+		   	}
+			*/
+			eventClick: function(calEvent, jsEvent, view) {
+				if(idTanggal != null){
+					if(calEvent.id == idTanggal)
+						modalStaticMultipleButton("Anda ingin menghapus even ini ",function(){
+							$('#calendar').fullCalendar('removeEvents', calEvent.id);
+						});
+				}
+			}
+		});
+	}

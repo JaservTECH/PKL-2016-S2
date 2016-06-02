@@ -11,7 +11,8 @@ class Sc_sm extends CI_Model {
 		$this->tablename = 'sc_sm';
         $this->resetValue();
 		$this->load->library('session');
-		
+		$this->TEMP_RESULT_ARRAY = NULL;
+		$this->TEMP_INDEX_RESULT_ARRAY = 0;
 	}
 	//is could do seminar TA?
 	public function getCheckSeminarPermission($code=1){
@@ -89,9 +90,22 @@ class Sc_sm extends CI_Model {
 	}
 	public function getAllData(){
 		$this->TEMP_RESULT_ARRAY = $this->query('*')->result_array();
-		if(count($this->TEMP_RESULT_ARRAY) > 0){
-			$this->TEMP_INDEX_RESULT_ARRAY = 0;
-			return true;}else{return false;}
+		return $this->neutralizedResultArray();
+	}
+	//neutralizedResultArray
+	protected function neutralizedResultArray(){
+		$this->TEMP_INDEX_RESULT_ARRAY = 0;
+		if(!is_array($this->TEMP_RESULT_ARRAY)){
+			$this->TEMP_RESULT_ARRAY = NULL;
+			return FALSE;
+		}
+		if(count($this->TEMP_RESULT_ARRAY) <= 0){
+			$this->TEMP_RESULT_ARRAY = NULL;
+			return FALSE;
+		}
+		return TRUE;
+		
+		
 	}
 	public function getNextCursor(){
 		if(is_array($this->TEMP_RESULT_ARRAY)){

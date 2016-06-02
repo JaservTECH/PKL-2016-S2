@@ -42,6 +42,7 @@ class Classroom extends CI_Controller {
 				//"resources/taurus/js/plugins/maskedinput/jquery.maskedinput.min.js",
 				//"resources/taurus/js/plugins/stepy/jquery.stepy.min.js",
 				"resources/taurus/js/plugins/fullcalendar/fullcalendar.min.js",
+				"resources/plugins/fullcalendar/v2/lib/moment.min.js",
 				//"resources/taurus/js/js.js",
 				"resources/taurus/js/settings.js",
 				"resources/taurus/js/plugins/noty/jquery.noty.js",

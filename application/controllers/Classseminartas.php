@@ -44,7 +44,8 @@ class Classseminartas extends CI_Controller {
 		}
 		$value.="";
 		switch ($variabel){
-			case 'TA' : 
+			case 'TA1' : 
+				$this->mahasiswa->isAvailableRoomTASOn($value);
 				break;
 			default :
 				echo "0Kode yang anda kirimkan tidak sesuai, kontak developer";

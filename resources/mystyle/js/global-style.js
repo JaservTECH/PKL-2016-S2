@@ -14,11 +14,21 @@ function modalStaticBodyMultipleButton(message,message2,a,b){
 	j('#msmb-message').setInHtml(message);
 	$("#msmb-body").html(message2);
 	var yes = function(){
-		$('#msmb').unbind('click',yes);
-		$('#mod-sta-mul-but').modal('hide');
-		a();
+		a(function(a){
+			if(a){
+				$('#msmb-yes').unbind('click',yes);	
+				$('#msmb-no').unbind('click',no);
+				$('#mod-sta-mul-but').modal('hide');
+			}
+		});
 	};
+	var no = function(){
+		$('#msmb-yes').unbind('click',yes);
+		$('#msmb-no').unbind('click',no);
+		$('#mod-sta-mul-but').modal('hide');
+	}
 	$('#msmb-yes').bind('click',yes).focus();
+	$('#msmb-no').bind('click',no);
 	$('#mod-sta-mul-but').modal({backdrop : 'static'});
 	b();
 }
@@ -28,11 +38,18 @@ function modalStaticMultipleButton(message,a){
 		"display" : "none"
 	});
 	var yes = function(){
-		$('#msmb').unbind('click',yes);
+		$('#msmb-yes').unbind('click',yes);
+		$('#msmb-no').unbind('click',no);
 		$('#mod-sta-mul-but').modal('hide');
 		a();
 	};
+	var no = function(){
+		$('#msmb-yes').unbind('click',yes);
+		$('#msmb-no').unbind('click',no);
+		$('#mod-sta-mul-but').modal('hide');
+	}
 	$('#msmb-yes').bind('click',yes).focus();
+	$('#msmb-no').bind('click',no);
 	$('#mod-sta-mul-but').modal({backdrop : 'static'});
 }
 function modalStaticSingleWarning(message){
@@ -209,7 +226,7 @@ $('document').ready(function(){
 						'</div>'+
 						'<div class="modal-footer">'+
 							'<button type="button" class="btn btn-success btn-clean" id="msmb-yes">ya</button>'+
-							'<button type="button" class="btn btn-danger btn-clean" data-dismiss="modal">tidak</button>'+ 
+							'<button type="button" class="btn btn-danger btn-clean" id="msmb-no">tidak</button>'+ 
 						'</div>'+ 
 					'</div>'+ 
 				'</div>'+ 

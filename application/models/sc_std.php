@@ -15,7 +15,33 @@ class Sc_std extends CI_Model {
 		$this->resetValue();
 	}
 	//public function
-	
+	public function getDataTabelOnThisDay(){
+		$this->load->helper('date');
+		if($this->getTanggal() == NULL)
+			return false;
+		$TEMP_DATE = nice_date($this->getTanggal(),"Y-m-d");
+		if($this->getKode() == NULL){
+			$this->TEMP_RESULT_ARRAY = $this->query("s_tanggal",'s_tanggal like "'.$TEMP_DATE.'%"')->result_array();
+		}else{
+			$this->TEMP_RESULT_ARRAY = $this->query("s_tanggal",'s_rt="'.$this->getKode().'" AND s_tanggal like "'.$TEMP_DATE.'%"')->result_array();
+		}
+		return $this->neutralizedResultArray();
+	}
+	//neutralizedResultArray
+	protected function neutralizedResultArray(){
+		$this->TEMP_INDEX_RESULT_ARRAY = 0;
+		if(!is_array($this->TEMP_RESULT_ARRAY)){
+			$this->TEMP_RESULT_ARRAY = NULL;
+			return FALSE;
+		}
+		if(count($this->TEMP_RESULT_ARRAY) <= 0){
+			$this->TEMP_RESULT_ARRAY = NULL;
+			return FALSE;
+		}
+		return TRUE;
+		
+		
+	}
     //protected
 	protected function query($select='*',$where=""){$query="SELECT ".$select." FROM ".$this->tablename;	if($where!="")	$query=$query." WHERE ".$where;	return $this->db->query($query);}
 	protected function insert($data){ return $this->db->insert($this->tablename,$data);}
@@ -58,7 +84,7 @@ class Sc_std extends CI_Model {
 		}
 	}
     //-valid
-	protected function resetValue(){
+	public function resetValue(){
 		$this->setKode(null);
 		$this->setNim(null);
 		$this->setNips(null);
@@ -130,33 +156,33 @@ class Sc_std extends CI_Model {
     private $status;
     private $ruang;
     //getter
-    private function getKode(){$kode = $this->kode; return $kode;}
-    private function getNim(){$nim = $this->nim; return $nim;}
-    private function getNips(){$nips = $this->nips; return $nips;}
-    private function getNipd(){$nipd = $this->nipd; return $nipd;}
-    private function getNipt(){$nipt = $this->nipt; return $nipt;}
-    private function getDocp(){$docp = $this->docp; return $docp;}
-    private function getDocbta(){$docbta = $this->docbta; return $docbta;}
-    private function getDocpta(){$docpta = $this->docpta; return $docpta;}
-    private function getDocTranskrip(){$doctranskrip = $this->doctranskrip; return $doctranskrip;}
-    private function getTanggal(){$tanggal = $this->tanggal; return $tanggal;}
-    private function getDocppp(){$docppp = $this->docppp; return $docppp;}
-    private function getStatus(){$status = $this->status; return $status;}
-    private function getRuang(){$ruang = $this->ruang; return $ruang;}
+    public function getKode(){$kode = $this->kode; return $kode;}
+    public function getNim(){$nim = $this->nim; return $nim;}
+    public function getNips(){$nips = $this->nips; return $nips;}
+    public function getNipd(){$nipd = $this->nipd; return $nipd;}
+    public function getNipt(){$nipt = $this->nipt; return $nipt;}
+    public function getDocp(){$docp = $this->docp; return $docp;}
+    public function getDocbta(){$docbta = $this->docbta; return $docbta;}
+    public function getDocpta(){$docpta = $this->docpta; return $docpta;}
+    public function getDocTranskrip(){$doctranskrip = $this->doctranskrip; return $doctranskrip;}
+    public function getTanggal(){$tanggal = $this->tanggal; return $tanggal;}
+    public function getDocppp(){$docppp = $this->docppp; return $docppp;}
+    public function getStatus(){$status = $this->status; return $status;}
+    public function getRuang(){$ruang = $this->ruang; return $ruang;}
     //setter
-    private function setKode($kode){$this->kode = $kode;}
-    private function setNim($nim){$this->nim = $nim;}
-    private function setNips($nips){$this->nips = $nips;}
-    private function setNipd($nipd){$this->nipd = $nipd;}
-    private function setNipt($nipt){$this->nipt = $nipt;}
-    private function setDocp($docp){$this->docp = $docp;}
-    private function setDocbta($docbta){$this->docbta = $docbta;}
-    private function setDocpta($docpta){$this->docpta = $docpta;}
-    private function setDocTranskrip($doctranskrip){$this->doctranskrip = $doctranskrip;}
-    private function setTanggal($tanggal){$this->tanggal = $tanggal;}
-    private function setDocppp($docppp){$this->docppp = $docppp;}
-    private function setStatus($status){$this->status = $status;}
-    private function setRuang($ruang){$this->ruang = $ruang;}
+    public function setKode($kode){$this->kode = $kode;}
+    public function setNim($nim){$this->nim = $nim;}
+    public function setNips($nips){$this->nips = $nips;}
+    public function setNipd($nipd){$this->nipd = $nipd;}
+    public function setNipt($nipt){$this->nipt = $nipt;}
+    public function setDocp($docp){$this->docp = $docp;}
+    public function setDocbta($docbta){$this->docbta = $docbta;}
+    public function setDocpta($docpta){$this->docpta = $docpta;}
+    public function setDocTranskrip($doctranskrip){$this->doctranskrip = $doctranskrip;}
+    public function setTanggal($tanggal){$this->tanggal = $tanggal;}
+    public function setDocppp($docppp){$this->docppp = $docppp;}
+    public function setStatus($status){$this->status = $status;}
+    public function setRuang($ruang){$this->ruang = $ruang;}
     
 	
 }

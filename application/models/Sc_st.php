@@ -17,13 +17,7 @@ class Sc_st extends CI_Model {
 		if($TEMP_BOOL){
 			if($this->getKode() == NULL){
 				$this->TEMP_RESULT_ARRAY = $this->query("*","s_nim='".$this->getNim()."' AND s_statue=1 AND s_data_statue=0")->result_array();
-				if(count($this->TEMP_RESULT_ARRAY)<=0){
-					$this->resetValue();
-					$this->TEMP_RESULT_ARRAY = NULL;
-					return false;
-				}else{
-					return true;
-				}
+				return $this->neutralizedResultArray();
 			}else{
 				$TEMP_ARRAY = $this->query("*","s_nim='".$this->getNim()."' AND s_rt=".$this->getKode()." AND s_statue=1 AND s_data_statue=0")->row_array();
 				if(count($TEMP_ARRAY)<=0){
@@ -36,22 +30,10 @@ class Sc_st extends CI_Model {
 		}else{
 			if($this->getKode() == NULL){
 				$this->TEMP_RESULT_ARRAY = $this->query("*","s_nim='".$this->getNim()."'")->result_array();
-				if(count($this->TEMP_RESULT_ARRAY)<=0){
-					$this->resetValue();
-					$this->TEMP_RESULT_ARRAY = NULL;
-					return false;
-				}else{
-					return true;
-				}
+				return $this->neutralizedResultArray();
 			}else{
 				$this->TEMP_RESULT_ARRAY = $this->query("*","s_nim='".$this->getNim()."' AND s_rt=".$this->getKode())->result_array();
-				if(count($this->TEMP_RESULT_ARRAY)<=0){
-					$this->resetValue();
-					$this->TEMP_RESULT_ARRAY = NULL;
-					return false;
-				}else{
-					return true;
-				}
+				return $this->neutralizedResultArray();
 			}
 		}
 	} 

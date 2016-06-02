@@ -11,13 +11,28 @@ class Sc_sm_interest extends CI_Model {
 		$this->load->database();
 		$this->tablename = 'sc_sm_interest';
 		$this->TEMP_RESULT_ARRAY = null;
-		$this->TEMP_INDEX_RESULT_ARRAY = null;
+		$this->TEMP_INDEX_RESULT_ARRAY = 0;
 		$this->resetValue();
 	}
 	protected function query($select='*',$where=""){$query="SELECT ".$select." FROM ".$this->tablename;	if($where!="")	$query=$query." WHERE ".$where;	return $this->db->query($query);}
 	function getAllData(){
 		$this->TEMP_RESULT_ARRAY = $this->sc_sm_interest->query("*")->result_array();
+		return $this->neutralizedResultArray();
+	}
+	//neutralizedResultArray
+	protected function neutralizedResultArray(){
 		$this->TEMP_INDEX_RESULT_ARRAY = 0;
+		if(!is_array($this->TEMP_RESULT_ARRAY)){
+			$this->TEMP_RESULT_ARRAY = NULL;
+			return FALSE;
+		}
+		if(count($this->TEMP_RESULT_ARRAY) <= 0){
+			$this->TEMP_RESULT_ARRAY = NULL;
+			return FALSE;
+		}
+		return TRUE;
+		
+		
 	}
 	public function getNextCursor(){
 		if(is_array($this->TEMP_RESULT_ARRAY)){

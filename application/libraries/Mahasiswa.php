@@ -10,6 +10,7 @@ class Mahasiswa extends Aktor{
 		$this->setModel('sc_st');
 		$this->setModel('sc_sm_interest');
 		$this->setModel('sc_lms');
+		$this->setModel('sc_std');
 	}
 	//get code year now - valid
 	public function getYearNow(){ 
@@ -623,11 +624,80 @@ class Mahasiswa extends Aktor{
 	}
 
 	//-valid 
-	public function isAvailableRoomTAOn($TEMP_DATE_TIME,$SRT = NULL,$TEMP_ROOM_NUMBER=1,$CAT=1){
+	public function isAvailableRoomTASOn($TEMP_DATE_TIME,$TEMP_ROOM_NUMBER=1,$SRT = NULL,$CAT=0){
+		$this->setHelper('date');
+		//echo "koko ".nice_date($TEMP_DATE_TIME,"Y-m-d H:i:s");
+		//return;
 		if(nice_date($TEMP_DATE_TIME,"Y-m-d H:i:s") == "Invalid Date"){
-			return $this->setCategoryPrintMessage($CAT, false, "");
+			return $this->setCategoryPrintMessage($CAT, false, "Anda melakuan debugging dengan format tanggal");
+		}
+		exit("0 ".nice_date($TEMP_DATE_TIME,"Y-m-d H:i:s"));
+		$TEMP_DATE_TIME = nice_date($TEMP_DATE_TIME,"Y-m-d H:i:s");
+		$OUR_HOUR = nice_date($TEMP_DATE_TIME,"H");
+		$OUR_MINUTE = nice_date($TEMP_DATE_TIME,"i");
+		if($SRT == NULL)
+			$SRT = $this->getYearNow();
+		$this->sc_std->resetValue();
+		$this->sc_std->setKode($SRT);
+		$this->sc_std->setTanggal($TEMP_DATE_TIME);
+		if(!$this->sc_std->getDataTabelOnThisDay())
+			return $this->setCategoryPrintMessage($CAT,true,"VALID");
+		$ERROR = 0;
+		while($this->sc_std->getNextCursor()){
+			$OTHER_HOUR = nice_date($this->sc_std->getTanggal(),"H");
+			$OTHER_MINUTE = nice_date($this->sc_std->getTanggal(),"i");
+			$OUR_AFTER_HOUR = $OUR_HOUR+2;
+			$OUR_AFTER_MINUTE = $OUR_MINUTE+30;
+			if($OUR_AFTER_MINUTE > 59){
+				$OUR_AFTER_MINUTE -= 59;
+				$OUR_AFTER_HOUR +=1;
+			}
+			if(intval($OUR_HOUR) > intval($OTHER_HOUR)){
+				if(intval($OUR_HOUR) == intval($OTHER_HOUR)+3){
+					if(intval($OTHER_MINUTE) > intval($OUR_MINUTE))
+						$ERROR += 1;
+				}else if(intval($OUR_HOUR) < intval($OTHER_HOUR)+3){
+					$ERROR += 1;
+				}
+			}else{
+				if(intval($OUR_AFTER_HOUR) == intval($OTHER_HOUR)){
+					if(intval($OTHER_MINUTE) < intval($OUR_AFTER_MINUTE))
+						$ERROR += 1;
+				}else if(intval($OUR_AFTER_MINUTE) > intval($OTHER_HOUR)){
+					$ERROR += 1;
+				}
+			}
+		}
+		//echo "hello".$ERROR;
+		if($ERROR > 0)
+			return $this->setCategoryPrintMessage($CAT,FALSE,"Maaf, sudah ada yang menempati tanggal tersebut");
+		if(intval($OUR_HOUR) < 7){
+			$ERROR += 1;
+		}else{
+			echo intval($OUR_HOUR).intval($OUR_MINUTE);
+			if(intval($OUR_HOUR) == 7){
+				if(intval($OUR_MINUTE) < 30)
+					$ERROR += 1;
+			}
+		}
+		if($ERROR > 0)
+			return $this->setCategoryPrintMessage($CAT,FALSE,"Maaf, 07.30 adalah waktu paling pagi");
+		
+		
+		if(intval($OUR_HOUR) > 14){
+			$ERROR += 1;
+		}else{
+			if(intval($OUR_HOUR)+3 == 15){
+				if(intval($OUR_MINUTE) > 30)
+					$ERROR += 1;
+			}else if(intval($OUR_HOUR)+3 > 15){
+				$ERROR += 1;
+			}
 		}
 		
+		if($ERROR > 0)
+			return $this->setCategoryPrintMessage($CAT,FALSE,"Maaf, 02.00 adalah waktu paling sore");
+		return $this->setCategoryPrintMessage($CAT,true,"VALID");
 	}
 	//waiting
 	/*
