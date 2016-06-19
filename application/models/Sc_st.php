@@ -48,6 +48,25 @@ class Sc_st extends CI_Model {
 		$this->update("`s_statue`='2', `s_data_statue`='".$this->getLogStatus()."'","s_rt=".$this->getKode()." AND s_nim='".$this->getNim()."' AND s_statue=1");
 		return true;
 	}
+	//getSpecific date_add
+	public function getDataActiveRegister(){
+		if($this->getNim() == NULL){
+			$this->resetValue();
+			return false;
+		}
+		if($this->getKode() == NULL){
+			$this->TEMP_RESULT_ARRAY = $this->query("*","s_nim='".$this->getNim()."' AND s_statue=1")->result_array();
+			return $this->neutralizedResultArray();
+		}else{
+			$TEMP_ARRAY = $this->query("*","s_nim='".$this->getNim()."' AND s_statue=1 AND s_rt='".$this->getKode()."'")->row_array();
+			if(count($TEMP_ARRAY)<=0){
+				return false;
+			}else{
+				$this->automaSetContent($TEMP_ARRAY);
+				return true;
+			}
+		}
+	}
 	//count array of cursor
 	public function getCount(){
 		if($this->TEMP_RESULT_ARRAY == NULL)
@@ -66,7 +85,49 @@ class Sc_st extends CI_Model {
 		$this->insert($TEMP_ARRAY);
 		return TRUE;
 	}
+	public function isHaveRegisteredOnThisSemesterAndValid(){
+		if($this->getKode() == NULL)
+			return FALSE;
+		if($this->getNim() == NULL)
+			return FALSE;
+		$TEMP_ARRAY = $this->query("*","s_rt='".$this->getKode()."' AND s_nim='".$this->getNim()."' AND s_statue=1")->row_array();
+		if(count($TEMP_ARRAY) > 0){
+			if($TEMP_ARRAY['s_nip'] != '0')
+				return TRUE;
+		}
+		return FALSE;
+	}
+	public function getNipRegisteredOnThisSemesterAndValid(){
+		if($this->getKode() == NULL)
+			return FALSE;
+		if($this->getNim() == NULL)
+			return FALSE;
+		$TEMP_ARRAY = $this->query("s_nip","s_rt='".$this->getKode()."' AND s_nim='".$this->getNim()."' AND s_statue=1")->row_array();
+		
+		$this->resetValue();
+		if(count($TEMP_ARRAY) > 0){
+			if($TEMP_ARRAY['s_nip'] != '0'){
+				$this->automaSetContent($TEMP_ARRAY);
+				return TRUE;
+			}
+		}
+		return FALSE;
+	}
 	//
+	
+	public function getLastDosenIfExist(){
+		if($this->getNim() == NULL){
+			$this->resetValue();
+			return FALSE;
+		}
+		if($this->getKode() == NULL){
+			$this->resetValue();
+			return FALSE;
+		}
+		$this->TEMP_RESULT_ARRAY = $this->query("s_nip","s_nim=".$this->getNim()." AND s_rt=".$this->getKode()." AND s_statue=2 ORDER BY s_data_statue desc")->result_array();
+		//return $this->TEMP_RESULT_ARRAY;
+		return $this->neutralizedResultArray();
+	}
 	protected function query($select='*',$where=""){
 		$query="SELECT ".$select." FROM ".$this->tablename;
 		if($where!="")
@@ -148,6 +209,7 @@ class Sc_st extends CI_Model {
 		$this->setLogStatus(NULL);
 		$this->setKategori(NULL);
 		$this->setDataProses(NULL);
+		
 	}
 	//array Builder
 	protected function arrayBuilder(){
@@ -171,6 +233,28 @@ class Sc_st extends CI_Model {
 		else
 			return NULL;
 	}
+	public function getCountDosenPembimbing(){
+		if($this->getNip() == NULL){
+			return 0;
+		}
+		if($this->getKode() == NULL){
+			return 0;
+		}
+		$TEMP_ARRAY = $this->query("*","s_rt=".$this->getKode()." AND s_nip=".$this->getNip()." AND s_statue=1 AND s_data_statue=0")->result_array();
+		return count($TEMP_ARRAY);
+	}
+	protected function falseOutput(){
+		$this->resetValue();
+		return FALSE;
+	}
+	public function getCountDataPrimary(){
+		if($this->getKode() == null)
+			return 0;
+		if($this->getNim() == null)
+			return 0;
+		$RESULT_ARRAY = $this->query("*","s_rt='".$this->getKode()."' AND s_nim='".$this->getNim()."'")->result_array();
+		return count($RESULT_ARRAY);
+	}
 	//query builder
 	protected function queryBuilder(){
 		$TEMP_QUERY = "";
@@ -193,7 +277,16 @@ class Sc_st extends CI_Model {
 		else
 			return $TEMP_QUERY;
 	}
-	
+	public function setUpdateActive(){
+		if($this->getNim() == NULL){
+			return falseOutput();
+		}
+		if($this->getKode() == NULL){
+			return falseOutput();
+		}
+		$this->update($this->queryBuilder(),"s_nim='".$this->getNim()."' AND s_rt='".$this->getKode()."' AND s_statue=1 AND s_data_statue=0");
+		return true;
+	}
 	public function getNextCursor(){
 		if(is_array($this->TEMP_RESULT_ARRAY)){
 			if(array_key_exists($this->TEMP_INDEX_RESULT_ARRAY,$this->TEMP_RESULT_ARRAY)){

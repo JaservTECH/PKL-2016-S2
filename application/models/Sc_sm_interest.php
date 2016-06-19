@@ -19,6 +19,19 @@ class Sc_sm_interest extends CI_Model {
 		$this->TEMP_RESULT_ARRAY = $this->sc_sm_interest->query("*")->result_array();
 		return $this->neutralizedResultArray();
 	}
+	public function getMinat(){
+		if($this->getId() == NULL){
+			$this->resetValue();
+			return false;
+		}
+		$TEMP_ARRAY = $this->query("*","si_id='".$this->getId()."'")->row_array();
+		if(count($TEMP_ARRAY)<=0){
+			return false;
+		}else{
+			$this->automaSetContent($TEMP_ARRAY);
+			return true;
+		}
+	}
 	//neutralizedResultArray
 	protected function neutralizedResultArray(){
 		$this->TEMP_INDEX_RESULT_ARRAY = 0;
@@ -59,7 +72,7 @@ class Sc_sm_interest extends CI_Model {
 			}
 		}
 	}
-	protected function resetValue(){
+	public function resetValue(){
 		$this->setId(null);
 		$this->setName(null);
 	}

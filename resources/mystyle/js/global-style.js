@@ -41,9 +41,15 @@ function modalStaticMultipleButton(message,a){
 		$('#msmb-yes').unbind('click',yes);
 		$('#msmb-no').unbind('click',no);
 		$('#mod-sta-mul-but').modal('hide');
+		$("#msmb-body").css({
+			"display" : "block"
+		});
 		a();
 	};
 	var no = function(){
+		$("#msmb-body").css({
+			"display" : "block"
+		});
 		$('#msmb-yes').unbind('click',yes);
 		$('#msmb-no').unbind('click',no);
 		$('#mod-sta-mul-but').modal('hide');
@@ -52,7 +58,19 @@ function modalStaticMultipleButton(message,a){
 	$('#msmb-no').bind('click',no);
 	$('#mod-sta-mul-but').modal({backdrop : 'static'});
 }
+function modalStaticSingleInformation(title,message){
+	$('#mssw-body').css({
+		'display' : 'block'
+	});
+	j('#mssw-message').setInHtml(title);
+	j('#mssw-body').setInHtml(message);
+	$('#mod-sta-sing-warn').modal({backdrop : 'static'});
+}
+//warning message
 function modalStaticSingleWarning(message){
+	$('#mssw-body').css({
+		'display' : 'none'
+	});
 	j('#mssw-message').setInHtml(message);
 	$('#mod-sta-sing-warn').modal({backdrop : 'static'});
 }
@@ -126,7 +144,7 @@ if(parseInt(b) == 200){
 				setLoadingBarMessage("server mengalami kesalahan instruksi ...");
 				setTimeout(function(){
 					closeLoadingBar();
-					reloadTable();
+					//reloadTable();
 				},2000);	
 			}
 			if(parseInt(b) == 404){
@@ -134,7 +152,7 @@ if(parseInt(b) == 200){
 				setLoadingBarMessage("response tidak ditemukan ...");
 				setTimeout(function(){
 					closeLoadingBar();
-					reloadTable();
+					//reloadTable();
 				},2000);	
 			}
 			if(parseInt(b) >= 301 && parseInt(b) <= 303){
@@ -142,7 +160,7 @@ if(parseInt(b) == 200){
 				setLoadingBarMessage("response di tolak ...");
 				setTimeout(function(){
 					closeLoadingBar();
-					reloadTable();
+					//reloadTable();
 				},2000);	
 			}
 }
@@ -218,7 +236,7 @@ $('document').ready(function(){
 				'<div class="modal-dialog">'+
 					'<div class="modal-content">'+ 
 						'<div class="modal-header">'+ 
-							'<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>'+
+							
 							'<h4 class="modal-title" id="msmb-message"></h4>'+
 						'</div>'+
 						'<div class="modal-body" id="msmb-body">'+
@@ -235,8 +253,11 @@ $('document').ready(function(){
 				'<div class="modal-dialog">'+
 					'<div class="modal-content">'+ 
 						'<div class="modal-header">'+ 
-							'<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>'+
+							
 							'<h4 class="modal-title" id="mssw-message"></h4>'+
+						'</div>'+
+						'<div id="mssw-body" class="" style="background-color : rgb(200,200,200); color: #666;">'+
+							
 						'</div>'+
 						'<div class="modal-footer">'+
 							'<button type="button" class="btn btn-danger btn-clean" data-dismiss="modal">Terima kasih</button>'+ 
@@ -285,7 +306,7 @@ $('document').ready(function(){
 							'<h4 class="modal-title" id="modal_default_header">Informasi sekilas</h4>'+
 						'</div>'+
 						'<div class="modal-body clearfix">'+
-							'<p class="grey-blur" id="modal_default_message" class=""></p>'+
+							'<p class="grey-blur" id="modal_default_message" class="" style="word-wrap : true;word-break:break-all;word-wrap:break-word;"></p>'+
 						'</div>'+
 						'<div class="modal-footer">'+
 							'<button type="button" class="btn btn-default btn-clean" data-dismiss="modal">Tutup</button>'+

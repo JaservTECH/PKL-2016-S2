@@ -24,7 +24,7 @@ function reloadChart(){
 	openLoadingBar("mengambil diagram ...");
 	j('#setAjax').setAjax({
 		methode : 'POST',
-		url : 'Controlroom/getJsonTableNow.aspx',
+		url : 'Controlregistrasi/getJsonTableNow.aspx',
 		bool : true,
 		content : "kode=JASERVCONTROL",
 		sucOk : function(a){
@@ -96,7 +96,7 @@ function reloadTable(){
 	openLoadingBar("refresh tabel ...");
 	j("#setAjax").setAjax({
 		methode:"POST",
-		url : "Controlroom/getPemerataanListMahasiswa.aspx",
+		url : "Controlregistrasi/getPemerataanListMahasiswa.aspx",
 		bool : true,
 		content : "kode=controlroom",
 		sucOk : function(a){
@@ -116,7 +116,7 @@ function changeDospem(nim,value){
 	openLoadingBar("menyimpan perubahan ...");
 	j('#setAjax').setAjax({
 		methode : 'POST',
-		url : "Controlroom/setDospem.aspx",
+		url : "Controlregistrasi/setDospem.aspx",
 		content : "nim="+nim+"&nip="+value+"&kode=JASERVCONTROL",
 		bool : true,
 		sucOk : function(a){

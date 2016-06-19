@@ -31,7 +31,7 @@ class Koordinator extends Aktor{
 				if($this->sc_ea->setUpdateEventActiveRegister())
 					return $this->setCategoryPrintMessage(0, TRUE, "Berhasil, input data");
 				else
-					return $this->setCategoryPrintMessage(0, FALSE, "Gagal, input data");
+					return $this->setCategoryPrintMessage(0, FALSE, "Gagal1, input data");
 					
 			}else{
 				$this->sc_ea->resetValue();
@@ -49,11 +49,12 @@ class Koordinator extends Aktor{
 					if($this->sc_ea->setNewEventActiveRegister())
 						return $this->setCategoryPrintMessage(0, TRUE, "Berhasil, input data");
 					else
-						return $this->setCategoryPrintMessage(0, FALSE, "Gagal, input data");
+						return $this->setCategoryPrintMessage(0, FALSE, "Gagal0, input data");
 				}else
 					return $this->setCategoryPrintMessage(0, FALSE, "Gagal, input data");
 			}
 		}else{
+			exit("0gogogo");
 			$this->sc_ea->resetValue();
 			$this->sc_ea->setYear($YEAR);
 			$this->sc_ea->setSemester($SEMESTER);
@@ -118,6 +119,7 @@ class Koordinator extends Aktor{
 		return $this->sc_ea->query("*","e_id=".$id." AND e_event=3")->row_array();
 	}
 	*/
+	/*
 	public function getListEventkoordinator($key){
 		$temp = $this->sc_ea->query("*","e_event=3 AND e_status=1")->result_array();
 		if(count($temp) > 0){
@@ -147,10 +149,14 @@ class Koordinator extends Aktor{
 			return $this->sc_ea->query("*","e_event=3 AND e_year=".$key." order by e_year desc,e_semester desc")->result_array();
 		}
 	}
+	*/
 	//memperoleh daftar list acara sesi akademik
+	//transisi on sc_es -> getListAkademicActive()
+	/*
 	public function getListEventAcademic(){
 		return $this->sc_ea->query("*","e_event=1 order by e_id desc")->result_array();
 	}
+	*/
 	//get code registrasi yang aktif - valid
 	public function getCodeRegisterAktif(){
 		$this->sc_ea->getListAkademicActive();

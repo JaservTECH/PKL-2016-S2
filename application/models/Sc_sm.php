@@ -122,10 +122,44 @@ class Sc_sm extends CI_Model {
 			return false;
 		}
 	}
-	
+	public function setSeminarTA1CloseOrOpen(){
+		if($this->getNim() == null)
+			return false;
+		if($this->getSeminarTA1() == null)
+			return false;
+		$this->update("s_seminar_ta1='".$this->getSeminarTA1()."'","s_nim='".$this->getNim()."'");
+		return true;
+	}
+	public function setSeminarTA2CloseOrOpen(){
+		if($this->getNim() == null)
+			return false;
+		if($this->getSeminarTA2() == null)
+			return false;
+		$this->update("s_seminar_ta2='".$this->getSeminarTA2()."'","s_nim='".$this->getNim()."'");
+		return true;
+	}
+	public function getAllListOrderByNim(){
+		$this->TEMP_RESULT_ARRAY = $this->query('*',"s_statue=1 order by s_nim")->result_array();
+		return $this->neutralizedResultArray();
+	}
+	public function setSeminarTA2CloseOrOppen(){
+		if($this->getNim() == null)
+			return false;
+		if($this->getSeminarTA2() == null)
+			return false;
+		$this->update("s_seminar_ta2='".$this->getSeminarTA1()."'","s_nim='".$this->getNim()."'");
+		return true;
+	}
 	public function getDataNim($TEMP_VALUE_NIM=""){
 		if($TEMP_VALUE_NIM == ""){
-			return false;
+			if($this->getNim() == NULL)
+				return false;
+			else{
+				
+				$TEMP_ROW_ARRAY = $this->query('*','s_nim="'.$this->getNim().'"')->row_array();
+				if(count($TEMP_ROW_ARRAY) > 0){	$this->automaSetContent($TEMP_ROW_ARRAY); return true; }else{ $this->resetValue(); return false;}
+			}
+			//return false;
 		}else{
 			$TEMP_ROW_ARRAY = $this->query('*','s_nim="'.$TEMP_VALUE_NIM.'"')->row_array();
 			if(count($TEMP_ROW_ARRAY) > 0){	$this->automaSetContent($TEMP_ROW_ARRAY); return true; }else{ $this->resetValue(); return false;}

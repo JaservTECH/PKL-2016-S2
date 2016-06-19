@@ -1,4 +1,5 @@
 var navbarNavigation = {};
+var barSettingProfile = false;
 $(document).ready(function(){
 	if($(".datepickers").length>0)$(".datepickers").datepicker({nextText:"",prevText:""});
 	resetControlNavigasi();
@@ -17,160 +18,395 @@ $(document).ready(function(){
 		},5000);
 	},3000);
 	$('#home-layout').on('click',function(){
-		if(navbarNavigation['home'] == 0){
-			if(navbarNavigation['form-control'] == 1){
-				modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
-			}else{
-				resetControlNavigasi();
-				navbarNavigation['home']=1;
-				setBreadCrumb({0:'Beranda'});
-				setNewContentIntern("Classroom/getLayoutHome",function(){},function(){},function(){});	
-			}
+		if(barSettingProfile){
+			setBreadCrumb({0:'Beranda'});
+			barSettingProfile = false;
+			closeLoadingBar(function(){
+				if(navbarNavigation['home'] == 0){
+					if(navbarNavigation['form-control'] == 1){
+						modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+					}else{
+						resetControlNavigasi();
+						navbarNavigation['home']=1;
+						setBreadCrumb({0:'Beranda'});
+						setNewContentIntern("Classroom/getLayoutHome",function(){},function(){},function(){});	
+					}
+				}				
+			});
+		}else{
+			if(navbarNavigation['home'] == 0){
+				if(navbarNavigation['form-control'] == 1){
+					modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+				}else{
+					resetControlNavigasi();
+					navbarNavigation['home']=1;
+					setBreadCrumb({0:'Beranda'});
+					setNewContentIntern("Classroom/getLayoutHome",function(){},function(){},function(){});	
+				}
+			}	
 		}
 	});
 	$('#registrasi-baru-layout').on('click',function(){
-		if(navbarNavigation['baru'] == 0){
-			if(navbarNavigation['form-control'] == 1){
-				modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
-			}else{
-				resetControlNavigasi();
-				navbarNavigation['baru']=1;
-				setBreadCrumb({0:'Registrasi TA',1:"baru"});
-				setNewContentIntern(
-					"Classregistrasibaru/getLayoutRegistrasiBaru",
-					function(){reLoadFormBaru();},
-					function(){
-						$("#content-intern").slideUp('slow',function(){
-							j("#content-intern").setInHtml();
-							j("#setAjax").setAjax({
-								methode : 'POST',
-								url : "Classregistrasibaru/getLayoutRegistrasiBaru.aspx",
-								bool : true,
-								content : "force=trueJaserv",
-								sucOk : function(a){
-									j("#content-intern").setInHtml(a.substr(1,a.length-1));
-									if(a[0] == '1'){
-										$('#content-intern').slideDown('slow',function(){
-											reLoadFormBaru();
-										});
-									}else{
-										$('#content-intern').slideDown('slow');
-									}
-								}
-							});
-						});
-					},
-					function(){
-						$('#registrasi-lama-layout').trigger('click');
+		if(barSettingProfile){
+			setBreadCrumb({0:'Registrasi TA',1:"baru"});
+			barSettingProfile = false;
+			closeSettingLayout(function(){
+				if(navbarNavigation['baru'] == 0){
+					if(navbarNavigation['form-control'] == 1){
+						modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+					}else{
+						resetControlNavigasi();
+						navbarNavigation['baru']=1;
+						setBreadCrumb({0:'Registrasi TA',1:"baru"});
+						setNewContentIntern(
+							"Classregistrasibaru/getLayoutRegistrasiBaru",
+							function(){reLoadFormBaru();},
+							function(){
+								$("#content-intern").slideUp('slow',function(){
+									j("#content-intern").setInHtml();
+									j("#setAjax").setAjax({
+										methode : 'POST',
+										url : "Classregistrasibaru/getLayoutRegistrasiBaru.aspx",
+										bool : true,
+										content : "force=trueJaserv",
+										sucOk : function(a){
+											j("#content-intern").setInHtml(a.substr(1,a.length-1));
+											if(a[0] == '1'){
+												$('#content-intern').slideDown('slow',function(){
+													reLoadFormBaru();
+												});
+											}else{
+												$('#content-intern').slideDown('slow');
+											}
+										}
+									});
+								});
+							},
+							function(){
+								$('#registrasi-lama-layout').trigger('click');
+							}
+						);
 					}
-				);
+				}
+				
+			});
+		}else{
+			if(navbarNavigation['baru'] == 0){
+				if(navbarNavigation['form-control'] == 1){
+					modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+				}else{
+					resetControlNavigasi();
+					navbarNavigation['baru']=1;
+					setBreadCrumb({0:'Registrasi TA',1:"baru"});
+					setNewContentIntern(
+						"Classregistrasibaru/getLayoutRegistrasiBaru",
+						function(){reLoadFormBaru();},
+						function(){
+							$("#content-intern").slideUp('slow',function(){
+								j("#content-intern").setInHtml();
+								j("#setAjax").setAjax({
+									methode : 'POST',
+									url : "Classregistrasibaru/getLayoutRegistrasiBaru.aspx",
+									bool : true,
+									content : "force=trueJaserv",
+									sucOk : function(a){
+										j("#content-intern").setInHtml(a.substr(1,a.length-1));
+										if(a[0] == '1'){
+											$('#content-intern').slideDown('slow',function(){
+												reLoadFormBaru();
+											});
+										}else{
+											$('#content-intern').slideDown('slow');
+										}
+									}
+								});
+							});
+						},
+						function(){
+							$('#registrasi-lama-layout').trigger('click');
+						}
+					);
+				}
 			}
 		}
 	});
 	$('#registrasi-lama-layout').on('click',function(){
-		if(navbarNavigation['lama'] == 0){
-			if(navbarNavigation['form-control'] == 1){
-				modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
-			}else{
-				resetControlNavigasi();
-				navbarNavigation['lama']=1;
-				setBreadCrumb({0:'Registrasi TA',1:"lama"});
-				setNewContentIntern(
-					"Classregistrasilama/getLayoutRegistrasiLama",
-					function(){reLoadFormLama();},
-					function(){
-						$("#content-intern").slideUp('slow',function(){
-							j("#content-intern").setInHtml();
-							j("#setAjax").setAjax({
-								methode : 'POST',
-								url : "Classregistrasilama/getLayoutRegistrasiLama.aspx",
-								bool : true,
-								content : "force=trueJaserv",
-								sucOk : function(a){
-									j("#content-intern").setInHtml(a.substr(1,a.length-1));
-									if(a[0] == '1'){
-										$('#content-intern').slideDown('slow',function(){
-											reLoadFormLama();
-										});
-									}else{
-										$('#content-intern').slideDown('slow');
-									}
-								}
-							});
-						});
-					},
-					function(){
-						$('#registrasi-baru-layout').trigger('click');
+		if(barSettingProfile){
+			setBreadCrumb({0:'Registrasi TA',1:"lama"});
+			barSettingProfile = false;
+			closeSettingLayout(function(){
+				if(navbarNavigation['lama'] == 0){
+					if(navbarNavigation['form-control'] == 1){
+						modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+					}else{
+						resetControlNavigasi();
+						navbarNavigation['lama']=1;
+						setBreadCrumb({0:'Registrasi TA',1:"lama"});
+						setNewContentIntern(
+							"Classregistrasilama/getLayoutRegistrasiLama",
+							function(){reLoadFormLama();},
+							function(){
+								$("#content-intern").slideUp('slow',function(){
+									j("#content-intern").setInHtml();
+									j("#setAjax").setAjax({
+										methode : 'POST',
+										url : "Classregistrasilama/getLayoutRegistrasiLama.aspx",
+										bool : true,
+										content : "force=trueJaserv",
+										sucOk : function(a){
+											j("#content-intern").setInHtml(a.substr(1,a.length-1));
+											if(a[0] == '1'){
+												$('#content-intern').slideDown('slow',function(){
+													reLoadFormLama();
+												});
+											}else{
+												$('#content-intern').slideDown('slow');
+											}
+										}
+									});
+								});
+							},
+							function(){
+								$('#registrasi-baru-layout').trigger('click');
+							}
+						);
 					}
-				);
+				}
+				
+			});
+		}else{
+			if(navbarNavigation['lama'] == 0){
+				if(navbarNavigation['form-control'] == 1){
+					modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+				}else{
+					resetControlNavigasi();
+					navbarNavigation['lama']=1;
+					setBreadCrumb({0:'Registrasi TA',1:"lama"});
+					setNewContentIntern(
+						"Classregistrasilama/getLayoutRegistrasiLama",
+						function(){reLoadFormLama();},
+						function(){
+							$("#content-intern").slideUp('slow',function(){
+								j("#content-intern").setInHtml();
+								j("#setAjax").setAjax({
+									methode : 'POST',
+									url : "Classregistrasilama/getLayoutRegistrasiLama.aspx",
+									bool : true,
+									content : "force=trueJaserv",
+									sucOk : function(a){
+										j("#content-intern").setInHtml(a.substr(1,a.length-1));
+										if(a[0] == '1'){
+											$('#content-intern').slideDown('slow',function(){
+												reLoadFormLama();
+											});
+										}else{
+											$('#content-intern').slideDown('slow');
+										}
+									}
+								});
+							});
+						},
+						function(){
+							$('#registrasi-baru-layout').trigger('click');
+						}
+					);
+				}
 			}
+			
+		}
+	});
+	$('#pengaturan-control').on('click',function(){
+		if(!barSettingProfile){
+			barSettingProfile=true;
+			openSettingLayout();
 		}
 	});
 	$('#seminar-ta1-layout').on('click',function(){
-		if(navbarNavigation['t1'] == 0){
-			if(navbarNavigation['form-control'] == 1){
-				modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
-			}else{
-				resetControlNavigasi();
-				navbarNavigation['t1']=1;
-				setBreadCrumb({0:'Seminar TA',1:"pertama"});
-				setNewContentIntern("Classseminartas/getLayoutTaS",function(){
-					SeminarTAS();
-				},function(){},function(){});
-			}
+		if(barSettingProfile){
+			setBreadCrumb({0:'Seminar TA',1:"pertama"});
+			barSettingProfile = false;
+			closeSettingLayout(function(){
+				if(navbarNavigation['t1'] == 0){
+					if(navbarNavigation['form-control'] == 1){
+						modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+					}else{
+						resetControlNavigasi();
+						navbarNavigation['t1']=1;
+						setBreadCrumb({0:'Seminar TA',1:"pertama"});
+						
+						setNewContentInternSeminar("Classseminartas/getLayoutTaS",function(a){
+							SeminarTAS(a);
+						});
+					}
+				}
+			});
+		}else{
+			if(navbarNavigation['t1'] == 0){
+				if(navbarNavigation['form-control'] == 1){
+					modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+				}else{
+					resetControlNavigasi();
+					navbarNavigation['t1']=1;
+					setBreadCrumb({0:'Seminar TA',1:"pertama"});
+					
+					setNewContentInternSeminar("Classseminartas/getLayoutTaS",function(a){
+						SeminarTAS(a);
+					});
+				}
+			}	
 		}
 	});
 	$('#seminar-ta2-layout').on('click',function(){
-		if(navbarNavigation['t2'] == 0){
-			if(navbarNavigation['form-control'] == 1){
-				modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
-			}else{
-				resetControlNavigasi();
-				navbarNavigation['t2']=1;
-				setBreadCrumb({0:'Seminar TA',1:"kedua"});
-			}
+		if(barSettingProfile){
+			setBreadCrumb({0:'Seminar TA',1:"kedua"});
+			barSettingProfile = false;
+			closeSettingLayout(function(){
+				if(navbarNavigation['t2'] == 0){
+					if(navbarNavigation['form-control'] == 1){
+						modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+					}else{
+						resetControlNavigasi();
+						navbarNavigation['t2']=1;
+						setBreadCrumb({0:'Seminar TA',1:"kedua"});
+						setNewContentInternSeminar("Classseminartad/getLayoutTaD",function(a){
+							SeminarTAD(a);
+						});
+					}
+				}
+			});
+		}else{
+			if(navbarNavigation['t2'] == 0){
+				if(navbarNavigation['form-control'] == 1){
+					modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+				}else{
+					resetControlNavigasi();
+					navbarNavigation['t2']=1;
+					setBreadCrumb({0:'Seminar TA',1:"kedua"});
+					setNewContentInternSeminar("Classseminartad/getLayoutTaD",function(a){
+						SeminarTAD(a);
+					});
+				}
+			}	
 		}
 	});
 	$('#lihat-dosen-layout').on('click',function(){
-		if(navbarNavigation['dosen'] == 0){
-			if(navbarNavigation['form-control'] == 1){
-				modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
-			}else{
-				resetControlNavigasi();
-				navbarNavigation['dosen']=1;
-				setBreadCrumb({0:'Lihat',1:"dosen"});
-				setNewContentIntern2("Classdosenpreview/getListDosenAktif",function(){
-					mainListDosen();
-				});
-			}
+		if(barSettingProfile){
+			setBreadCrumb({0:'Lihat',1:"dosen"});
+			barSettingProfile = false;
+			closeSettingLayout(function(){
+				if(navbarNavigation['dosen'] == 0){
+					if(navbarNavigation['form-control'] == 1){
+						modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+					}else{
+						resetControlNavigasi();
+						navbarNavigation['dosen']=1;
+						setBreadCrumb({0:'Lihat',1:"dosen"});
+						setNewContentIntern2("Classdosenpreview/getListDosenAktif",function(){
+							mainListDosen();
+						});
+					}
+				}
+			});
+		}else{
+			if(navbarNavigation['dosen'] == 0){
+				if(navbarNavigation['form-control'] == 1){
+					modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+				}else{
+					resetControlNavigasi();
+					navbarNavigation['dosen']=1;
+					setBreadCrumb({0:'Lihat',1:"dosen"});
+					setNewContentIntern2("Classdosenpreview/getListDosenAktif",function(){
+						mainListDosen();
+					});
+				}
+			}	
 		}
 	});
 	$('#lihat-bimbingan-layout').on('click',function(){
-		if(navbarNavigation['bimbingan'] == 0){
-			if(navbarNavigation['form-control'] == 1){
-				modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
-			}else{
-				resetControlNavigasi();
-				navbarNavigation['bimbingan']=1;
-				setBreadCrumb({0:'Lihat',1:"bimbingan"});
-				setNewContentIntern2("Classbimbingan/getLayoutBimbingan",function(){
-					mainBimbingan();
-				});
-			}
+		if(barSettingProfile){
+			setBreadCrumb({0:'Lihat',1:"bimbingan"});
+			barSettingProfile = false;
+			closeSettingLayout(function(){
+				if(navbarNavigation['bimbingan'] == 0){
+					if(navbarNavigation['form-control'] == 1){
+						modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+					}else{
+						resetControlNavigasi();
+						navbarNavigation['bimbingan']=1;
+						setBreadCrumb({0:'Lihat',1:"bimbingan"});
+						setNewContentIntern2("Classbimbingan/getLayoutBimbingan",function(){
+							mainBimbingan();
+						});
+					}
+				}
+			});
+		}else{
+			if(navbarNavigation['bimbingan'] == 0){
+				if(navbarNavigation['form-control'] == 1){
+					modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+				}else{
+					resetControlNavigasi();
+					navbarNavigation['bimbingan']=1;
+					setBreadCrumb({0:'Lihat',1:"bimbingan"});
+					setNewContentIntern2("Classbimbingan/getLayoutBimbingan",function(){
+						mainBimbingan();
+					});
+				}
+			}	
 		}
 	});
 	$('#bantuan-layout').on('bantuan',function(){
-		if(navbarNavigation['bantuan'] == 0){
-			if(navbarNavigation['form-control'] == 1){
-				modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
-			}else{
-				resetControlNavigasi();
-				navbarNavigation['t1']=1;
-				setBreadCrumb({0:'Bantuan'});
+		if(barSettingProfile){
+			setBreadCrumb({0:'Bantuan'});
+			barSettingProfile = false;
+			closeSettingLayout(function(){
+				if(navbarNavigation['bantuan'] == 0){
+					if(navbarNavigation['form-control'] == 1){
+						modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+					}else{
+						resetControlNavigasi();
+						navbarNavigation['t1']=1;
+						setBreadCrumb({0:'Bantuan'});
+					}
+				}
+			});
+		}else{				
+			if(navbarNavigation['bantuan'] == 0){
+				if(navbarNavigation['form-control'] == 1){
+					modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
+				}else{
+					resetControlNavigasi();
+					navbarNavigation['t1']=1;
+					setBreadCrumb({0:'Bantuan'});
+				}
 			}
 		}
 	});
 });
+function openSettingLayout(){
+	$('#default-left').slideUp('slow',function(){
+		setBreadCrumb({0:'Pengaturan'});
+		$("#setting-left-1").slideDown('slow');
+		$("#setting-left-2").slideDown('slow',function(){
+			pengaturanMahasiswaDefault();
+		});
+	});
+	$("#content-intern").slideUp('slow',function(){
+		$("#content-setting").slideDown('slow');
+	});
+}
+function closeSettingLayout(a){
+	$("#setting-left-1").slideUp("slow",function(){
+		$("#default-left").slideDown("slow");
+	});
+	$("#setting-left-2").slideUp("slow",function(){
+		//$("#content-intern").html("");
+		a();
+		/* $("#content-intern").slideDown("slow",function(){
+		}); */
+	});
+	$("#content-setting").slideUp("slow");
+}
 function resetControlNavigasi(){
 	navbarNavigation['home'] = 0;
 	navbarNavigation['baru'] = 0;
@@ -190,6 +426,30 @@ function setLoadingBarMessage(a){
 }
 function closeLoadingBar(){
 	$('#statusbar-loading').fadeOut('slow');
+}
+
+function setNewContentInternSeminar(data,aa){
+	openLoadingBar("mengganti layout ...");
+	$("#content-intern").slideUp('slow',function(){
+		j("#content-intern").setInHtml();
+		j("#setAjax").setAjax({
+			methode : 'POST',
+			url : data+".aspx",
+			bool : true,
+			content : "",
+			sucOk : function(a){
+				j("#content-intern").setInHtml(a.substr(2,a.length-2));
+				if(a[0] == '1'){
+					$('#content-intern').slideDown('slow',function(){
+						aa(a[1]);
+					});
+				}else{
+					$('#content-intern').slideDown('slow');
+				}
+				closeLoadingBar()
+			}
+		});
+	});
 }
 function setNewContentIntern(data,aa,yes,not){
 	openLoadingBar("mengganti layout ...");
@@ -227,8 +487,6 @@ function setNewContentIntern(data,aa,yes,not){
 		});
 	});
 }
-
-
 function setNewContentIntern2(data,aa){
 	openLoadingBar("mengganti layout ...");
 	$("#content-intern").slideUp('slow',function(){

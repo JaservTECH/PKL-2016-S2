@@ -13,7 +13,7 @@ $(document).ready(function(){
 	resetControlNavigasi();
 	navbarNavigation['acara']=1;
 	setBreadCrumb({0:'Acara'});
-	setNewIntern("getLayoutAcara",function(){
+	setNewIntern("Controlacara/getLayoutAcara",function(){
 		mainAcara();
 	},function(){
 
@@ -33,7 +33,7 @@ $(document).ready(function(){
 				resetControlNavigasi();
 				navbarNavigation['acara']=1;
 				setBreadCrumb({0:'Acara'});
-				setNewIntern("getLayoutAcara",function(){
+				setNewIntern("Controlacara/getLayoutAcara",function(){
 					mainAcara();
 				},function(){
 
@@ -97,7 +97,7 @@ $(document).ready(function(){
 				navbarNavigation['registrasi']=1;
 				setBreadCrumb({0:'Registrasi'});
 				hidePlugin();
-				setNewIntern("getLayoutRegistrasi",function(){
+				setNewIntern("Controlregistrasi/getLayoutRegistrasi",function(){
 					reloadRegistrasiPemerataan();
 				},function(){
 					
@@ -124,7 +124,7 @@ function setNewIntern(data,f,g){
 		j("#content-intern").setInHtml();
 		j("#setAjax").setAjax({
 			methode : "POST",
-			url : "Controlroom/"+data+".aspx",
+			url : data+".aspx",
 			bool : true,
 			content : "kode=JASERV-KOOR",
 			sucOk : function(a){

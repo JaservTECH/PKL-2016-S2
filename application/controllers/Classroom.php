@@ -53,10 +53,12 @@ class Classroom extends CI_Controller {
 				"resources/LibraryJaserv/js/jaserv.min.dev.js",
 				"resources/mystyle/js/global-style.js",
 				"resources/mystyle/js/SeminarTAS.js",
+				"resources/mystyle/js/SeminarTAD.js",
 				"resources/mystyle/js/Classroom.js",
 				"resources/mystyle/js/RegistrasiBaru.js",
 				"resources/mystyle/js/RegistrasiLama.js",
 				"resources/mystyle/js/list-dosen-mahasiswa.js",
+				"resources/mystyle/js/pengaturan-mahasiswa.js",
 				"resources/mystyle/js/Bimbingan.js"
 				//"resources/dist/date/bootstrap.min.js",
 				//"resources/dist/date/moment-with-locales.js",

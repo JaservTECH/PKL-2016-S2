@@ -16,7 +16,19 @@ class Dosen extends Aktor {
 	}
 	*/
 	public function getListDosen(){
-		return $this->sc_sd->query("s_id as id, s_name as nama","s_status=1")->result_array();
+		$this->sc_sd->resetValue();
+		$i=0;
+		$gg['data'] = false;
+		if($this->sc_sd->getListDosenActive()){
+			while($this->sc_sd->getNextCursor()){
+				$gg['data'] = true;
+				$gg[$i]['nama'] = $this->sc_sd->getNama();
+				$gg[$i]['id'] = $this->sc_sd->getNip();
+				$i++;
+				$gg['length'] = $i;
+			}
+		}
+		return $gg;
 	}
 	
 	public function setStatusDosen($nip,$stat){

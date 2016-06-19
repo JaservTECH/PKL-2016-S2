@@ -13,6 +13,20 @@ class Sc_ea extends CI_Model {
 		$this->TEMP_INDEX_RESULT_ARRAY = 0;
 		return $this->neutralizedResultArray();
 	}
+	public function getEventKoordinatorActive(){
+		$this->TEMP_RESULT_ARRAY = $this->query("*","e_event=3 AND e_status=1")->result_array();
+		$this->TEMP_INDEX_RESULT_ARRAY = 0;
+		return $this->neutralizedResultArray();
+	}
+	public function getEventKoorWithStyle(){
+		if($this->getYear() == null)
+			$this->TEMP_RESULT_ARRAY = $this->query("*","e_event=3 order by e_year desc, e_semester desc")->result_array();
+		else
+			$this->TEMP_RESULT_ARRAY = $this->query("*","e_event=3 AND e_year=".$this->getYear()." order by e_year desc,e_semester desc")->result_array();
+		$this->TEMP_INDEX_RESULT_ARRAY = 0;
+		return $this->neutralizedResultArray();
+	}
+
 	//neutralizedResultArray
 	protected function neutralizedResultArray(){
 		$this->TEMP_INDEX_RESULT_ARRAY = 0;
@@ -36,18 +50,14 @@ class Sc_ea extends CI_Model {
 	public function setUpdateEventActiveRegister(){
 		if($this->queryBuilder() == "")
 			return false;
-		if($this->update($this->queryBuilder(),"e_status=1 AND e_event=1"))
-			return true;
-		else
-			return false;
+		$this->update($this->queryBuilder(),"e_status=1 AND e_event=1");
+		return true;
 	}
 	public function setNewEventActiveRegister(){
 		if(count($this->arrayBuilder()) <=0)
 			return false;
-		if($this->sc_ea->insert($this->arrayBuilder()))
-			return true;
-		else
-			return false;
+		$this->sc_ea->insert($this->arrayBuilder());
+		return true;
 	}
 	
 	//update data full
@@ -56,9 +66,9 @@ class Sc_ea extends CI_Model {
 			return false;
 		$TEMP_ID = $this->getId();
 		$this->setId(NULL);
-		if($this->queryBuilder == "")
+		if($this->queryBuilder() == "")
 			return false;
-		$this->update($this->queryBuilder(),"e_id=".$TEMP_ID." AND e_event=3");
+		$this->update($this->queryBuilder(),"e_id='".$TEMP_ID."'");
 		return true;
 	}
 	/*
@@ -330,8 +340,6 @@ class Sc_ea extends CI_Model {
 	}
 	//valid
 	public function getDataRegistrasiAktifNow(){
-		if(!$this->isKoordinatorKeyAllowed())
-			return false;
 		if(intval(DATE("m")) > 6){
 			$YEAR = intval(date("Y"));
 			$SEMESTER = 1;

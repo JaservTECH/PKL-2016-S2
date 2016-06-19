@@ -290,7 +290,7 @@ class Mahasiswa extends Aktor{
 		return (array(FALSE,NULL));
 	}
 	//encrypt - valid
-	protected function getResultEncryptMahasiswaString($TEMP_VALUE_STRING){return md5($TEMP_VALUE_STRING."Mahasiswa.Encrypt.String");}
+	public function getResultEncryptMahasiswaString($TEMP_VALUE_STRING){return md5($TEMP_VALUE_STRING."Mahasiswa.Encrypt.String");}
 	
 	//check nim - valid
 	public function getContactFormat($TEMP_VALUE_NIM = ""){
@@ -401,8 +401,63 @@ class Mahasiswa extends Aktor{
 		if(!$this->getStatusLoginMahasiswa())
 			return NULL;
 		return $this->session->userdata('nim');
+	} 
+	//koordinator kontrol add new nip to registrasi
+	public function setDospemForTA($nim,$nip,$srt){
+		if(!$this->getCheckNim($nim,1)[0])
+			return false;
+		if($nip == "")
+			return false;
+		if($srt == "")
+			return false;
+		$this->sc_st->resetValue();
+		$this->sc_st->setNim($nim);
+		$this->sc_st->setKode($srt);
+		$this->sc_st->getDataActiveRegister();
+		//$TEMP_DATA_MAHASISWA = $this->sc_st;
+		$TEMP_DATA_MAHASISWA = array(
+			'judulta' => $this->sc_st->getJudulTa(),
+			'metode' => $this->sc_st->getMetode(),
+			'refrences' => $this->sc_st->getReferensis(),
+			'referensid' => $this->sc_st->getReferensid(),
+			'referensit' => $this->sc_st->getReferensit(),
+			'lokasi' => $this->sc_st->getLokasi(),
+			'namakrs' => $this->sc_st->getNamaKrs(),
+			'status' => $this->sc_st->getStatus(),
+			'logstatus' => $this->sc_st->getLogStatus(),
+			'kategori' => $this->sc_st->getKategori(),
+			'dataproses' => $this->sc_st->getDataProses()
+		);
+		//counting data
+		$this->sc_st->resetValue();
+		$this->sc_st->setNim($nim);
+		$this->sc_st->setKode($srt);
+		$this->sc_st->getHaveLastTAInfo(FALSE);
+		$TEMP_COUNT = $this->sc_st->getCount();
+		//log data
+		$this->sc_st->resetValue();
+		$this->sc_st->setNim($nim);
+		$this->sc_st->setKode($srt);
+		$this->sc_st->setLogStatus($TEMP_COUNT);
+		$this->sc_st->setLog();
+		//insert again
+		$this->sc_st->resetValue();
+		$this->sc_st->setNim($nim);
+		$this->sc_st->setKode($srt);
+		$this->sc_st->setNip($nip);
+		$this->sc_st->setJudulTa($TEMP_DATA_MAHASISWA['judulta']);
+		$this->sc_st->setMetode($TEMP_DATA_MAHASISWA['metode']);
+		$this->sc_st->setReferensis($TEMP_DATA_MAHASISWA['refrences']);
+		$this->sc_st->setReferensid($TEMP_DATA_MAHASISWA['referensid']);
+		$this->sc_st->setReferensit($TEMP_DATA_MAHASISWA['referensit']);
+		$this->sc_st->setLokasi($TEMP_DATA_MAHASISWA['lokasi']);
+		$this->sc_st->setNamaKrs($TEMP_DATA_MAHASISWA['namakrs']);
+		$this->sc_st->setStatus($TEMP_DATA_MAHASISWA['status']);
+		$this->sc_st->setLogStatus($TEMP_DATA_MAHASISWA['logstatus']);
+		$this->sc_st->setKategori($TEMP_DATA_MAHASISWA['kategori']);
+		$this->sc_st->setDataProses($TEMP_DATA_MAHASISWA['dataproses']);
+		return $this->sc_st->setNewData();
 	}
-	
 	public function getTAInfo($srt,$data=null){
 		$temp = $this->sc_st->query("*","s_rt=".$srt." AND s_nim='".$this->session->userdata('nim')."'")->row_array(); 
 		if(count($temp)<=0)
@@ -443,13 +498,18 @@ class Mahasiswa extends Aktor{
 		}
 		return array(true,$temp2);
 	}
-	//Registrasi Lama proses
+	//Registrasi Lama proses - valid
 	public function setRegistrasiLama($data){
 		if(!$this->getStatusLoginMahasiswa())
 			header("location:".base_url()."gateinout.aspx");
+		
+		$this->sc_st->resetValue();
+		$this->sc_st->setNim($this->getNimSessionLogin());
+		$this->sc_st->setKode($data['codeRegist']);
+		$NUM = $this->sc_st->getCountDataPrimary();
 		$conPic['upload_path'] = './upload/krs/';
 		$conPic['allowed_types'] = 'pdf';
-		$conPic['file_name'] = $data['codereg']."-".$data['nim']."-krs";
+		$conPic['file_name'] = $data['codereg']."-".$data['nim']."-".$NUM."-krs";
 		$conPic['overwrite'] = true;
 		$conPic['remove_spaces'] = true;
 		$conPic['max_size'] = 1024;
@@ -517,13 +577,19 @@ class Mahasiswa extends Aktor{
 		$this->sc_lms->addNew();
 		return $this->setCategoryPrintMessage(1, true, "Valid");
 	}
-	//Registerasi Baru proses
+	//Registerasi Baru proses - valid
 	public function setRegistrasiBaru($data){
 		if(!$this->getStatusLoginMahasiswa())
 			header("location:".base_url()."gateinout.aspx");
+		
+		$this->sc_st->resetValue();
+		$this->sc_st->setNim($this->getNimSessionLogin());
+		$this->sc_st->setKode($data['codeRegist']);
+		$NUM = $this->sc_st->getCountDataPrimary();
+		
 		$conPic['upload_path'] = './upload/krs/';
 		$conPic['allowed_types'] = 'pdf';
-		$conPic['file_name'] = $data['codereg']."-".$data['nim']."-krs";
+		$conPic['file_name'] = $data['codereg']."-".$data['nim']."-".$NUM."-krs";
 		$conPic['overwrite'] = true;
 		$conPic['remove_spaces'] = true;
 		$conPic['max_size'] = 1024;
@@ -612,46 +678,102 @@ class Mahasiswa extends Aktor{
 	//Seminar TA
 	//Seminar TA 1
 	//-valid
-	public function setNewSeminarTA1($data){
-		if(!$this->getStatusLoginMahasiswa())
-			header("location:".base_url()."gateinout.aspx");
-		if(!$this->getStatusLockPermission("seminar-ta1"))
-			return $this->setCategoryPrintMessage(1, false, "class anda tidak dapat mengakses bagian objek ini");
-		if(!isset($data))
-			return false;
-		$data->setNim("24010313130125");
-		echo "hohoho".$data->getNim();
-	}
 
 	//-valid 
 	public function isAvailableRoomTASOn($TEMP_DATE_TIME,$TEMP_ROOM_NUMBER=1,$SRT = NULL,$CAT=0){
 		$this->setHelper('date');
 		//echo "koko ".nice_date($TEMP_DATE_TIME,"Y-m-d H:i:s");
 		//return;
+		//exit("0".nice_date($TEMP_DATE_TIME,"Y-m-d H:i:s"));
 		if(nice_date($TEMP_DATE_TIME,"Y-m-d H:i:s") == "Invalid Date"){
 			return $this->setCategoryPrintMessage($CAT, false, "Anda melakuan debugging dengan format tanggal");
 		}
-		exit("0 ".nice_date($TEMP_DATE_TIME,"Y-m-d H:i:s"));
+		//exit("0 ".nice_date($TEMP_DATE_TIME,"Y-m-d H:i:s"));
 		$TEMP_DATE_TIME = nice_date($TEMP_DATE_TIME,"Y-m-d H:i:s");
 		$OUR_HOUR = nice_date($TEMP_DATE_TIME,"H");
 		$OUR_MINUTE = nice_date($TEMP_DATE_TIME,"i");
+		$OUR_YEAR = nice_date($TEMP_DATE_TIME,"Y");
+		$OUR_MONTH = nice_date($TEMP_DATE_TIME,"m");
+		$OUR_DAY = nice_date($TEMP_DATE_TIME,"d");
+		//exit("0".$TEMP_DATE_TIME." ".date("Y-m-d H:i:s"));
+		if(intval($OUR_YEAR) < intval(date("Y"))){
+			return $this->setCategoryPrintMessage($CAT,false,"Tanggal dan jam minimum hari ini");
+		}else if(intval($OUR_YEAR) == intval(date("Y"))){
+			
+			if(intval($OUR_MONTH) < intval(date("m"))){
+				return $this->setCategoryPrintMessage($CAT,false,"Tanggal dan jam minimum hari ini");
+			}else if(intval($OUR_MONTH) == intval(date("m"))){
+				
+				if(intval($OUR_DAY) < intval(date("d"))){
+					return $this->setCategoryPrintMessage($CAT,false,"Tanggal dan jam minimum hari ini");
+				}else if(intval($OUR_DAY) == intval(date("d"))){
+					if(intval($OUR_HOUR) < intval(date("H"))+1){
+						return $this->setCategoryPrintMessage($CAT,false,"jam harus lebih 1 jam dari jam sekarang");
+					}
+				}
+			}
+		}
+		
 		if($SRT == NULL)
 			$SRT = $this->getYearNow();
 		$this->sc_std->resetValue();
 		$this->sc_std->setKode($SRT);
 		$this->sc_std->setTanggal($TEMP_DATE_TIME);
+		$this->sc_std->setKategori($TEMP_ROOM_NUMBER);
+		$this->sc_std->setDataProses("33");
 		if(!$this->sc_std->getDataTabelOnThisDay())
-			return $this->setCategoryPrintMessage($CAT,true,"VALID");
+			return $this->setCategoryPrintMessage($CAT,true,"Waktu di terima");
+		
+		//exit("0".var_dump($this->sc_std->TEMP_RESULT_ARRAY));
+		//exit("0asasas=".$TEMP_ROOM_NUMBER."=".var_dump($this->sc_std->getDataTabelOnThisDay()));
 		$ERROR = 0;
+		$OUR_AFTER_HOUR = $OUR_HOUR+2;
+		$OUR_AFTER_MINUTE = $OUR_MINUTE+30;
+		
+		if($OUR_AFTER_MINUTE > 59){
+			$OUR_AFTER_MINUTE -= 59;
+			$OUR_AFTER_HOUR +=1;
+		}
+		//exit("0".$OUR_HOUR." ".$OUR_MINUTE." ".$OUR_AFTER_HOUR." ".$OUR_AFTER_MINUTE);
+		
 		while($this->sc_std->getNextCursor()){
 			$OTHER_HOUR = nice_date($this->sc_std->getTanggal(),"H");
 			$OTHER_MINUTE = nice_date($this->sc_std->getTanggal(),"i");
-			$OUR_AFTER_HOUR = $OUR_HOUR+2;
-			$OUR_AFTER_MINUTE = $OUR_MINUTE+30;
-			if($OUR_AFTER_MINUTE > 59){
-				$OUR_AFTER_MINUTE -= 59;
-				$OUR_AFTER_HOUR +=1;
+			
+			$OTHER_AFTER_HOUR = $OTHER_HOUR+2;
+			$OTHER_AFTER_MINUTE = $OTHER_MINUTE+30;
+			
+			if($OTHER_AFTER_MINUTE > 59){
+				$OTHER_AFTER_MINUTE -= 59;
+				$OTHER_AFTER_HOUR +=1;
+			} 
+			if(intval($OUR_HOUR) == intval($OTHER_HOUR)){
+				$ERROR=1;
+			}else if(intval($OUR_HOUR) > intval($OTHER_HOUR)){
+				if(intval($OUR_HOUR) < intval($OTHER_AFTER_HOUR)){
+					$ERROR=1;
+					break;
+				}else if(intval($OUR_HOUR) == intval($OTHER_AFTER_HOUR)){
+					if(intval($OUR_MINUTE) < intval($OTHER_AFTER_MINUTE)){
+						$ERROR=1;
+						break;
+					}
+				}
+				//if do then go because exist
+			}else{
+				if(intval($OTHER_HOUR) < intval($OUR_AFTER_HOUR)){
+					$ERROR=2;
+					break;
+				}else if(intval($OTHER_HOUR) == intval($OUR_AFTER_HOUR)){
+					if(intval($OTHER_MINUTE) < intval($OUR_AFTER_MINUTE)){
+						$ERROR=2;
+						break;
+					}
+				}
+				//ifif do then is broken
 			}
+			/*
+			
 			if(intval($OUR_HOUR) > intval($OTHER_HOUR)){
 				if(intval($OUR_HOUR) == intval($OTHER_HOUR)+3){
 					if(intval($OTHER_MINUTE) > intval($OUR_MINUTE))
@@ -667,14 +789,70 @@ class Mahasiswa extends Aktor{
 					$ERROR += 1;
 				}
 			}
+			*/
 		}
+		if($ERROR > 0)
+			if($ERROR == 1)
+				return $this->setCategoryPrintMessage($CAT,FALSE,"Maaf, Kwaktu anda tabrakan dengan seminar sebelum anda");
+			else
+				return $this->setCategoryPrintMessage($CAT,FALSE,"Maaf, Kwaktu anda tabrakan dengan seminar sesudah anda");
+		
+		$this->setModel("sc_arte");
+		$this->sc_arte->resetValue();
+		$this->sc_arte->setTanggal($TEMP_DATE_TIME);
+		if($this->sc_arte->getAllData($TEMP_ROOM_NUMBER)){
+			//$data['kode'] = true;
+			
+			//exit("0sucllces".var_dump($this->sc_arte->TEMP_RESULT_ARRAY));
+			while($this->sc_arte->getNextCursor()){
+				$OTHER_HOUR = nice_date($this->sc_arte->getTanggal(),"H");
+				$OTHER_MINUTE = nice_date($this->sc_arte->getTanggal(),"i");
+				
+				$OTHER_AFTER_HOUR = $OTHER_HOUR+2;
+				$OTHER_AFTER_MINUTE = $OTHER_MINUTE+30;
+				//echo  "0 ".$OTHER_HOUR." ".$OTHER_MINUTE." ".$OTHER_AFTER_HOUR." ";
+				if($OTHER_AFTER_MINUTE > 59){
+					$OTHER_AFTER_MINUTE -= 59;
+					$OTHER_AFTER_HOUR +=1;
+				}
+				if(intval($OUR_HOUR) == intval($OTHER_HOUR)){
+					$ERROR=1;
+				}else if(intval($OUR_HOUR) > intval($OTHER_HOUR)){
+					if(intval($OUR_HOUR) < intval($OTHER_AFTER_HOUR)){
+						$ERROR=1;
+						break;
+					}else if(intval($OUR_HOUR) == intval($OTHER_AFTER_HOUR)){
+						if(intval($OUR_MINUTE) < intval($OTHER_AFTER_MINUTE)){
+							$ERROR=1;
+							break;
+						}
+					}
+					//if do then go because exist
+				}else{
+					if(intval($OTHER_HOUR) < intval($OUR_AFTER_HOUR)){
+						$ERROR=2;
+						break;
+					}else if(intval($OTHER_HOUR) == intval($OUR_AFTER_HOUR)){
+						if(intval($OTHER_MINUTE) < intval($OUR_AFTER_MINUTE)){
+							$ERROR=2;
+							break;
+						}
+					}
+					//ifif do then is broken
+				}
+			}
+		}
+		//exit("0failed");
 		//echo "hello".$ERROR;
 		if($ERROR > 0)
-			return $this->setCategoryPrintMessage($CAT,FALSE,"Maaf, sudah ada yang menempati tanggal tersebut");
+			if($ERROR == 1)
+				return $this->setCategoryPrintMessage($CAT,FALSE,"Maaf, waktu anda tabrakan dengan seminar sebelum anda");
+			else
+				return $this->setCategoryPrintMessage($CAT,FALSE,"Maaf, waktu anda tabrakan dengan seminar sesudah anda");
 		if(intval($OUR_HOUR) < 7){
 			$ERROR += 1;
 		}else{
-			echo intval($OUR_HOUR).intval($OUR_MINUTE);
+			//echo intval($OUR_HOUR).intval($OUR_MINUTE);
 			if(intval($OUR_HOUR) == 7){
 				if(intval($OUR_MINUTE) < 30)
 					$ERROR += 1;
@@ -697,7 +875,384 @@ class Mahasiswa extends Aktor{
 		
 		if($ERROR > 0)
 			return $this->setCategoryPrintMessage($CAT,FALSE,"Maaf, 02.00 adalah waktu paling sore");
-		return $this->setCategoryPrintMessage($CAT,true,"VALID");
+		return $this->setCategoryPrintMessage($CAT,true,"waktu di terima");
+	}
+	public function getDataSeminarTA(){
+		
+	}
+	//
+	/*
+	$DATA_ARRAY
+	->penganta
+	->kartbim
+	->transkrip
+	->kartsemta
+	->datestart
+	Update recomendation by dosen, with parameter docppp is value 2, and date is default  1000-01-01 00:00:00 if not, it was to log
+	
+	*/
+	public function setSeminarTA1($DATA_ARRAY){
+		if(!$this->getStatusLoginMahasiswa())
+			header("location:".base_url()."gateinout.aspx");
+		$this->sc_std->resetValue();
+		$this->sc_std->setKode($this->getYearNow());
+		$this->sc_std->setNim($this->getNimSessionLogin());
+		$NUM = $this->sc_std->getCountDataPrimary();
+		
+		$conPdf['upload_path'] = './upload/seminarta/seminarta1/pdf/';
+		$conPdf['allowed_types'] = 'pdf';
+		$conPdf['overwrite'] = true;
+		$conPdf['remove_spaces'] = true;
+		$conPdf['max_size'] = 1024;
+		
+		
+		$conPic['upload_path'] = './upload/seminarta/seminarta1/png/';
+		$conPic['allowed_types'] = 'png|PNG';
+		$conPic['overwrite'] = true;
+		$conPic['remove_spaces'] = true;
+		$conPic['max_size'] = 1024;
+        $conPic['max_width'] = 1366;
+        $conPic['max_height'] = 2556;
+		
+		$this->setLibrary('upload');
+		$this->setHelper('date');
+		$pengantar_upload_state = true;
+		$this->sc_std->getDataPrimaryActive();
+		if($this->sc_std->getKode() != NULL){
+			if(intval($this->sc_std->getDocppp()) == 2){
+				if(intval($this->sc_std->getKategori()) == 1){
+					$pengantar_upload_state = false;
+				}
+			}
+		}
+		//exit("0".$this->sc_std->getDocppp()." -".$pengantar_upload_state."- ".true." ".($this->sc_std->getKode() != NULL)." ".(intval($this->sc_std->getDocppp()) == 2)."-".nice_date($this->sc_std->getTanggal(),"m")."-".nice_date($this->sc_std->getTanggal(),"Y")." ".nice_date($this->sc_std->getTanggal(),"d")."kkokokoko" );
+		//Penggantar
+		if($pengantar_upload_state){		
+			$conPdf['file_name'] = $this->getYearNow()."-".$this->getNimSessionLogin()."-".$NUM."-pngtr";
+			$this->upload->initialize($conPdf);
+			if(!$this->upload->do_upload($DATA_ARRAY['pengantar'])){
+				return $this->setCategoryPrintMessage(1, false, 'file yang di upload adalah, pdf(yanng tidak ter password, maupun terenkripsi). dan ukuran maksimal 1 mb.');
+			}
+			$pengantar = $this->upload->data('file_name');
+		}else{
+			$pengantar = "";
+		}
+		//Transkrip
+		$conPdf['file_name'] = $this->getYearNow()."-".$this->getNimSessionLogin()."-".$NUM."-trskr";
+		$this->upload->initialize($conPdf);
+		if(!$this->upload->do_upload($DATA_ARRAY['transkrip'])){
+			return $this->setCategoryPrintMessage(1, false, 'file yang di upload adalah, pdf(yanng tidak ter password, maupun terenkripsi). dan ukuran maksimal 1 mb.');
+		}
+		$transkrip = $this->upload->data('file_name');
+		//Kartu bimbingan
+		$conPic['file_name'] = $this->getYearNow()."-".$this->getNimSessionLogin()."-".$NUM."-krtbm";
+		$this->upload->initialize($conPic);
+		if(!$this->upload->do_upload($DATA_ARRAY['kartbim'])){
+			return $this->setCategoryPrintMessage(1, false, 'file yang di upload adalah, png(1366 x 2556). dan ukuran maksimal 1 mb.');
+		}
+		$kartbim = $this->upload->data('file_name');
+		//kartu seminar ta
+		$conPic['file_name'] = $this->getYearNow()."-".$this->getNimSessionLogin()."-".$NUM."-krtta"; //20152-24010313130125-00-krta.png
+		$this->upload->initialize($conPic);
+		if(!$this->upload->do_upload($DATA_ARRAY['kartsemta'])){
+			return $this->setCategoryPrintMessage(1, false, 'file yang di upload adalah, png(1366 x 2556). dan ukuran maksimal 1 mb.');
+		}
+		$kartsemta = $this->upload->data('file_name');
+		//date
+		$date = $DATA_ARRAY['datestart'];
+		$ruang = $DATA_ARRAY['ruang'];
+		$nimdosen = $DATA_ARRAY['dosen'];
+		//checking
+		$this->sc_std->resetValue();
+		if($NUM > 0){
+			$dosen_recommendation = false;
+			$this->sc_std->setKode($this->getYearNow());
+			$this->sc_std->setNim($this->getNimSessionLogin());
+			$this->sc_std->getDataPrimaryActive();
+			if($this->sc_std->getKode() != NULL){
+				if(intval($this->sc_std->getDocppp()) == 2){
+					if(intval($this->sc_std->getKategori()) == 1){
+						$dosen_recommendation = true;	
+					}
+				}
+			}
+			$this->sc_std->resetValue();
+			if($dosen_recommendation){
+				$this->sc_std->resetValue();
+				$this->sc_std->setKode($this->getYearNow());
+				$this->sc_std->setNim($this->getNimSessionLogin());
+				$this->sc_std->setNips($nimdosen);
+				$this->sc_std->setDocp($pengantar);
+				$this->sc_std->setDocbta($kartbim);
+				$this->sc_std->setDocpta($kartsemta);
+				$this->sc_std->setDocTranskrip($transkrip);
+				$this->sc_std->setTanggal($date); //YYY-mm-dd H:i:s
+				$this->sc_std->setRuang($ruang);
+				$this->sc_std->setKategori(1);
+				//update
+				$this->sc_std->updateFormActive();
+				//close permission
+				$this->sc_sm->resetValue();
+				$this->sc_sm->setNim($this->getNimSessionLogin());
+				$this->sc_sm->setSeminarTA1(2);
+				$this->sc_sm->setSeminarTA1CloseOrOpen();
+				return $this->setCategoryPrintMessage(1,true,'Data berhasil dimasukan');
+			}else{
+				$this->sc_std->setKode($this->getYearNow());
+				$this->sc_std->setNim($this->getNimSessionLogin());
+				if($this->sc_std->setToLog()){
+					$this->sc_std->resetValue();
+					$this->sc_std->setKode($this->getYearNow());
+					$this->sc_std->setNim($this->getNimSessionLogin());
+					$this->sc_std->setNips($nimdosen);
+					$this->sc_std->setDocp($pengantar);
+					$this->sc_std->setDocbta($kartbim);
+					$this->sc_std->setDocpta($kartsemta);
+					$this->sc_std->setDocTranskrip($transkrip);
+					$this->sc_std->setTanggal($date); //YYY-mm-dd H:i:s
+					$this->sc_std->setRuang($ruang);
+					$this->sc_std->setKategori(1);
+					//insert
+					$this->sc_std->insertNewForm();
+					//close permission
+					$this->sc_sm->resetValue();
+					$this->sc_sm->setNim($this->getNimSessionLogin());
+					$this->sc_sm->setSeminarTA1(2);
+					$this->sc_sm->setSeminarTA1CloseOrOpen();
+					return $this->setCategoryPrintMessage(1,true,'Data berhasil di tingkatkan');
+				}else{
+					return $this->setCategoryPrintMessage(1,false,'Gagal melakukan logging data form, contact developer');
+				}
+			}
+		}else{
+			$this->sc_std->setKode($this->getYearNow());
+			$this->sc_std->setNim($this->getNimSessionLogin());
+			$this->sc_std->setDocp($pengantar);
+			$this->sc_std->setNips($nimdosen);
+			$this->sc_std->setDocbta($kartbim);
+			$this->sc_std->setDocpta($kartsemta);
+			$this->sc_std->setDocTranskrip($transkrip);
+			$this->sc_std->setTanggal($date); //YYY-mm-dd H:i:s
+			$this->sc_std->setRuang($ruang);
+			$this->sc_std->setKategori(1);
+			//insert
+			$this->sc_std->insertNewForm();
+			//close permission
+			$this->sc_sm->resetValue();
+			$this->sc_sm->setNim($this->getNimSessionLogin());
+			$this->sc_sm->setSeminarTA1(2);
+			$this->sc_sm->setSeminarTA1CloseOrOpen();
+			return $this->setCategoryPrintMessage(1,true,'Data berhasil dimasukan');
+		}
+	}
+	public function setSeminarTA2($DATA_ARRAY){
+		if(!$this->getStatusLoginMahasiswa())
+			header("location:".base_url()."gateinout.aspx");
+		$this->sc_std->resetValue();
+		$this->sc_std->setKode($this->getYearNow());
+		$this->sc_std->setNim($this->getNimSessionLogin());
+		$NUM = $this->sc_std->getCountDataPrimary();
+		
+		$conPdf['upload_path'] = './upload/seminarta/seminarta2/pdf/';
+		$conPdf['allowed_types'] = 'pdf';
+		$conPdf['overwrite'] = true;
+		$conPdf['remove_spaces'] = true;
+		$conPdf['max_size'] = 1024;
+		
+		
+		$conPic['upload_path'] = './upload/seminarta/seminarta2/png/';
+		$conPic['allowed_types'] = 'png|PNG';
+		$conPic['overwrite'] = true;
+		$conPic['remove_spaces'] = true;
+		$conPic['max_size'] = 1024;
+        $conPic['max_width'] = 1366;
+        $conPic['max_height'] = 2556;
+		
+		$this->setLibrary('upload');
+		$this->setHelper('date');
+		$pengantar_upload_state = true;
+		$this->sc_std->getDataPrimaryActive();
+		if($this->sc_std->getKode() != NULL){
+			if(intval($this->sc_std->getDocppp()) == 2){
+				if(intval($this->sc_std->getKategori()) == 2){
+					$pengantar_upload_state = false;
+				}
+			}
+		}
+		//exit("0".$this->sc_std->getDocppp()." -".$pengantar_upload_state."- ".true." ".($this->sc_std->getKode() != NULL)." ".(intval($this->sc_std->getDocppp()) == 2)."-".nice_date($this->sc_std->getTanggal(),"m")."-".nice_date($this->sc_std->getTanggal(),"Y")." ".nice_date($this->sc_std->getTanggal(),"d")."kkokokoko" );
+		//Penggantar
+		if($pengantar_upload_state){		
+			$conPdf['file_name'] = $this->getYearNow()."-".$this->getNimSessionLogin()."-".$NUM."-pngtr";
+			$this->upload->initialize($conPdf);
+			if(!$this->upload->do_upload($DATA_ARRAY['pengantar'])){
+				return $this->setCategoryPrintMessage(1, false, 'file yang di upload adalah, pdf(yanng tidak ter password, maupun terenkripsi). dan ukuran maksimal 1 mb.');
+			}
+			$pengantar = $this->upload->data('file_name');
+		}else{
+			$pengantar = "";
+		}
+		//Transkrip
+		$conPdf['file_name'] = $this->getYearNow()."-".$this->getNimSessionLogin()."-".$NUM."-trskr";
+		$this->upload->initialize($conPdf);
+		if(!$this->upload->do_upload($DATA_ARRAY['transkrip'])){
+			return $this->setCategoryPrintMessage(1, false, 'file yang di upload adalah, pdf(yanng tidak ter password, maupun terenkripsi). dan ukuran maksimal 1 mb.');
+		}
+		$transkrip = $this->upload->data('file_name');
+		//Kartu bimbingan
+		$conPic['file_name'] = $this->getYearNow()."-".$this->getNimSessionLogin()."-".$NUM."-krtbm";
+		$this->upload->initialize($conPic);
+		if(!$this->upload->do_upload($DATA_ARRAY['kartbim'])){
+			return $this->setCategoryPrintMessage(1, false, 'file yang di upload adalah, png(1366 x 2556). dan ukuran maksimal 1 mb.');
+		}
+		$kartbim = $this->upload->data('file_name');
+		//kartu seminar ta
+		$conPic['file_name'] = $this->getYearNow()."-".$this->getNimSessionLogin()."-".$NUM."-krtta"; //20152-24010313130125-00-krta.png
+		$this->upload->initialize($conPic);
+		if(!$this->upload->do_upload($DATA_ARRAY['kartsemta'])){
+			return $this->setCategoryPrintMessage(1, false, 'file yang di upload adalah, png(1366 x 2556). dan ukuran maksimal 1 mb.');
+		}
+		$kartsemta = $this->upload->data('file_name');
+		//date
+		$date = $DATA_ARRAY['datestart'];
+		$ruang = $DATA_ARRAY['ruang'];
+		$nimdosen = $DATA_ARRAY['dosen'];
+		//checking
+		$this->sc_std->resetValue();
+		if($NUM > 0){
+			$dosen_recommendation = false;
+			$this->sc_std->setKode($this->getYearNow());
+			$this->sc_std->setNim($this->getNimSessionLogin());
+			$this->sc_std->getDataPrimaryActive();
+			if($this->sc_std->getKode() != NULL){
+				if(intval($this->sc_std->getDocppp()) == 2){
+					if(intval($this->sc_std->getKategori()) == 2){
+						$dosen_recommendation = true;	
+					}
+				}
+			}
+			$this->sc_std->resetValue();
+			if($dosen_recommendation){
+				$this->sc_std->resetValue();
+				$this->sc_std->setKode($this->getYearNow());
+				$this->sc_std->setNim($this->getNimSessionLogin());
+				$this->sc_std->setNips($nimdosen);
+				$this->sc_std->setDocp($pengantar);
+				$this->sc_std->setDocbta($kartbim);
+				$this->sc_std->setDocpta($kartsemta);
+				$this->sc_std->setDocTranskrip($transkrip);
+				$this->sc_std->setTanggal($date); //YYY-mm-dd H:i:s
+				$this->sc_std->setRuang($ruang);
+				$this->sc_std->setKategori(2);
+				//update
+				$this->sc_std->updateFormActive();
+				//close permission
+				$this->sc_sm->resetValue();
+				$this->sc_sm->setNim($this->getNimSessionLogin());
+				$this->sc_sm->setSeminarTA2(2);
+				$this->sc_sm->setSeminarTA2CloseOrOpen();
+				return $this->setCategoryPrintMessage(1,true,'Data berhasil dimasukan');
+			}else{
+				$this->sc_std->setKode($this->getYearNow());
+				$this->sc_std->setNim($this->getNimSessionLogin());
+				if($this->sc_std->setToLog()){
+					$this->sc_std->resetValue();
+					$this->sc_std->setKode($this->getYearNow());
+					$this->sc_std->setNim($this->getNimSessionLogin());
+					$this->sc_std->setNips($nimdosen);
+					$this->sc_std->setDocp($pengantar);
+					$this->sc_std->setDocbta($kartbim);
+					$this->sc_std->setDocpta($kartsemta);
+					$this->sc_std->setDocTranskrip($transkrip);
+					$this->sc_std->setTanggal($date); //YYY-mm-dd H:i:s
+					$this->sc_std->setRuang($ruang);
+					$this->sc_std->setKategori(2);
+					//insert
+					$this->sc_std->insertNewForm();
+					//close permission
+					$this->sc_sm->resetValue();
+					$this->sc_sm->setNim($this->getNimSessionLogin());
+					$this->sc_sm->setSeminarTA2(2);
+					$this->sc_sm->setSeminarTA2CloseOrOpen();
+					return $this->setCategoryPrintMessage(1,true,'Data berhasil di tingkatkan');
+				}else{
+					return $this->setCategoryPrintMessage(1,false,'Gagal melakukan logging data form, contact developer');
+				}
+			}
+		}else{
+			$this->sc_std->setKode($this->getYearNow());
+			$this->sc_std->setNim($this->getNimSessionLogin());
+			$this->sc_std->setDocp($pengantar);
+			$this->sc_std->setNips($nimdosen);
+			$this->sc_std->setDocbta($kartbim);
+			$this->sc_std->setDocpta($kartsemta);
+			$this->sc_std->setDocTranskrip($transkrip);
+			$this->sc_std->setTanggal($date); //YYY-mm-dd H:i:s
+			$this->sc_std->setRuang($ruang);
+			$this->sc_std->setKategori(2);
+			//insert
+			$this->sc_std->insertNewForm();
+			//close permission
+			$this->sc_sm->resetValue();
+			$this->sc_sm->setNim($this->getNimSessionLogin());
+			$this->sc_sm->setSeminarTA2(2);
+			$this->sc_sm->setSeminarTA2CloseOrOpen();
+			return $this->setCategoryPrintMessage(1,true,'Data berhasil dimasukan');
+		}
+	}
+	//list pemerataan
+	//valid
+	public function getListMahasiswaPemerataan($akademik){
+		$this->sc_sm->resetValue();
+		$gg['data'] = false;
+		
+		if($this->sc_sm->getAllListOrderByNim()){
+			$i=0;
+			while($this->sc_sm->getNextCursor()){
+				$this->sc_st->resetValue();
+				$this->sc_st->setNim($this->sc_sm->getNim());
+				$this->sc_st->setKode($akademik);
+				if($this->sc_st->getDataActiveRegister()){
+					$this->sc_sm_interest->resetValue();
+					$this->sc_sm_interest->setId($this->sc_sm->getPeminatan());
+					if($this->sc_sm_interest->getMinat()){
+						$gg[$i]['nim'] = $this->sc_sm->getNim();
+						$gg[$i]['nama'] = $this->sc_sm->getName();
+						$gg[$i]['minat'] = $this->sc_sm_interest->getName();
+						$gg[$i]['nipreviews'] = $this->sc_sm->getNipReview1();
+						$gg[$i]['nipreviewd'] = $this->sc_sm->getNipReview2();
+						$gg[$i]['nipreviewt'] = $this->sc_sm->getNipReview3();
+						$gg[$i]['kategori'] = $this->sc_st->getKategori();
+						$gg[$i]['nip'] = $this->sc_st->getNip();
+						$i++;
+						$gg['length'] = $i;
+						$gg['data'] = true;
+					}
+				}
+			}
+		}
+		return $gg;
+		/*
+		$this->multi_sc->initial("sc_st,sc_sm,sc_sm_interest");
+		return $this->multi_sc->query("
+				sc_sm.s_nim as nim, 
+				sc_sm.s_name as nama, 
+				sc_sm_interest.si_name as minat,
+				sc_sm.s_nip_review_1 as nipreviews,
+				sc_sm.s_nip_review_2 as nipreviewd,
+				sc_sm.s_nip_review_3 as nipreviewt,
+				sc_st.s_category as kategori,
+				sc_st.s_nip as nip
+			",
+			"
+				sc_sm.s_nim=sc_st.s_nim AND
+				sc_sm.s_statue=1 AND
+				sc_st.s_statue=1 AND
+				sc_st.s_data_statue=0 AND
+				sc_sm_interest.si_id=sc_sm.s_p AND
+				sc_st.s_rt=".$akademik." order by sc_sm.s_nim
+			"
+			)->result_array();
+			*/
 	}
 	//waiting
 	/*

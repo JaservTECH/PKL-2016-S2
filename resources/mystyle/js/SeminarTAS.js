@@ -27,291 +27,263 @@ var templateCalendarTAS =
 		'</div>'+
 	'</div>'
 ;
-function SeminarTAS(){
-	refreshCalendar();
-	refreshButton();
+var pengantarButtonControl;
+function SeminarTAS(a){
+	//alert(a);
+	if(a == '3')
+		return;
+	pengantarButtonControl = a;
+	refreshCalendarSeminarTa1();
+	refreshButtonSeminarTa1();
 	//alert("ok = "+$(".datetimepicker").length);
 	if($(".datetimepicker").length>0)$(".datetimepicker").datetimepicker({nextText:"",prevText:""});
+	resetFormSeminarTA1();
+	$('#resetForm').on("click",function(){
+		modalStaticMultipleButton("Anda yakin ingin me lakukan reset form?",function(){
+			resetFormSeminarTA1();
+		});
+	});
+	$("#input-data-seminarta1").on("click",function(){
+		inputFormSeinarta1();
+	});
+	var datasending = $("#frame-layout").on("change",function(){
+		
+	});
+	$('#seminar1form').submit(function(){
+		iframe = $('#frame-layout').load(function (){
+			response = iframe.contents().find('body');
+			returnResponse = response.html();
+			iframe.unbind('load');
+			//alert(returnResponse);
+			if(parseInt(returnResponse[0]) == 1){
+				$("#content-intern").slideUp('slow',function(){
+					j("#content-intern").setInHtml(returnResponse.substr(1,returnResponse.length-1));
+					$("#content-intern").slideDown('slow');
+				});
+				
+			}else{
+				modalStaticSingleWarning(returnResponse.substr(1,returnResponse.length-1));
+			}
+			$('#registrasi-baru-submit').removeAttr('disabled');
+			$('#krs-exe').removeAttr('disabled');
+			closeLoadingBar()
+			setTimeout(function ()
+			{
+				response.html('');
+			}, 1);
+		});
+	});
+}
+function inputFormSeinarta1(){
+	openLoadingBar("Memeriksa input ...");
+	if(!failedInput(0,"kartu peserta wajib dilampirkan")){
+		return;
+	}
+	if(!failedInput(1,"scan kartu bimbingan wajib dilampirkan")){
+		return;
+	}
+	if(!failedInput(2,"transkrip wajib dilampirkan")){
+		return;
+	}
+	if(parseInt(pengantarButtonControl) == 1){
+		if(!failedInput(3,"Wajib melampirkan kartu pengantar")){
+			return;
+		}
+	}
+	if(idTanggal == null){
+		setLoadingBarMessage("Silahkan memilih hari dan waktu seminar anda pada list seminar ruang TA 1");
+		setTimeout(function(){
+			closeLoadingBar();
+		},1000);
+		return;
+	}
+	$("#seminar1form").trigger('submit');
+}
+function failedInput(index,message){
+	if(!uploadFileState[index]){
+		setLoadingBarMessage(message);
+		setTimeout(function(){
+			closeLoadingBar();
+		},1000);
+		return false;
+	}else{
+		return true;
+	}
+}
+function errorInFile(data){
+	j("#"+data.idC).setValue(null);
+	$("#exec-"+data.idC).css({
+		"backgroundColor" : "red"
+	});
+	uploadFileState[data.kodeValid] = false;
+	$("#info-"+data.idC).html(": Data Kosong");
+	$("#true-"+data.idC).css({"color":"red"});
+	$("#false-"+data.idC).css({"color":"green"});
+}
+function noErrorInFile(data,a){	
+	uploadFileState[data.kodeValid] = true;
+	$("#exec-"+data.idC).css({
+		"backgroundColor" : "green"
+	});
+	$("#info-"+data.idC).html(": "+a);
+	$("#true-"+data.idC).css({"color":"green"});
+	$("#false-"+data.idC).css({"color":"red"});
+}
+function resetFormSeminarTA1(){	
+	errorInFile({
+		idC : "s-k-peserta",
+		kodeValid : 0
+	});
+	errorInFile({
+		idC : "s-k-bimbingan",
+		kodeValid : 1
+	});
+	errorInFile({
+		idC : "s-transkrip",
+		kodeValid : 2
+	});
+	if(parseInt(pengantarButtonControl) == 1){		
+		errorInFile({
+			idC : "s-pengantar",
+			kodeValid : 3
+		});
+	}
+	$("#s-ruang").val("");
+	$("#s-tanggal").val("");
+	
 	var xx = new Date();
 	tanggalSewaRuangTA1 = xx.getDate()+"/"+xx.getMonth()+"/"+xx.getFullYear()+" "+xx.getHours()+":"+xx.getMinutes()+":"+xx.getSeconds();
 	tanggalSewaRuangDefault = true;
 	uploadFileState.satu = false;
 	uploadFileState.dua = false;
 	uploadFileState.tiga = false;
-	uploadFileState.empat = false
+	uploadFileState.empat = false;
+	if(idTanggal != null){
+		$('#calendar').fullCalendar('removeEvents', idTanggal);
+		idTanggal = null;
+	}
 }
-function refreshButton(){
-	$("#exec-s-k-bimbingan").click(function(){$("#s-k-bimbingan").trigger('click');});
-	$("#s-k-bimbingan").change(function () {
-		if (typeof (FileReader) != "undefined") {
-			var regex = /^([a-zA-Z0-9()\s_\\.\-:])+(.png|.PNG)$/;
-			$($(this)[0].files).each(function () {
-				var file = $(this);
-				if (regex.test(file[0].name.toLowerCase())) {
-					var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
-					if(parseFloat(TEMP_VIDEO_SIZE+"") > 1){
-						j("#s-k-bimbingan").setValue(null);
-						$("#exec-s-k-bimbingan").css({
-							"backgroundColor" : "red"
-						});
-						uploadFileState.dua = false;
-						modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.png)");
-						return false;
-					}else{
-						var reader = new FileReader();
-						reader.onload = function (e) {
-							uploadFileState.dua = true;
-							$("#exec-s-k-bimbingan").css({
-								"backgroundColor" : "green"
-							});
-							return true;
-						}
-						reader.readAsDataURL(file[0]);
-					}
-				} else {
-						var t=file[0].name.substr(file[0].name.length-4,4);
-						if(t=='.PDF' || t.toLowerCase()==".pdf"){
-							var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
-							if(parseFloat(TEMP_VIDEO_SIZE+"") > 1){
-								j("#s-k-bimbingan").setValue(null);
-								$("#exec-s-k-bimbingan").css({
-									"backgroundColor" : "red"
-								});
-								uploadFileState.dua = false;
-								modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.png)");
-								return false;		
-							}else{
-								uploadFileState.dua = true;
-								$("#exec-s-k-bimbingan").css({
-									"backgroundColor" : "green"
-								});
-								return true;
-							}
-						}else{
-							j("#s-k-bimbingan").setValue(null);
-							$("#exec-s-k-bimbingan").css({
-								"backgroundColor" : "red"
-							});
-							uploadFileState.dua = false;
-							modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.png)");
-							return false;
-						}
-				}
-			});
-		} else {
-			j("#s-k-bimbingan").setValue(null);
-			$("#exec-s-k-bimbingan").css({
-				"backgroundColor" : "red"
-			});
-			uploadFileState.dua = false;
-			modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.png)");
-			return false;
-		}
+function refreshButtonSeminarTa1(){
+	buttonLoaderFunctionFull({
+		idC : "s-k-peserta",
+		size : 1,
+		regexC : "png",
+		messageFalse : "Ukuran file maksimal 1 mb, dan format file yang didukung (.png)",
+		kodeValid : 0
 	});
-	$("#exec-s-k-peserta").click(function(){$("#s-k-peserta").trigger('click');});
-	$("#s-k-peserta").change(function () {
-		if (typeof (FileReader) != "undefined") {
-			var regex = /^([a-zA-Z0-9()\s_\\.\-:])+(.png|.PNG)$/;
-			$($(this)[0].files).each(function () {
-				var file = $(this);
-				if (regex.test(file[0].name.toLowerCase())) {
-					var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
-					if(parseFloat(TEMP_VIDEO_SIZE+"") > 1){
-						j("#s-k-peserta").setValue(null);
-						$("#exec-s-k-peserta").css({
-							"backgroundColor" : "red"
-						});
-						uploadFileState.tiga = false;
-						modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.png)");
-						return false;
-					}else{
-						var reader = new FileReader();
-						reader.onload = function (e) {
-							uploadFileState.tiga = true;
-							$("#exec-s-k-peserta").css({
-								"backgroundColor" : "green"
-							});
-							return true;
-						}
-						reader.readAsDataURL(file[0]);
-					}
-				} else {
-						var t=file[0].name.substr(file[0].name.length-4,4);
-						if(t=='.PDF' || t.toLowerCase()==".pdf"){
-							var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
-							if(parseFloat(TEMP_VIDEO_SIZE+"") > 1){
-								j("#s-k-peserta").setValue(null);
-								$("#exec-s-k-peserta").css({
-									"backgroundColor" : "red"
-								});
-								uploadFileState.tiga = false;
-								modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.png)");
-								return false;		
-							}else{
-								uploadFileState.tiga = true;
-								$("#exec-s-k-peserta").css({
-									"backgroundColor" : "green"
-								});
-								return true;
-							}
-						}else{
-							j("#s-k-peserta").setValue(null);
-							$("#exec-s-k-peserta").css({
-								"backgroundColor" : "red"
-							});
-							uploadFileState.tiga = false;
-							modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.png)");
-							return false;
-						}
-				}
-			});
-		} else {
-			j("#s-k-peserta").setValue(null);
-			$("#exec-s-k-peserta").css({
-				"backgroundColor" : "red"
-			});
-			uploadFileState.tiga = false;
-			modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.png)");
-			return false;
-		}
+	buttonLoaderFunctionFull({
+		idC : "s-k-bimbingan",
+		size : 1,
+		regexC : "png",
+		messageFalse : "Ukuran file maksimal 1 mb, dan format file yang didukung (.png)",
+		kodeValid : 1
 	});
-	$("#exec-s-transkrip").click(function(){$("#s-transkrip").trigger('click');});
-	$("#s-transkrip").change(function () {
+	buttonLoaderFunctionFull({
+		idC : "s-transkrip",
+		size : 1,
+		regexC : "pdf",
+		messageFalse : "Ukuran file maksimal 1 mb, dan format file yang didukung (.pdf)",
+		kodeValid : 2
+	});
+	if(parseInt(pengantarButtonControl) == 1){		
+		buttonLoaderFunctionFull({
+			idC : "s-pengantar",
+			size : 1,
+			regexC : "pdf",
+			messageFalse : "Ukuran file maksimal 1 mb, dan format file yang didukung (.pdf)",
+			kodeValid : 3
+		});
+	}
+}
+/*
+array
+data 
+->idC
+->size
+->regexC
+->messageFalse
+->data.kodeValid
+
+*/
+function buttonLoaderFunctionFull(data){
+	$("#exec-"+data.idC).click(function(){$("#"+data.idC).trigger('click');});
+	$("#"+data.idC).change(function () {
 		if (typeof (FileReader) != "undefined") {
-			var regex = /^([a-zA-Z0-9()\s_\\.\-:])+(.pdf|.PDF)$/;
+			var regex;
+			var upperC;
+			var lowerC;
+			if(data.regexC == "pdf"){
+				regex = /^([a-zA-Z0-9()\s_\\.\-:])+(.pdf|.PDF)$/;
+				upperC = ".PDF";
+				lowerC = ".pdf";
+			}else if(data.regexC == "png"){
+				regex = /^([a-zA-Z0-9()\s_\\.\-:])+(.png|.PNG)$/;
+				upperC = ".PNG";
+				lowerC = ".png";
+			}
 			$($(this)[0].files).each(function () {
 				var file = $(this);
 				if (regex.test(file[0].name.toLowerCase())) {
 					var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
-					if(parseFloat(TEMP_VIDEO_SIZE+"") > 1){
-						j("#s-transkrip").setValue(null);
-						$("#exec-s-transkrip").css({
-							"backgroundColor" : "red"
+					if(parseFloat(TEMP_VIDEO_SIZE+"") > data.size){
+						errorInFile({
+							idC : data.idC,
+							kodeValid : data.kodeValid
 						});
-						uploadFileState.empat = false;
-						modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.pdf)");
+						modalStaticSingleWarning(data.messageFalse);
 						return false;	
 					}else{
 						var reader = new FileReader();
 						reader.onload = function (e) {
-							uploadFileState.empat = true;
-							$("#exec-s-transkrip").css({
-								"backgroundColor" : "green"
-							});
+							noErrorInFile({
+								idC : data.idC,
+								kodeValid : data.kodeValid
+							},file[0].name);
 							return true;
 						}
 						reader.readAsDataURL(file[0]);
 					}
 				} else {
 						var t=file[0].name.substr(file[0].name.length-4,4);
-						if(t=='.PDF' || t.toLowerCase()==".pdf"){
+						if(t==upperC || t.toLowerCase()==lowerC){
 							var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
-							if(parseFloat(TEMP_VIDEO_SIZE+"") > 1){
-								j("#s-transkrip").setValue(null);
-								$("#exec-s-transkrip").css({
-									"backgroundColor" : "red"
+							if(parseFloat(TEMP_VIDEO_SIZE+"") > data.size){
+								errorInFile({
+									idC : data.idC,
+									kodeValid : data.kodeValid
 								});
-								uploadFileState.empat = false;
-								modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.pdf)");
-								return false;			
-							}else{
-								uploadFileState.empat = true;
-								$("#exec-s-transkrip").css({
-									"backgroundColor" : "green"
-								});
-								return true;
-							}
-						}else{
-							j("#s-transkrip").setValue(null);
-							$("#exec-s-transkrip").css({
-								"backgroundColor" : "red"
-							});
-							uploadFileState.empat = false;
-							modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.pdf)");
-							return false;	
-						}
-				}
-			});
-		} else {
-			j("#s-transkrip").setValue(null);
-			$("#exec-s-transkrip").css({
-				"backgroundColor" : "red"
-			});
-			uploadFileState.empat = false;
-			modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.pdf)");
-			return false;	
-		}
-	});
-	$("#exec-s-pengantar").click(function(){$("#s-pengantar").trigger('click');});
-	$("#s-pengantar").change(function () {
-		if (typeof (FileReader) != "undefined") {
-			var regex = /^([a-zA-Z0-9()\s_\\.\-:])+(.pdf|.PDF)$/;
-			$($(this)[0].files).each(function () {
-				var file = $(this);
-				if (regex.test(file[0].name.toLowerCase())) {
-					var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
-					if(parseFloat(TEMP_VIDEO_SIZE+"") > 1){
-						j("#s-pengantar").setValue(null);
-						$("#exec-s-pengantar").css({
-							"backgroundColor" : "red"
-						});
-						uploadFileState.satu = false;
-						modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.pdf)");
-						return false;	
-					}else{
-						var reader = new FileReader();
-						reader.onload = function (e) {
-							uploadFileState.satu = true;
-							$("#exec-s-pengantar").css({
-								"backgroundColor" : "green"
-							});
-							return true;
-						}
-						reader.readAsDataURL(file[0]);
-					}
-				} else {
-						var t=file[0].name.substr(file[0].name.length-4,4);
-						if(t=='.PDF' || t.toLowerCase()==".pdf"){
-							var TEMP_VIDEO_SIZE = file[0].size/(1024*1024);
-							if(parseFloat(TEMP_VIDEO_SIZE+"") > 1){
-								j("#s-pengantar").setValue(null);
-								$("#exec-s-pengantar").css({
-									"bgColor" : "red"
-								});
-								uploadFileState.satu = false;
-								modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.pdf)");
+								modalStaticSingleWarning(data.messageFalse);
 								return false;
 							}else{
-								uploadFileState.satu = true;
-								$("#exec-s-pengantar").css({
-									"backgroundColor" : "green"
-								});
+								noErrorInFile({
+									idC : data.idC,
+									kodeValid : data.kodeValid
+								},file[0].name);
 								return true;
 							}
 						}else{
-							j("#s-pengantar").setValue(null);
-							$("#exec-s-pengantar").css({
-								"backgroundColor" : "red"
+							errorInFile({
+								idC : data.idC,
+								kodeValid : data.kodeValid
 							});
-							uploadFileState.satu = false;
-							modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.pdf)");
+							modalStaticSingleWarning(data.messageFalse);
 							return false;
 						}
 				}
 			});
 		} else {
-			j("#s-pengantar").setValue(null);
-			$("#exec-s-pengantar").css({
-				"backgroundColor" : "red"
+			errorInFile({
+				idC : data.idC,
+				kodeValid : data.kodeValid
 			});
-			uploadFileState.satu = false;
-			modalStaticSingleWarning("Ukuran file maksimal 1 mb, dan format file yang didukung (.pdf)");
+			modalStaticSingleWarning(data.messageFalse);
 			return false;
 		}
 	});
 }
 var Calenders;
-function refreshCalendar(){
+function refreshCalendarSeminarTa1(){
+	$("#calendar").html("");
 	if($("#calendar").length>0){
 		var e=new Date();
 		var t=e.getDate();
@@ -324,46 +296,12 @@ function refreshCalendar(){
 		Calenders = $("#calendar").fullCalendar({
 			header:{
 				left:"prev,next today",
-				center:"",
+				center:"title",
 				right : ""
 				//center:"title",
 				//right:"month,agendaWeek,agendaDay"
 				}
-			,editable:true,events:[
-			{
-				title:"All Day Event",
-				start:new Date(r,n,1)},
-			{
-				title:"Long Event",
-				start:new Date(r,n,t-5),
-				end:new Date(r,n,t-2)},
-			{
-				id:999,title:"Repeating Event",
-				start:new Date(r,n,t-3,16,0),
-				allDay:false},
-			{
-				id:999,
-				title:"Repeating Event",
-				start:new Date(r,n,t+4,16,0),
-				allDay:false},
-			{
-				title:"Meeting",
-				start:new Date(r,n,t,10,30),
-				allDay:false},
-			{
-				title:"Meeting2",
-				start:new Date(r,n,t,22,30),
-				allDay:false},
-			{
-				title:"Lunch",
-				start:new Date(r,n,t,12,0),
-				end:new Date(r,n,t,14,0),
-				allDay:false},
-			{
-				title:"Birthday Party",
-				start:new Date(r,n,t+1,19,0),
-				end:new Date(r,n,t+1,22,30),
-				allDay:false}],
+			,editable:true,events:[],
 			droppable:false,
 			selectable:true,
 			selectHelper:false,
@@ -371,31 +309,73 @@ function refreshCalendar(){
 			eventDurationEditable : false,
 			disableResizing : true,
 			select:function(e,t,n){
+				//alert(e);
 				TEMP_N = n;
 				tanggalSewaRuangTA1_TEMP = moment(e);
 				//alert(tanggalSewaRuangTA1_TEMP.toISOString());
 				modalStaticBodyMultipleButton("Masukan Jam Seminar anda",templateCalendarTAS,function(finalis){
+					openLoadingBar("Validasi tanggal dan jam ...");
 					var TEMP_DATE_TIME = moment("0000-00-00T"+$("#jam-rung-tas").val());
-					alert($("#jam-rung-tas").val());
+					//alert($("#jam-rung-tas").val());
 					tanggalSewaRuangTA1_TEMP.hour(TEMP_DATE_TIME.hours());
 					tanggalSewaRuangTA1_TEMP.minute(TEMP_DATE_TIME.minutes());
-					alert(TEMP_DATE_TIME.minute()+" "+tanggalSewaRuangTA1_TEMP.minute()+" "+tanggalSewaRuangTA1_TEMP.toISOString());
-					//alert();
+					tanggalSewaRuangTA1_TEMP.minute(tanggalSewaRuangTA1_TEMP.minute()-30);
+					TEMP_DATE_TIME = tanggalSewaRuangTA1_TEMP.toArray();
+					//console.log(tanggalSewaRuangTA1_TEMP.toArray());
+					//alert(tanggalSewaRuangTA1_TEMP.toISOString());
+					TEMP_DATE_TIME = generateNormalTime(TEMP_DATE_TIME);
+					//alert(TEMP_DATE_TIME);
 					j("#ajax").setAjax({
 						methode: "POST",
-						url:"Classsemestertas/getCheck.aspx",
+						url:"Classseminartas/getCheck.aspx",
 						bool : true,
-						content: "variabel=TA1&value="+tanggalSewaRuangTA1_TEMP.toISOString(),
+						content: "variabel=TA1&value="+TEMP_DATE_TIME,
 						sucOk : function(a){
-							if(parseInt(a[0]) ==  0){
-								
+							//alert(a);
+							if(parseInt(a[0]) ==  1){
+								setLoadingBarMessage(a.substr(1,a.length-1)+" ...");
+								tanggalSewaRuangTA1 = tanggalSewaRuangTA1_TEMP;
+								var START_DAY = tanggalSewaRuangTA1;
+								var END_DAY = tanggalSewaRuangTA1;
+								END_DAY.minutes(END_DAY.minutes()+30);
+								if(END_DAY.minutes > 59){
+									END_DAY.minutes(END_DAY.minutes()-59);
+									END_DAY.hours(END_DAY.hours()+1);
+								}
+								tanggalSewaRuangDefault = false;
+								if(idTanggal == null){
+									idTanggal = "aktifNow";	
+									Calenders.fullCalendar('renderEvent',{
+										id:idTanggal,
+										title:"Seminar Ku",
+										start: START_DAY,
+										end: END_DAY,
+										allDay:TEMP_N},true);
+								}else{
+									Calenders.fullCalendar('removeEvents', idTanggal);
+									Calenders.fullCalendar('renderEvent',{
+										id:idTanggal,
+										title:"Seminar Ku",
+										start: START_DAY,
+										end: END_DAY,
+										allDay:TEMP_N},true);
+								}
+								STSTTS = START_DAY.toArray();
+								STSTTS = generateNormalTime(STSTTS);
+								//alert(STSTTS);
+								$('#s_tanggal').val(STSTTS);
+								$('#s_ruang').val("TA1");
 								finalis(true);
 							}else{
-								
+								setLoadingBarMessage(a.substr(1,a.length-1)+" ...");
+								finalis(false);
 							}
+							setTimeout(function(){
+								closeLoadingBar();
+							},3000);
 						},
 						sucEr : function(a,b){
-							
+							template(a,b,"checking tanggal");
 						}
 						
 					});
@@ -437,12 +417,119 @@ function refreshCalendar(){
 		   	}
 			*/
 			eventClick: function(calEvent, jsEvent, view) {
+				var wkwk = moment(calEvent.start);
+				wkwk = wkwk.toArray();
+				var wkwk2 = moment(calEvent.start);
+				wkwk2.minute(wkwk2.minute()+30);
+				wkwk2.hour(wkwk2.hour()+2);
+				wkwk2 = wkwk2.toArray();
 				if(idTanggal != null){
 					if(calEvent.id == idTanggal)
 						modalStaticMultipleButton("Anda ingin menghapus even ini ",function(){
+							$("#s-tanggal").val("");
+							$("s-ruang").val("");
 							$('#calendar').fullCalendar('removeEvents', calEvent.id);
+							tanggalSewaRuangDefault = false;
+							idTanggal = null;
 						});
+					else{
+						 modalStaticSingleInformation("Pelaku seminar TA ",
+					 "<table style='width : 100%;'>"+
+						"<tr>"+
+							"<td style='width : 25%; padding-left : 10px;'>"+
+								"Nama"+
+							"</td>"+
+							"<td style='width : 75%;'>"+
+								calEvent.title+
+							"</td>"+
+						"</tr>"+
+						"<tr>"+
+							"<td style='width : 25%; padding-left : 10px;'>"+
+								"Mulai"+
+							"</td>"+
+							"<td>"+
+								"Pukul "+wkwk[3]+":"+wkwk[4]+" WIB"+
+							"</td>"+
+						"</tr>"+
+						"<tr>"+
+							"<td style='width : 25%; padding-left : 10px;'>"+
+								"Berakhir"+
+							"</td>"+
+							"<td>"+
+								"Pukul "+wkwk2[3]+":"+wkwk2[4]+" WIB"+
+							"</td>"+
+						"</tr>"+
+					 "</table>"
+					 );
+					}
+						
+				}else{
+					 modalStaticSingleInformation("Pelaku seminar TA ",
+					 "<table style='width : 100%;'>"+
+						"<tr >"+
+							"<td style='width : 25%; padding-left : 10px;'>"+
+								"Nama"+
+							"</td>"+
+							"<td style='width : 75%;'>"+
+								calEvent.title+
+							"</td>"+
+						"</tr>"+
+						"<tr>"+
+							"<td style='width : 25%; padding-left : 10px;'>"+
+								"Mulai"+
+							"</td>"+
+							"<td>"+
+								"Pukul "+wkwk[3]+":"+wkwk[4]+" WIB"+
+							"</td>"+
+						"</tr>"+
+						"<tr>"+
+							"<td style='width : 25%; padding-left : 10px;'>"+
+								"Berakhir"+
+							"</td>"+
+							"<td>"+
+								"Pukul "+wkwk2[3]+":"+wkwk2[4]+" WIB"+
+							"</td>"+
+						"</tr>"+
+					 "</table>"
+					 );
 				}
+			}
+		});
+		openLoadingBar("get all list data seminar ta 1");
+		j("#setAjax").setAjax({
+			methode : "GET",
+			bool : true,
+			url :"Classseminartas/getJSONDataSeminarTA1.aspx",
+			content : "",
+			sucOk : function(a){
+				if(a[0] == "0"){
+					setLoadingBarMessage("Refresh halaman ...");
+				}else{
+					setLoadingBarMessage("Data sedang diproses ...");
+					jsonList = JSON.parse(a.substr(1,a.length-1));
+					if(jsonList.kode){
+						for(i=0;i<jsonList.content;i++){		
+							var START_DAY = moment(jsonList[i].tanggal);
+							var END_DAY = START_DAY;
+							END_DAY.minutes(END_DAY.minutes()+30);
+							if(END_DAY.minutes > 59){
+								END_DAY.minutes(END_DAY.minutes()-59);
+								END_DAY.hours(END_DAY.hours());
+							}
+							Calenders.fullCalendar('renderEvent',{
+								title: jsonList[i].nama,
+								start: START_DAY,
+								end: END_DAY},true);
+						}
+					}
+				}
+				setTimeout(function(){
+					closeLoadingBar();
+					//reloadTable();
+				},2000);	
+			},
+			sucEr : function(a,b){
+				template(a,b,"get all table");
 			}
 		});
 	}
@@ -484,5 +571,8 @@ function getCheckJam(jam,tr,fl){
 	$("#jam-rung-tas").val(parseInt(TEMP_SPLIT[0])+":"+parseInt(TEMP_SPLIT[1]));
 	tr();
 	return true;
+}
+function generateNormalTime(z){
+	return z[0]+"-"+(z[1]+1)+"-"+z[2]+" "+z[3]+":"+z[4]+":"+z[5];
 }
 // 

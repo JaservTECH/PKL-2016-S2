@@ -1,6 +1,7 @@
 var acaraTableNonDefault = 1000;
+//default system call
 function mainAcara(){
-	refreshAcaraDefault();
+	refreshAcaraDefault(); //ok
 	refreshAcaraNonDefault();
 	$("#search-semester").keyup(function(event){
 	    if(event.keyCode == 13){
@@ -26,7 +27,7 @@ function refreshAcaraDefault(){
 	openLoadingBar("mengambil data tabel ...");
 	j('#setAjax').setAjax({
 		methode : "POST",
-		url : "Controlroom/getTableAcara.aspx",
+		url : "Controlacara/getTableAcara.aspx",
 		bool : true,
 		content : "kode=JASERVCONTROL",
 		sucOk : function(a){
@@ -49,7 +50,7 @@ function refreshAcaraNonDefault(){
 	openLoadingBar("mengambil data tabel ...");
 	j('#setAjax').setAjax({
 		methode : "POST",
-		url : "Controlroom/getTableAcaraNonDefault.aspx",
+		url : "Controlacara/getTableAcaraNonDefault.aspx",
 		bool : true,
 		content : "kode=JASERVCONTROL&year="+acaraTableNonDefault,
 		sucOk : function(a){
@@ -73,7 +74,7 @@ function showMeThisRegistrasiContent(a,b){
 	j("#setAjax").setAjax({
 		methode : 'POST',
 		bool : true,
-		url : "Controlroom/getJsonDataRegistrasi.aspx",
+		url : "Controlacara/getJsonDataRegistrasi.aspx",
 		content : "year="+a+"&semester="+b+"&kode=JASERVCONTROL",
 		sucOk : function(a){
 			setLoadingBarMessage("pesan server diterima ...");
@@ -111,7 +112,7 @@ function showMeThisRegistrasiContentNonDefault(a){
 	j("#setAjax").setAjax({
 		methode : 'POST',
 		bool : true,
-		url : "Controlroom/getJsonDataRegistrasiNonDefault.aspx",
+		url : "Controlacara/getJsonDataRegistrasiNonDefault.aspx",
 		content : "id="+a+"&kode=JASERVCONTROL",
 		sucOk : function(a){
 			setLoadingBarMessage("pesan server diterima ...");
@@ -182,7 +183,7 @@ function addNewEvent(){
 					j('#setAjax').setAjax({
 						methode : "POST",
 						bool : true,
-						url : "Controlroom/setNewEvent.aspx",
+						url : "Controlacara/setNewEvent.aspx",
 						content : 
 						"start="+$('#start-event-new').val()+
 						"&end="+$('#end-event-new').val()+
@@ -220,7 +221,7 @@ function addNewEvent(){
 		}else{
 			j("#setAjax").setAjax({
 				methode : "POST",
-				url : "Controlroom/getCheck.aspx",
+				url : "Controlacara/getCheck.aspx",
 				bool : true,
 				content : "value="+$(this).val()+"&kode=TITLE&cat=0",
 				sucOk : function(a){
@@ -251,7 +252,7 @@ function addNewEvent(){
 		}else{
 			j("#setAjax").setAjax({
 				methode : "POST",
-				url : "Controlroom/getCheck.aspx",
+				url : "Controlacara/getCheck.aspx",
 				bool : true,
 				content : "value="+$(this).val()+"&kode=SUMMARY&cat=0",
 				sucOk : function(a){
@@ -281,7 +282,7 @@ function addNewEvent(){
 		}else{
 			j("#setAjax").setAjax({
 				methode : "POST",
-				url : "Controlroom/getCheck.aspx",
+				url : "Controlacara/getCheck.aspx",
 				bool : true,
 				content : "value="+$(this).val()+"&kode=DATE&cat=0",
 				sucOk : function(a){
@@ -327,7 +328,7 @@ function addNewEvent(){
 		}else{
 			j("#setAjax").setAjax({
 				methode : "POST",
-				url : "Controlroom/getCheck.aspx",
+				url : "Controlacara/getCheck.aspx",
 				bool : true,
 				content : "value="+$(this).val()+"&kode=DATE&cat=0",
 				sucOk : function(a){
@@ -406,7 +407,7 @@ function editEventAktif(ccc){
 					j('#setAjax').setAjax({
 						methode : "POST",
 						bool : true,
-						url : "Controlroom/setDataEditEvent.aspx",
+						url : "Controlacara/setDataEditEvent.aspx",
 						content : 
 						"start="+$('#start-edit-event').val()+
 						"&end="+$('#end-edit-event').val()+
@@ -441,7 +442,7 @@ function editEventAktif(ccc){
 	j("#setAjax").setAjax({
 		methode : "POST",
 		bool : true,
-		url : "Controlroom/getJsonDataEventActive.aspx",
+		url : "Controlacara/getJsonDataEventActive.aspx",
 		content : "kode=JASERVCONTROL&id="+ccc,
 		sucOk : function(a){
 			//var bb = JSON.parse(a);
@@ -476,7 +477,7 @@ function editEventAktif(ccc){
 		}else{
 			j("#setAjax").setAjax({
 				methode : "POST",
-				url : "Controlroom/getCheck.aspx",
+				url : "Controlacara/getCheck.aspx",
 				bool : true,
 				content : "value="+$(this).val()+"&kode=TITLE&cat=0",
 				sucOk : function(a){
@@ -507,7 +508,7 @@ function editEventAktif(ccc){
 		}else{
 			j("#setAjax").setAjax({
 				methode : "POST",
-				url : "Controlroom/getCheck.aspx",
+				url : "Controlacara/getCheck.aspx",
 				bool : true,
 				content : "value="+$(this).val()+"&kode=SUMMARY&cat=0",
 				sucOk : function(a){
@@ -537,7 +538,7 @@ function editEventAktif(ccc){
 		}else{
 			j("#setAjax").setAjax({
 				methode : "POST",
-				url : "Controlroom/getCheck.aspx",
+				url : "Controlacara/getCheck.aspx",
 				bool : true,
 				content : "value="+$(this).val()+"&kode=DATE&cat=0",
 				sucOk : function(a){
@@ -583,7 +584,7 @@ function editEventAktif(ccc){
 		}else{
 			j("#setAjax").setAjax({
 				methode : "POST",
-				url : "Controlroom/getCheck.aspx",
+				url : "Controlacara/getCheck.aspx",
 				bool : true,
 				content : "value="+$(this).val()+"&kode=DATE&cat=0",
 				sucOk : function(a){
@@ -664,7 +665,7 @@ function editAkademikAktif(){
 					j('#setAjax').setAjax({
 						methode : "POST",
 						bool : true,
-						url : "Controlroom/setNewAkademik.aspx",
+						url : "Controlacara/setNewAkademik.aspx",
 						content : 
 						"start="+$('#start-acara').val()+
 						"&end="+$('#end-acara').val()+
@@ -698,7 +699,7 @@ function editAkademikAktif(){
 	j("#setAjax").setAjax({
 		methode : "POST",
 		bool : true,
-		url : "Controlroom/getJsonDataRegistrasiActive.aspx",
+		url : "Controlacara/getJsonDataRegistrasiActive.aspx",
 		content : "kode=JASERVCONTROL",
 		sucOk : function(a){
 			//var bb = JSON.parse(a);
@@ -733,7 +734,7 @@ function editAkademikAktif(){
 		}else{
 			j("#setAjax").setAjax({
 				methode : "POST",
-				url : "Controlroom/getCheck.aspx",
+				url : "Controlacara/getCheck.aspx",
 				bool : true,
 				content : "value="+$(this).val()+"&kode=TITLE&cat=0",
 				sucOk : function(a){
@@ -764,7 +765,7 @@ function editAkademikAktif(){
 		}else{
 			j("#setAjax").setAjax({
 				methode : "POST",
-				url : "Controlroom/getCheck.aspx",
+				url : "Controlacara/getCheck.aspx",
 				bool : true,
 				content : "value="+$(this).val()+"&kode=SUMMARY&cat=0",
 				sucOk : function(a){
@@ -794,7 +795,7 @@ function editAkademikAktif(){
 		}else{
 			j("#setAjax").setAjax({
 				methode : "POST",
-				url : "Controlroom/getCheck.aspx",
+				url : "Controlacara/getCheck.aspx",
 				bool : true,
 				content : "value="+$(this).val()+"&kode=DATE&cat=0",
 				sucOk : function(a){
@@ -840,7 +841,7 @@ function editAkademikAktif(){
 		}else{
 			j("#setAjax").setAjax({
 				methode : "POST",
-				url : "Controlroom/getCheck.aspx",
+				url : "Controlacara/getCheck.aspx",
 				bool : true,
 				content : "value="+$(this).val()+"&kode=DATE&cat=0",
 				sucOk : function(a){
