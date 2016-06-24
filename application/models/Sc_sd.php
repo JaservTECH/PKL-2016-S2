@@ -16,6 +16,14 @@ class Sc_sd extends CI_Model {
 	public function insert($data){
 		return $this->db->insert($this->tablename,$data);
 	}
+	public function deactivateDosen(){
+		if($this->getNip() == NULL)
+			return false;
+		if($this->getStatus() == NULL)
+			return FALSE;
+		$this->update($this->queryBuilder(),"s_id='".$this->getNip()."'");
+		return true;
+	}
 	public function update($set="",$where=""){
 		$query="UPDATE `".$this->tablename."` SET ".$set;
 		if($where!="")
@@ -57,6 +65,16 @@ class Sc_sd extends CI_Model {
 		return TRUE;
 		
 		
+	}
+	public function isNipExist(){
+		if($this->getNip() == NULL){
+			return false;
+		}
+		$TEMP_ARRAY = $this->query("*","s_id='".$this->getNip()."'")->row_array();
+		if(count($TEMP_ARRAY) > 0)
+			return true;
+		else
+			return false;
 	}
 	public function getNextCursor(){
 		if(is_array($this->TEMP_RESULT_ARRAY)){
@@ -122,7 +140,6 @@ class Sc_sd extends CI_Model {
 		}
 	}
 	//query  Builder
-	public function queryBuider(){}
 	//reset value to null
 	public function resetValue(){
 		$this->setNip(NULL);

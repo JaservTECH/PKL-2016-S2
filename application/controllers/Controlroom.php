@@ -47,6 +47,7 @@ class Controlroom extends CI_Controller {
 				"resources/mystyle/js/registrasi-pemerataan.js",
 				"resources/mystyle/js/dosen-koordinator.js",
 				"resources/mystyle/js/acara-koordinator.js",
+				"resources/mystyle/js/Seminar-ta1-ta2.js",
 				"resources/Chart/Chart.js"
 		);
 		$data['url_link'] = array(
@@ -88,118 +89,9 @@ class Controlroom extends CI_Controller {
 	
 	
 	
-	public function getTableDosen(){
-		if(!$this->koordinator->getStatusLoginKoordinator())
-			redirect(base_url().'Gateinout.aspx');
-		$kode = $this->isNullPost('kode');
-		if($kode!="JASERVCONTROL")
-			exit("0maaf, anda melakukan debugging");
-		//$temp = $this->dosen->getAllListDosen();
-		$this->sc_sd->getAllListDosen();
-		$srt = $this->koordinator->getCodeRegisterAktif()->now();
-		$rest="";
-		while($this->sc_sd->getCursorNext()){
-			$rest.="<tr>";
-			$rest.="<td>".$i."</td>";
-			$rest.="<td>".$this->sc_sd->getNip()."</td>";
-			$rest.="<td>".$this->sc_sd->getNama()."</td>";
-			$rest.="<td>".$this->sc_sd->getBidang()."</td>";
-			$rest.="<td>";
-			$rest.="<input type='button' value='lihat (".count($this->mahasiswa->getCountDospem($value['s_id'],$srt)[1]).")' class='btn btn-info' onclick='showListMahasiswaAmpuan(".'"'.$value['s_id'].'"'.")'>";
-			$rest.="</td>";
-			$rest.="<td><select onchange='statusDosen(".'"'.$this->sc_sd->getNip().'"'.",this.value);'>";
-			if(intval($this->sc_sd->getStatus()) == 1){
-				$rest.= "<option value='0'>Tidak Aktif</option>".
-						"<option  value='1' selected>Aktif</option>";
-			}else{
-				$rest.= "<option value='0' selected>Tidak Aktif</option>".
-						"<option value='1'>Aktif</option>";
-			}
-			$rest.="</tr>";
-			$i++;
-		}
-		if($temp[0]){
-			$i=1;
-			foreach ($temp[1] as $value){
-				$rest.="<tr>";
-				$rest.="<td>".$i."</td>";
-				$rest.="<td>".$value['s_id']."</td>";
-				$rest.="<td>".$value['s_name']."</td>";
-				$rest.="<td>".$value['s_bidang_riset']."</td>";
-				$rest.="<td>";
-				$rest.="<input type='button' value='lihat (".count($this->mahasiswa->getCountDospem($value['s_id'],$srt)[1]).")' class='btn btn-info' onclick='showListMahasiswaAmpuan(".'"'.$value['s_id'].'"'.")'>";
-				$rest.="</td>";
-				$rest.="<td><select onchange='statusDosen(".'"'.$value['s_id'].'"'.",this.value);'>";
-				if(intval($value['s_status']) == 1){
-					$rest.= "<option value='0'>Tidak Aktif</option>".
-							"<option  value='1' selected>Aktif</option>";
-				}else{
-					$rest.= "<option value='0' selected>Tidak Aktif</option>".
-							"<option value='1'>Aktif</option>";
-				}
-				$rest.="</tr>";
-				$i++;
-			}
-		}else{
-			$rest.="<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>";
-		}
-		echo "1".$rest;
-	}
-	public function getLayoutDosen(){
-		if(!$this->koordinator->getStatusLoginKoordinator())
-			redirect(base_url().'Gateinout.aspx');
-		echo"1";
-		$this->load->view("Controlroom_room/Body_right/Dosen.php");
-	}
 	protected function isNullPost($a){
 		if($this->input->post($a)===NULL)
 			exit('0anda melakukan percobaan terhadap halaman, jangan lakukan itu');
 		return $this->input->post($a);
-	}
-	public function setNewStatusDosen(){
-		if(!$this->koordinator->getStatusLoginKoordinator())
-			redirect(base_url().'Gateinout.aspx');
-		$kode = $this->isNullPost('kode');
-		if($kode!="JASERVCONTROL")
-			exit("0maaf, anda melakukan debugging");
-		$nip = $this->isNullPost('nip');
-		$stat = $this->isNullPost('status');
-		if(intval($stat) != 0){
-			if(intval($stat) != 1){
-				exit("0maaf, anda melakukan debugging");
-			}
-		}
-		$temp = $this->dosen->getCheckNip($nip,1);
-		if(!$temp[0]){
-			echo "0".$temp[1];
-			return;
-		}
-		return $this->dosen->setStatusDosen($nip,$stat);
-		
-	}
-	public function getJsonListMahasiswa(){
-		if(!$this->koordinator->getStatusLoginKoordinator())
-			redirect(base_url().'Gateinout.aspx');
-		$nip = $this->isNullPost('nip');
-		if(!$this->dosen->getCheckNip($nip,1))
-			exit("0Anda melakukan debuging");
-		$srt = $this->koordinator->getCodeRegisterAktif()->now();
-		$rr = $this->dosen->getCheckNip($nip,1);
-		if(!$rr[0])
-			exit('0maaf, anda melakukan debugging');
-		$temp = $this->mahasiswa->getCountDospem($nip,$srt);
-		if(!$temp[0])
-			exit("0gagal mengambil data");
-		$temp2="";
-		foreach ($temp[1] as $value){
-			$temps = $this->mahasiswa->getContactFormat($value['s_nim']);
-			$temp2.='["'.$temps[1]['nama'].'",'.$value['s_nim'].',"upload/foto/'.$temps[1]['foto'].'"],';
-		}
-		$temp2 = substr($temp2, 0,strlen($temp2)-1);
-		$json = '{"data": ['.count($temp[1]);
-		$json .= ",[";
-		$json .= $temp2;
-		$json .= "]]}";
-		echo "1".$json;
 	}
 }

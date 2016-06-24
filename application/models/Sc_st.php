@@ -243,6 +243,16 @@ class Sc_st extends CI_Model {
 		$TEMP_ARRAY = $this->query("*","s_rt=".$this->getKode()." AND s_nip=".$this->getNip()." AND s_statue=1 AND s_data_statue=0")->result_array();
 		return count($TEMP_ARRAY);
 	}
+	public function getDataDosenPembimbing(){
+		if($this->getNip() == NULL){
+			return false;
+		}
+		if($this->getKode() == NULL){
+			return false;
+		}
+		$this->TEMP_RESULT_ARRAY = $this->query("*","s_rt=".$this->getKode()." AND s_nip=".$this->getNip()." AND s_statue=1 AND s_data_statue=0")->result_array();
+		return $this->neutralizedResultArray();
+	}
 	protected function falseOutput(){
 		$this->resetValue();
 		return FALSE;

@@ -107,6 +107,17 @@ class Sc_sm extends CI_Model {
 		
 		
 	}
+	
+	public function isNimExist(){
+		if($this->getNim() == NULL){
+			return false;
+		}
+		$TEMP_ARRAY = $this->query("*","s_nim='".$this->getNim()."'")->row_array();
+		if(count($TEMP_ARRAY) > 0)
+			return true;
+		else
+			return false;
+	}
 	public function getNextCursor(){
 		if(is_array($this->TEMP_RESULT_ARRAY)){
 			if(array_key_exists($this->TEMP_INDEX_RESULT_ARRAY,$this->TEMP_RESULT_ARRAY)){

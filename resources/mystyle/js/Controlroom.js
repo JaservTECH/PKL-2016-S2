@@ -52,7 +52,7 @@ $(document).ready(function(){
 				navbarNavigation['dosen']=1;
 				setBreadCrumb({0:'Dosen'});
 				hidePlugin();
-				setNewIntern("getLayoutDosen",function(){
+				setNewIntern("Controldosen/getLayoutDosen",function(){
 					reloadLayoutDosen();
 				},
 				function(){
@@ -80,10 +80,17 @@ $(document).ready(function(){
 			if(navbarNavigation['form-control'] == 1){
 				modalStaticSingleWarning('Terdapat form yang aktif, tolong legkapi terlebih dahulu sebelum melanjutkan pindah form yang lain.');
 			}else{
+				
 				resetControlNavigasi();
 				navbarNavigation['seminar']=1;
 				setBreadCrumb({0:'Seminar'});
-				showPlugin();
+				hidePlugin();
+				setNewIntern("Controlseminar/getLayoutSeminar",function(){
+					tableTA1TA2Seminar();
+					//reloadRegistrasiPemerataan();
+				},function(){
+					
+				});
 				//setNewContentIntern("getLayoutHome",function(){},function(){},function(){});	
 			}
 		}

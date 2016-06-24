@@ -51,12 +51,13 @@ class Dosen extends Aktor {
 				return;
 			}
 		}
-		if(!$this->getStatusKey('koordinator'))
-			return $this->setCategoryPrintMessage(1, false, "maaf, key koordinator belum di buka");
-		$this->sc_sd->update("
-				`s_status`='".$stat."'
-				","s_id=".$nip);
-		echo "1berhasil melakukan perubahan";
+		$this->sc_sd->resetValue();
+		$this->sc_sd->setNip($nip);
+		$this->sc_sd->setStatus($stat);
+		if($this->sc_sd->deactivateDosen())
+			echo "1berhasil melakukan perubahan";
+		else
+			echo "0gagal melakukan perubahan";
 	}
 	public function getCheckNip($nip="",$cat=0){
 		if($nip == "")

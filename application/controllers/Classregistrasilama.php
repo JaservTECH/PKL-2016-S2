@@ -21,6 +21,16 @@ class Classregistrasilama extends CI_Controller {
 		$this->load->helper('html');
 		
 	}
+	
+	protected function getGenerateSimpleJson($a,$b){
+		if(!$this->mahasiswa->getStatusLoginMahasiswa())
+			redirect(base_url().'Gateinout.aspx');
+		if($b === NULL){
+			return '"'.$a.'" : { "status" : false, "value" : null}';
+		}else{
+			return '"'.$a.'" : { "status" : true, "value" : "'.$b.'"}';
+		}
+	}
 	//get data for form is exist before
 	public function getJsonDataTA(){
 		if(!$this->mahasiswa->getStatusLoginMahasiswa())

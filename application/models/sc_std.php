@@ -14,6 +14,17 @@ class Sc_std extends CI_Model {
 		$this->TEMP_INDEX_RESULT_ARRAY = null;
 		$this->resetValue();
 	}
+	public function getAllSeminarTAAktif(){
+		if($this->getKode() == NULL)
+		return false;
+		if($this->getKategori() == NULL){
+			$this->TEMP_RESULT_ARRAY = $this->query("*","s_status=1")->result_array();
+			return $this->neutralizedResultArray();
+		}else{
+			$this->TEMP_RESULT_ARRAY = $this->query("*","s_status=1 AND s_category='".$this->getKategori()."'")->result_array();
+			return $this->neutralizedResultArray();
+		}
+	}
 	//public function
 	private function partOfGetDataTableOnThisDay($string){
 		$code="";
@@ -47,6 +58,20 @@ class Sc_std extends CI_Model {
 		//exit("0s_process_data".$code." AND ".$string);
 		$this->TEMP_RESULT_ARRAY = $this->query("s_tanggal","s_process_data".$code." AND ".$string)->result_array();
 		return $this->neutralizedResultArray();
+	}
+	public function isRegisteredOnSeminar(){
+		if($this->getKode() == null)
+			return $this->failedResultAll();
+		if($this->getNim() == null)
+			return $this->failedResultAll();
+		if($this->getKategori() == null){
+			return $this->failedResultAll();
+		}
+		$TEMP_ARRAY = $this->query("*","s_rt='".$this->getKode()."' AND s_nim='".$this->getNim()."' AND s_status=1 AND s_category='".$this->getKategori()."'")->row_array();
+		if(count($TEMP_ARRAY)>0) 
+			return true;
+		else
+			return $this->failedResultAll();
 	}
 	public function getDataTabelOnThisDay(){
 		$this->load->helper('date');
@@ -160,6 +185,18 @@ class Sc_std extends CI_Model {
 	}
 	//by dosen
 	//update
+	public function updateDataProsesTA(){
+		if($this->getKode() == null)
+			return $this->failedResultAll();
+		if($this->getNim() == null)
+			return $this->failedResultAll();
+		if($this->getKategori() == null)
+			return $this->failedResultAll();
+		$this->update($this->queryBuilder(),"s_rt='".$this->getKode()."' AND s_nim='".$this->getNim()."' AND s_status=1 AND s_category='".$this->getKategori()."'");
+		return true;
+		
+	}
+	
 	public function updateFormActive(){
 		if($this->getKode() == null)
 			return $this->failedResultAll();
@@ -169,6 +206,34 @@ class Sc_std extends CI_Model {
 		return true;
 		
 	}
+	public function getCountDataNipS(){
+		if($this->getKode() == NULL)
+		return 0;
+		if($this->getNips() == null)
+		return 0;
+		if($this->getStatus() == NULL)
+			$this->setStatus(1);
+		else{
+			if(intval($this->getStatus()) < 1 || intval($this->getStatus()) >2)
+				$this->setStatus(1);
+		}
+		$RESULT_ARRAY = $this->query("*","s_rt='".$this->getKode()."' AND s_nip_p_s='".$this->getNips()."' AND s_status='".$this->getStatus()."' AND s_category=2")->result_array(); 
+		return count($RESULT_ARRAY);
+	}
+	public function getCountDataNipD(){
+		if($this->getKode() == NULL)
+		return 0;
+		if($this->getNipd() == null)
+		return 0;
+		if($this->getStatus() == NULL)
+			$this->setStatus(1);
+		else{
+			if(intval($this->getStatus()) < 1 || intval($this->getStatus()) >2)
+				$this->setStatus(1);
+		}
+		$RESULT_ARRAY = $this->query("*","s_rt='".$this->getKode()."' AND s_nip_p_d='".$this->getNipd()."' AND s_status='".$this->getStatus()."' AND s_category=2")->result_array(); 
+		return count($RESULT_ARRAY);
+	}
 	//
 	public function getDataPrimaryActive(){
 		if($this->getKode() == null)
@@ -177,6 +242,25 @@ class Sc_std extends CI_Model {
 			return $this->failedResultAll();
 		}
 		$ROW_ARRAY = $this->query("*","s_rt='".$this->getKode()."' AND s_nim='".$this->getNim()."' AND s_status=1")->row_array();
+		$this->resetValue();
+		if(count($ROW_ARRAY) <= 0){
+			return $this->failedResultAll();
+		}
+		else{
+			$this->automaSetContent($ROW_ARRAY);
+			return true;
+		}
+	}
+	
+	public function getDataPrimaryActiveByKategory(){
+		if($this->getKode() == null)
+			return $this->failedResultAll();
+		if($this->getNim() == null){
+			return $this->failedResultAll();
+		}
+		if($this->getKategori() == NULL)
+			return $this->failedResultAll();
+		$ROW_ARRAY = $this->query("*","s_rt='".$this->getKode()."' AND s_nim='".$this->getNim()."' AND s_status=1 AND s_category='".$this->getKategori()."'")->row_array();
 		$this->resetValue();
 		if(count($ROW_ARRAY) <= 0){
 			return $this->failedResultAll();
@@ -215,7 +299,6 @@ class Sc_std extends CI_Model {
                 case 's_nim' : $this->setNim($TEMP_ARRAY['s_nim']);break;
                 case 's_nip_p_s' : $this->setNips($TEMP_ARRAY['s_nip_p_s']);break;
                 case 's_nip_p_d' : $this->setNipd($TEMP_ARRAY['s_nip_p_d']);break;
-                case 's_nip_p_t' : $this->setNipt($TEMP_ARRAY['s_nip_p_t']);break;
                 case 's_doc_p_pengantar' : $this->setDocp($TEMP_ARRAY['s_doc_p_pengantar']);break;
                 case 's_doc_p_b_ta' : $this->setDocbta($TEMP_ARRAY['s_doc_p_b_ta']);break;
                 case 's_doc_p_p_ta' : $this->setDocpta($TEMP_ARRAY['s_doc_p_p_ta']);break;
@@ -236,7 +319,6 @@ class Sc_std extends CI_Model {
 		$this->setNim(null);
 		$this->setNips(null);
 		$this->setNipd(null);
-		$this->setNipt(null);
 		$this->setDocp(null);
 		$this->setDocbta(null);
 		$this->setDocpta(null);
@@ -264,7 +346,6 @@ class Sc_std extends CI_Model {
 		if($this->getNim() != NULL) $TEMP_QUERY["s_nim"] = $this->getNim();
 		if($this->getNips() != NULL) $TEMP_QUERY["s_nip_p_s"] = $this->getNips();
 		if($this->getNipd() != NULL) $TEMP_QUERY["s_nip_p_d"] = $this->getNipd();
-		if($this->getNipt() != NULL) $TEMP_QUERY["s_nip_p_t"] = $this->getNipt();
 		if($this->getDocp() != NULL) $TEMP_QUERY["s_doc_p_pengantar"] = $this->getDocp();
 		if($this->getDocbta() != NULL) $TEMP_QUERY["s_doc_p_b_ta"] = $this->getDocbta();
 		if($this->getDocpta() != NULL) $TEMP_QUERY["s_doc_p_p_ta"] = $this->getDocpta();
@@ -288,7 +369,6 @@ class Sc_std extends CI_Model {
         if($this->getNim() != NULL) $TEMP_QUERY.="s_nim='".$this->getNim()."',";
         if($this->getNips() != NULL) $TEMP_QUERY.="s_nip_p_s='".$this->getNips()."',";
         if($this->getNipd() != NULL) $TEMP_QUERY.="s_nip_p_d='".$this->getNipd()."',";
-        if($this->getNipt() != NULL) $TEMP_QUERY.="s_nip_p_t='".$this->getNipt()."',";
         if($this->getDocp() != NULL) $TEMP_QUERY.="s_doc_p_pengantar='".$this->getDocp()."',";
         if($this->getDocbta() != NULL) $TEMP_QUERY.="s_doc_p_b_ta='".$this->getDocbta()."',";
         if($this->getDocpta() != NULL) $TEMP_QUERY.="s_doc_p_p_ta='".$this->getDocpta()."',";
@@ -310,7 +390,6 @@ class Sc_std extends CI_Model {
 	private $nim;
     private $nips;
     private $nipd;
-    private $nipt;
     private $docp;
     private $docbta;
     private $docpta;
@@ -327,7 +406,6 @@ class Sc_std extends CI_Model {
     public function getNim(){$nim = $this->nim; return $nim;}
     public function getNips(){$nips = $this->nips; return $nips;}
     public function getNipd(){$nipd = $this->nipd; return $nipd;}
-    public function getNipt(){$nipt = $this->nipt; return $nipt;}
     public function getDocp(){$docp = $this->docp; return $docp;}
     public function getDocbta(){$docbta = $this->docbta; return $docbta;}
     public function getDocpta(){$docpta = $this->docpta; return $docpta;}
@@ -344,7 +422,6 @@ class Sc_std extends CI_Model {
     public function setNim($nim){$this->nim = $nim;}
     public function setNips($nips){$this->nips = $nips;}
     public function setNipd($nipd){$this->nipd = $nipd;}
-    public function setNipt($nipt){$this->nipt = $nipt;}
     public function setDocp($docp){$this->docp = $docp;}
     public function setDocbta($docbta){$this->docbta = $docbta;}
     public function setDocpta($docpta){$this->docpta = $docpta;}

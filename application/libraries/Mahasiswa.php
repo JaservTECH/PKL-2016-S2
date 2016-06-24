@@ -456,7 +456,53 @@ class Mahasiswa extends Aktor{
 		$this->sc_st->setLogStatus($TEMP_DATA_MAHASISWA['logstatus']);
 		$this->sc_st->setKategori($TEMP_DATA_MAHASISWA['kategori']);
 		$this->sc_st->setDataProses($TEMP_DATA_MAHASISWA['dataproses']);
-		return $this->sc_st->setNewData();
+		if(!$this->sc_st->setNewData())
+			return false;
+		$this->sc_std->resetValue();
+		$this->sc_std->setKode($srt);
+		$this->sc_std->setNim($nim);
+		$this->sc_std->setKategori(2);
+		if($this->sc_std->isRegisteredOnSeminar()){
+			$this->sc_std->resetValue();
+			$this->sc_std->setKode($srt);
+			$this->sc_std->setNim($nim);
+			$this->sc_std->setKategori(2);
+			if($this->sc_std->getDataPrimaryActiveByKategory()){
+				$nips = false;
+				if(strlen($this->sc_std->getNips()) > 5){
+					if($this->sc_std->getNips() == $nip)
+						$nips = true;
+				}
+				$nipd = false;
+				if(strlen($this->sc_std->getNipd()) > 5){
+					if($this->sc_std->getNipd() == $nip)
+						$nipd = true;
+				}
+				//change this code if want to log
+				//$nips if true then must be set 0 or long data save to log but if necessary, 
+				//even $nipd for tester 2 default set 0, or save to log before change with data actife with valu 0
+				if($nips){
+					$this->sc_std->resetValue();
+					$this->sc_std->setNim($nim);
+					$this->sc_std->setKode($srt);
+					$this->sc_std->setKategori(2);
+					$this->sc_std->setNips("0");
+					$this->sc_std->updateDataProsesTA();
+				}
+				if($nipd){
+					$this->sc_std->resetValue();
+					$this->sc_std->setNim($nim);
+					$this->sc_std->setKode($srt);
+					$this->sc_std->setKategori(2);
+					$this->sc_std->setNipd("0");
+					$this->sc_std->updateDataProsesTA();
+				}
+				//end of scope log
+				
+				
+			}
+		}
+		return true;
 	}
 	public function getTAInfo($srt,$data=null){
 		$temp = $this->sc_st->query("*","s_rt=".$srt." AND s_nim='".$this->session->userdata('nim')."'")->row_array(); 
@@ -509,7 +555,7 @@ class Mahasiswa extends Aktor{
 		$NUM = $this->sc_st->getCountDataPrimary();
 		$conPic['upload_path'] = './upload/krs/';
 		$conPic['allowed_types'] = 'pdf';
-		$conPic['file_name'] = $data['codereg']."-".$data['nim']."-".$NUM."-krs";
+		$conPic['file_name'] = $data['codeRegist']."-".$data['nim']."-".$NUM."-krs";
 		$conPic['overwrite'] = true;
 		$conPic['remove_spaces'] = true;
 		$conPic['max_size'] = 1024;
@@ -558,7 +604,7 @@ class Mahasiswa extends Aktor{
 		//add new item
 		$this->sc_st->resetValue();
 		$this->sc_st->setNim($this->getNimSessionLogin());
-		$this->sc_st->setKode($data['codereg']);
+		$this->sc_st->setKode($data['codeRegist']);
 		$this->sc_st->setJudulTa($data['judulta']);
 		$this->sc_st->setNip($data['dosbing']);
 		$this->sc_st->setMetode($TEMP_ARRAY['METODE']);
@@ -589,7 +635,7 @@ class Mahasiswa extends Aktor{
 		
 		$conPic['upload_path'] = './upload/krs/';
 		$conPic['allowed_types'] = 'pdf';
-		$conPic['file_name'] = $data['codereg']."-".$data['nim']."-".$NUM."-krs";
+		$conPic['file_name'] = $data['codeRegist']."-".$data['nim']."-".$NUM."-krs";
 		$conPic['overwrite'] = true;
 		$conPic['remove_spaces'] = true;
 		$conPic['max_size'] = 1024;
@@ -615,12 +661,12 @@ class Mahasiswa extends Aktor{
 		
 		//log data
 		$this->sc_st->setNim($this->getNimSessionLogin());
-		$this->sc_st->setKode($data['codereg']);
+		$this->sc_st->setKode($data['codeRegist']);
 		if($this->sc_st->getHaveLastTAInfo(FALSE)){
-			if($data['codereg'] == $this->getYearNow()){				
+			if($data['codeRegist'] == $this->getYearNow()){				
 				$TEMP_COUNT = $this->sc_st->getCount();
 				$this->sc_st->resetValue();
-				$this->sc_st->setKode($data['codereg']);
+				$this->sc_st->setKode($data['codeRegist']);
 				$this->sc_st->setNim($this->getNimSessionLogin());
 				$this->sc_st->setLogStatus($TEMP_COUNT);
 				$this->sc_st->setLog();
@@ -629,7 +675,7 @@ class Mahasiswa extends Aktor{
 		//add new item
 		$this->sc_st->resetValue();
 		$this->sc_st->setNim($this->getNimSessionLogin());
-		$this->sc_st->setKode($data['codereg']);
+		$this->sc_st->setKode($data['codeRegist']);
 		$this->sc_st->setJudulTa($data['judulta']);
 		$this->sc_st->setMetode($data['metode']);
 		$this->sc_st->setLokasi($data['lokasi']);
@@ -981,7 +1027,7 @@ class Mahasiswa extends Aktor{
 				$this->sc_std->resetValue();
 				$this->sc_std->setKode($this->getYearNow());
 				$this->sc_std->setNim($this->getNimSessionLogin());
-				$this->sc_std->setNips($nimdosen);
+				//$this->sc_std->setNips($nimdosen);
 				$this->sc_std->setDocp($pengantar);
 				$this->sc_std->setDocbta($kartbim);
 				$this->sc_std->setDocpta($kartsemta);
@@ -1004,7 +1050,7 @@ class Mahasiswa extends Aktor{
 					$this->sc_std->resetValue();
 					$this->sc_std->setKode($this->getYearNow());
 					$this->sc_std->setNim($this->getNimSessionLogin());
-					$this->sc_std->setNips($nimdosen);
+					//$this->sc_std->setNips($nimdosen);
 					$this->sc_std->setDocp($pengantar);
 					$this->sc_std->setDocbta($kartbim);
 					$this->sc_std->setDocpta($kartsemta);
@@ -1028,7 +1074,7 @@ class Mahasiswa extends Aktor{
 			$this->sc_std->setKode($this->getYearNow());
 			$this->sc_std->setNim($this->getNimSessionLogin());
 			$this->sc_std->setDocp($pengantar);
-			$this->sc_std->setNips($nimdosen);
+			//$this->sc_std->setNips($nimdosen);
 			$this->sc_std->setDocbta($kartbim);
 			$this->sc_std->setDocpta($kartsemta);
 			$this->sc_std->setDocTranskrip($transkrip);
@@ -1135,7 +1181,7 @@ class Mahasiswa extends Aktor{
 				$this->sc_std->resetValue();
 				$this->sc_std->setKode($this->getYearNow());
 				$this->sc_std->setNim($this->getNimSessionLogin());
-				$this->sc_std->setNips($nimdosen);
+				//$this->sc_std->setNips($nimdosen);
 				$this->sc_std->setDocp($pengantar);
 				$this->sc_std->setDocbta($kartbim);
 				$this->sc_std->setDocpta($kartsemta);
@@ -1158,7 +1204,7 @@ class Mahasiswa extends Aktor{
 					$this->sc_std->resetValue();
 					$this->sc_std->setKode($this->getYearNow());
 					$this->sc_std->setNim($this->getNimSessionLogin());
-					$this->sc_std->setNips($nimdosen);
+					//$this->sc_std->setNips($nimdosen);
 					$this->sc_std->setDocp($pengantar);
 					$this->sc_std->setDocbta($kartbim);
 					$this->sc_std->setDocpta($kartsemta);
@@ -1182,7 +1228,7 @@ class Mahasiswa extends Aktor{
 			$this->sc_std->setKode($this->getYearNow());
 			$this->sc_std->setNim($this->getNimSessionLogin());
 			$this->sc_std->setDocp($pengantar);
-			$this->sc_std->setNips($nimdosen);
+			//$this->sc_std->setNips($nimdosen);
 			$this->sc_std->setDocbta($kartbim);
 			$this->sc_std->setDocpta($kartsemta);
 			$this->sc_std->setDocTranskrip($transkrip);

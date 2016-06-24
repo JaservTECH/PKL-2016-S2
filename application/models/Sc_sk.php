@@ -101,12 +101,14 @@ class Sc_sk extends CI_Model {
 	}
 	public function automaSetContent($TEMP_ARRAY){
 		$this->resetValue();
-		foreach($TEMP_ARRAY as $TEMP_INDEX_ARRAY => $TEMP_VALUE){
-			switch($TEMP_INDEX_ARRAY){
-				case 's_kode' : $this->setKode($TEMP_ARRAY['s_kode']);break;
-				case 's_password' : $this->setPassword($TEMP_ARRAY['s_password']);break;
-				case 's_email' : $this->setEmail($TEMP_ARRAY['s_email']);break;
-				case 's_contacs' : $this->setNohp($TEMP_ARRAY['s_contacs']);break;
+		if(is_array($TEMP_ARRAY)){
+			foreach($TEMP_ARRAY as $TEMP_INDEX_ARRAY => $TEMP_VALUE){
+				switch($TEMP_INDEX_ARRAY){
+					case 's_kode' : $this->setKode($TEMP_ARRAY['s_kode']);break;
+					case 's_password' : $this->setPassword($TEMP_ARRAY['s_password']);break;
+					case 's_email' : $this->setEmail($TEMP_ARRAY['s_email']);break;
+					case 's_contacs' : $this->setNohp($TEMP_ARRAY['s_contacs']);break;
+				}
 			}
 		}
 	}

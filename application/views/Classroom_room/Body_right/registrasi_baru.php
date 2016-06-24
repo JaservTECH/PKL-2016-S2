@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('What Are You Looking For ?');
 ?>
 
-		<form id=validate method=POST target="frame-layout" enctype="multipart/form-data" action="Classroom/getResultRegistrasiBaru.aspx"> 
+		<form id=validate method=POST target="frame-layout" enctype="multipart/form-data" action="Classregistrasibaru/getResultRegistrasiBaru.aspx"> 
 			<div class=block> 
 				<div class=header> 
 					<h2>Registrasi TA Baru</h2> 

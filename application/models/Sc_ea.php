@@ -26,7 +26,6 @@ class Sc_ea extends CI_Model {
 		$this->TEMP_INDEX_RESULT_ARRAY = 0;
 		return $this->neutralizedResultArray();
 	}
-
 	//neutralizedResultArray
 	protected function neutralizedResultArray(){
 		$this->TEMP_INDEX_RESULT_ARRAY = 0;

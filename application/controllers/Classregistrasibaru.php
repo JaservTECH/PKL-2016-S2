@@ -19,6 +19,16 @@ class Classregistrasibaru extends CI_Controller {
 		$this->load->helper('url');
 		$this->load->helper('html');
 	}
+		
+	protected function getGenerateSimpleJson($a,$b){
+		if(!$this->mahasiswa->getStatusLoginMahasiswa())
+			redirect(base_url().'Gateinout.aspx');
+		if($b === NULL){
+			return '"'.$a.'" : { "status" : false, "value" : null}';
+		}else{
+			return '"'.$a.'" : { "status" : true, "value" : "'.$b.'"}';
+		}
+	}
 	//refreshing data form
 	public function getJsonDataPersonal(){
 		if(!$this->mahasiswa->getStatusLoginMahasiswa())
@@ -79,6 +89,7 @@ class Classregistrasibaru extends CI_Controller {
 				return;
 				break;
 				case 121 :
+				//pemaksaan regigstrasi lama
 				case 112 :
 				//neutrallized
 				break;
@@ -306,7 +317,7 @@ class Classregistrasibaru extends CI_Controller {
 				$this->getCheck('baru-ref3',$dataTemp['ref3'],true);	
 		}
 		$dataTemp['krs'] = 'baru-krs';
-		$dataTemp['codereg'] = $this->sc_ea->getCodeRegistrasiAkademik()->now();
+		$dataTemp['codeRegist'] = $this->mahasiswa->getYearNow();
 		//exit("0".$dataTemp['codereg']);
 		$this->sc_sm->getDataNim($this->session->userdata('nim'));
 		if(intval($this->sc_sm->getForceRegLama()) == 1){

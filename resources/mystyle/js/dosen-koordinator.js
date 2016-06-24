@@ -2,19 +2,23 @@ function statusDosen(a,b){
 	openLoadingBar("melakukan perubahan data");
 	j("#setajax").setAjax({
 		methode : 'POST',
-		url : 'Controlroom/setNewStatusDosen.aspx',
+		url : 'Controldosen/setNewStatusDosen.aspx',
 		bool : true,
 		content : "kode=JASERVCONTROL&nip="+a+"&status="+b,
 		sucOk : function(a){
-			if(a[0]=='1'){
+			//alert(a);
+			if(parseInt(a[0]) > 0){
 				setLoadingBarMessage("response berhasil diproses ...");
+				setTimeout(function(){
+					closeLoadingBar();
+				},2000);
 			}else{
+				//alert("response gagal");
 				setLoadingBarMessage("response gagal  ...");
-				refreshTable();
+				setTimeout(function(){
+					refreshTable();	
+				},2000);
 			}
-			setTimeout(function(){
-				closeLoadingBar();
-			},2000);
 		},
 		sucEr : function(a,b){
 			template(a,b,"status editing dosen");
@@ -30,7 +34,7 @@ function showListMahasiswaAmpuan(g){
 	j("#setAjax").setAjax(
 	{
 		methode : 'POST',
-		url : 'Controlroom/getJsonListMahasiswa.aspx',
+		url : 'Controldosen/getJsonListMahasiswa.aspx',
 		bool : true,
 		content : "nip="+g,
 		sucOk : function(a){
@@ -62,7 +66,7 @@ function refreshTable(){
 	openLoadingBar("refreshing tabel ...");
 	j("#setajax").setAjax({
 		methode : 'POST',
-		url : 'Controlroom/getTableDosen.aspx',
+		url : 'Controldosen/getTableDosen.aspx',
 		bool : true,
 		content : "kode=JASERVCONTROL",
 		sucOk : function(a){
